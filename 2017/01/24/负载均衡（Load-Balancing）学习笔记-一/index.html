@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233408890?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233657531?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233744423?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-01-24T07:06:20.510Z">
+<meta property="og:updated_time" content="2017-01-24T08:02:59.574Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记(一)">
 <meta name="twitter:description" content="概述在分布式系统中，负载均衡（Load Balancing）是一种将任务分派到多个服务端进程的方法。例如，将一个HTTP请求派发到实际的Web服务器中执行的过程就涉及负载均衡的实现。一个HTTP请求到达Web服务器，这中间涉及多个过程，也存在多种不同负载均衡的方法。本文讲述负载均衡的基本原理与派发策略，下图1是负载均衡的基本原理图，图1中客户端的请求请求经过达负载均衡器（Load Balancer">
@@ -396,7 +396,7 @@
 </ul>
 <h1 id="均匀派发（Even-Task-Distribution-Scheme）"><a href="#均匀派发（Even-Task-Distribution-Scheme）" class="headerlink" title="均匀派发（Even Task Distribution Scheme）"></a>均匀派发（Even Task Distribution Scheme）</h1><p>均匀派发是实现负载均衡最简单的策略，均衡派发的意思是指任务将均匀地派发到所有的服务器进程。在实现时，可以使用随机派发或者轮流派发（Round Robin）。</p>
 <p><img src="http://img.blog.csdn.net/20161227233209186?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图2：均匀派发策略</p>
-<p>均匀派发策略假设集群内所有进程具有相同的处理能力，且任务处理用时相同。但实际上，由于进程部署环境的不同，其处理能力一般不同，任务处理时间也不尽相同。因此均匀派发的策略并不能很好地将任务负载均滩到各个进程中。</p>
+<p>均匀派发策略假设集群内所有进程具有相同的处理能力，且任务处理用时相同。但实际上，由于进程部署环境的不同，其处理能力一般不同，任务处理时间也不尽相同。因此均匀派发的策略并不能很好地将任务负载均滩到各个进程中。<br><a id="more"></a></p>
 <h2 id="DNS负载均衡"><a href="#DNS负载均衡" class="headerlink" title="DNS负载均衡"></a>DNS负载均衡</h2><p>我们知道，DNS提供域名解析服务，当我们访问某个站点时，实际上首先需要通过该站点域名的DNS服务器来获取指向该域名的IP地址，在这过程中，DNS服务器完成了域名到IP地址的映射。由于这一映射可以是一对多的关系，因此DNS服务器可以充当负载均衡器的作用，DNS服务器在派发IP地址时，正是使用轮流派发的方式来实现的。</p>
 <h1 id="加权派发（Weighted-Task-Distribution-Scheme）"><a href="#加权派发（Weighted-Task-Distribution-Scheme）" class="headerlink" title="加权派发（Weighted Task Distribution Scheme）"></a>加权派发（Weighted Task Distribution Scheme）</h1><p>加权派发策略在派发任务时，会赋予服务器进程一个权值，即不同的进程会接受不同数量的任务，具体数量为权值确定。</p>
 <p><img src="http://img.blog.csdn.net/20161227233337234?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图3：加权派发策略<br>﻿<br>例如，三个进程的处理任务的能力比率为3:3:2，那么可以赋予这三个进程3:3:2的权值，即每8个任务中，3个发派给第一个进程，3个发派给第二个进程，2个分派给第三个进程。<br>加权派发策略考虑了进程处理能力的不同，因此更接近实际的应用。可是，加权派发策略也没有考虑任务处理的要求。</p>

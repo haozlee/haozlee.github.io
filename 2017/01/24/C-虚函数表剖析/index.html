@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20160528105449641">
 <meta property="og:image" content="http://img.blog.csdn.net/20160528105539173">
 <meta property="og:image" content="http://img.blog.csdn.net/20160528104806455">
-<meta property="og:updated_time" content="2017-01-24T07:25:34.294Z">
+<meta property="og:updated_time" content="2017-01-24T08:02:47.877Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++虚函数表剖析">
 <meta name="twitter:description" content="关键词：虚函数，虚表，虚表指针，动态绑定，多态
@@ -392,6 +392,7 @@
 <h2 id="二、类的虚表"><a href="#二、类的虚表" class="headerlink" title="二、类的虚表"></a>二、类的虚表</h2><p>每个包含了虚函数的类都包含一个虚表。<br>我们知道，当一个类（A）继承另一个类（B）时，类A会继承类B的函数的调用权。所以如果一个基类包含了虚函数，那么其继承类也可调用这些虚函数，换句话说，一个类继承了包含虚函数的基类，那么这个类也拥有自己的虚表。</p>
 <p>我们来看以下的代码。类A包含虚函数vfunc1，vfunc2，由于类A包含虚函数，故类A拥有一个虚表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class A &#123;</div><div class="line">public:</div><div class="line">    virtual void vfunc1();</div><div class="line">    virtual void vfunc2();</div><div class="line">    void func1();</div><div class="line">    void func2();</div><div class="line">private:</div><div class="line">    int m_data1, m_data2;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
 <p>类A的虚表如图1所示。<br><img src="http://img.blog.csdn.net/20160528105449641" alt="这里写图片描述"><br>图1：类A的虚表示意图</p>
+<a id="more"></a>
 <p>虚表是一个指针数组，其元素是虚函数的指针，每个元素对应一个虚函数的函数指针。需要指出的是，普通的函数即非虚函数，其调用并不需要经过虚表，所以虚表的元素并不包括普通函数的函数指针。<br>虚表内的条目，即虚函数指针的赋值发生在编译器的编译阶段，也就是说在代码的编译阶段，虚表就可以构造出来了。</p>
 <h2 id="三、虚表指针"><a href="#三、虚表指针" class="headerlink" title="三、虚表指针"></a>三、虚表指针</h2><p>虚表是属于类的，而不是属于某个具体的对象，一个类只需要一个虚表即可。同一个类的所有对象都使用同一个虚表。<br>为了指定对象的虚表，对象内部包含一个虚表的指针，来指向自己所使用的虚表。为了让每个包含虚表的类的对象都拥有一个虚表指针，编译器在类中添加了一个指针，*__vptr，用来指向虚表。这样，当类的对象在创建时便拥有了这个指针，且这个指针的值会自动被设置为指向类的虚表。</p>
 <p><img src="http://img.blog.csdn.net/20160528105539173" alt="这里写图片描述"><br>图2：对象与它的虚表</p>
