@@ -89,7 +89,7 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 <meta property="og:type" content="article">
 <meta property="og:title" content="负载均衡（Load Balancing）学习笔记(二)">
 <meta property="og:url" content="http://leehao.me/2017/01/24/负载均衡（Load-Balancing）学习笔记-二/index.html">
-<meta property="og:site_name" content="李生的博客">
+<meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="概述文章负载均衡（Load Balancing）学习笔记(一)  讲述了负载均衡的一般性原理，本文继续介绍常见的实现负载均衡的方法。
 HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请求先到达重定向服务器，这台服务器会挑选一台后端服务器的地址（例如使用轮询的方式），并将该地址写入HTTP重定向响应结果中（以响应状态码302返回）返回给用户。用户将根据这个新的地址重新发送请求到选中">
 <meta property="og:image" content="http://img.blog.csdn.net/20170121161127693?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
@@ -97,7 +97,7 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 <meta property="og:image" content="http://img.blog.csdn.net/20170121161158881?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170121161212350?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20170121161224264?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-01-24T08:45:49.707Z">
+<meta property="og:updated_time" content="2017-01-24T08:45:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记(二)">
 <meta name="twitter:description" content="概述文章负载均衡（Load Balancing）学习笔记(一)  讲述了负载均衡的一般性原理，本文继续介绍常见的实现负载均衡的方法。
@@ -136,7 +136,7 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 
 
 
-  <title> 负载均衡（Load Balancing）学习笔记(二) | 李生的博客 </title>
+  <title> 负载均衡（Load Balancing）学习笔记(二) | Leo的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -177,12 +177,12 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">李生的博客</span>
+      <span class="site-title">Leo的博客</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
     
-      <p class="site-subtitle">记录开发的点点滴滴</p>
+      <p class="site-subtitle">记录开发的点滴</p>
     
 </div>
 
@@ -282,15 +282,15 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
   <link itemprop="mainEntityOfPage" href="http://leehao.me/2017/01/24/负载均衡（Load-Balancing）学习笔记-二/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="李生">
+    <meta itemprop="name" content="Leo">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="李生的博客">
+    <meta itemprop="name" content="Leo的博客">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="李生的博客" src="">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
     </span>
   </span>
 
@@ -553,8 +553,8 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.jpg"
-               alt="李生" />
-          <p class="site-author-name" itemprop="name">李生</p>
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
           <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
         </div>
         <nav class="site-state motion-element">
@@ -640,7 +640,7 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">李生</span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
 </div>
 
 

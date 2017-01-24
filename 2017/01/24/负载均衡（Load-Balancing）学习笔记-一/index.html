@@ -88,7 +88,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="负载均衡（Load Balancing）学习笔记(一)">
 <meta property="og:url" content="http://leehao.me/2017/01/24/负载均衡（Load-Balancing）学习笔记-一/index.html">
-<meta property="og:site_name" content="李生的博客">
+<meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="概述在分布式系统中，负载均衡（Load Balancing）是一种将任务分派到多个服务端进程的方法。例如，将一个HTTP请求派发到实际的Web服务器中执行的过程就涉及负载均衡的实现。一个HTTP请求到达Web服务器，这中间涉及多个过程，也存在多种不同负载均衡的方法。本文讲述负载均衡的基本原理与派发策略，下图1是负载均衡的基本原理图，图1中客户端的请求请求经过达负载均衡器（Load Balancer">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233044748?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233209186?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233408890?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233657531?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 <meta property="og:image" content="http://img.blog.csdn.net/20161227233744423?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-01-24T08:44:52.894Z">
+<meta property="og:updated_time" content="2017-01-24T08:44:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记(一)">
 <meta name="twitter:description" content="概述在分布式系统中，负载均衡（Load Balancing）是一种将任务分派到多个服务端进程的方法。例如，将一个HTTP请求派发到实际的Web服务器中执行的过程就涉及负载均衡的实现。一个HTTP请求到达Web服务器，这中间涉及多个过程，也存在多种不同负载均衡的方法。本文讲述负载均衡的基本原理与派发策略，下图1是负载均衡的基本原理图，图1中客户端的请求请求经过达负载均衡器（Load Balancer">
@@ -134,7 +134,7 @@
 
 
 
-  <title> 负载均衡（Load Balancing）学习笔记(一) | 李生的博客 </title>
+  <title> 负载均衡（Load Balancing）学习笔记(一) | Leo的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -175,12 +175,12 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">李生的博客</span>
+      <span class="site-title">Leo的博客</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
     
-      <p class="site-subtitle">记录开发的点点滴滴</p>
+      <p class="site-subtitle">记录开发的点滴</p>
     
 </div>
 
@@ -280,15 +280,15 @@
   <link itemprop="mainEntityOfPage" href="http://leehao.me/2017/01/24/负载均衡（Load-Balancing）学习笔记-一/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="李生">
+    <meta itemprop="name" content="Leo">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.jpg">
   </span>
 
   <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="李生的博客">
+    <meta itemprop="name" content="Leo的博客">
     <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="李生的博客" src="">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
     </span>
   </span>
 
@@ -524,8 +524,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.jpg"
-               alt="李生" />
-          <p class="site-author-name" itemprop="name">李生</p>
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
           <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
         </div>
         <nav class="site-state motion-element">
@@ -611,7 +611,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">李生</span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
 </div>
 
 
