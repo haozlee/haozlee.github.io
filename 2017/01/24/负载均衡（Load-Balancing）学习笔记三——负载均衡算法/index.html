@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Redis,分布式锁," />
+  <meta name="keywords" content="负载均衡," />
 
 
 
@@ -84,46 +84,24 @@
 
 
 
-<meta name="description" content="使用Redis的 SETNX 命令可以实现分布式锁，下文介绍其实现方法。
-SETNX命令简介命令格式
-SETNX key value
-
-将 key 的值设为 value，当且仅当 key 不存在。若给定的 key 已经存在，则 SETNX 不做任何动作。SETNX 是SET if Not eXists的简写。
-返回值返回整数，具体为
-
-1，当 key 的值被设置
-0，当 key 的值没被设置
-
-例">
+<meta name="description" content="本文讲述实现负载均衡的常用算法。
+轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Redis SETNX 命令实现分布式锁">
-<meta property="og:url" content="http://leehao.io/2017/01/24/使用Redis-SETNX-命令实现分布式锁/index.html">
+<meta property="og:title" content="负载均衡（Load Balancing）学习笔记三——负载均衡算法">
+<meta property="og:url" content="http://leehao.io/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/index.html">
 <meta property="og:site_name" content="李生的博客">
-<meta property="og:description" content="使用Redis的 SETNX 命令可以实现分布式锁，下文介绍其实现方法。
-SETNX命令简介命令格式
-SETNX key value
-
-将 key 的值设为 value，当且仅当 key 不存在。若给定的 key 已经存在，则 SETNX 不做任何动作。SETNX 是SET if Not eXists的简写。
-返回值返回整数，具体为
-
-1，当 key 的值被设置
-0，当 key 的值没被设置
-
-例">
-<meta property="og:updated_time" content="2017-01-24T08:22:31.296Z">
+<meta property="og:description" content="本文讲述实现负载均衡的常用算法。
+轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
+<meta property="og:image" content="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170123194118520?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170123194129305?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170123194139665?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-01-24T08:48:27.105Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Redis SETNX 命令实现分布式锁">
-<meta name="twitter:description" content="使用Redis的 SETNX 命令可以实现分布式锁，下文介绍其实现方法。
-SETNX命令简介命令格式
-SETNX key value
-
-将 key 的值设为 value，当且仅当 key 不存在。若给定的 key 已经存在，则 SETNX 不做任何动作。SETNX 是SET if Not eXists的简写。
-返回值返回整数，具体为
-
-1，当 key 的值被设置
-0，当 key 的值没被设置
-
-例">
+<meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记三——负载均衡算法">
+<meta name="twitter:description" content="本文讲述实现负载均衡的常用算法。
+轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
 
 
 
@@ -151,13 +129,13 @@ SETNX key value
 
 
 
-  <link rel="canonical" href="http://leehao.io/2017/01/24/使用Redis-SETNX-命令实现分布式锁/"/>
+  <link rel="canonical" href="http://leehao.io/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/"/>
 
 
 
 
 
-  <title> 使用Redis SETNX 命令实现分布式锁 | 李生的博客 </title>
+  <title> 负载均衡（Load Balancing）学习笔记三——负载均衡算法 | 李生的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -300,7 +278,7 @@ SETNX key value
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://leehao.io/2017/01/24/使用Redis-SETNX-命令实现分布式锁/">
+  <link itemprop="mainEntityOfPage" href="http://leehao.io/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="李生">
@@ -324,7 +302,7 @@ SETNX key value
             
             
               
-                使用Redis SETNX 命令实现分布式锁
+                负载均衡（Load Balancing）学习笔记三——负载均衡算法
               
             
           </h1>
@@ -339,7 +317,7 @@ SETNX key value
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-24T16:21:01+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-24T16:47:43+08:00">
                 2017-01-24
               </time>
             
@@ -362,8 +340,8 @@ SETNX key value
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis</span>
+                  <a href="/categories/分布式架构/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式架构</span>
                   </a>
                 </span>
 
@@ -380,8 +358,8 @@ SETNX key value
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/01/24/使用Redis-SETNX-命令实现分布式锁/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/24/使用Redis-SETNX-命令实现分布式锁/" itemprop="commentCount"></span>
+                <a href="/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -407,55 +385,23 @@ SETNX key value
       
 
       
-        <p>使用Redis的 SETNX 命令可以实现分布式锁，下文介绍其实现方法。</p>
-<h1 id="SETNX命令简介"><a href="#SETNX命令简介" class="headerlink" title="SETNX命令简介"></a>SETNX命令简介</h1><h2 id="命令格式"><a href="#命令格式" class="headerlink" title="命令格式"></a>命令格式</h2><blockquote>
-<p>SETNX key value</p>
-</blockquote>
-<p>将 key 的值设为 value，当且仅当 key 不存在。<br>若给定的 key 已经存在，则 SETNX 不做任何动作。<br>SETNX 是SET if Not eXists的简写。</p>
-<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>返回整数，具体为</p>
-<ul>
-<li>1，当 key 的值被设置</li>
-<li>0，当 key 的值没被设置</li>
-</ul>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><blockquote>
-<p>redis&gt; SETNX mykey “hello”<br>(integer) 1<br>redis&gt; SETNX mykey “hello”<br>(integer) 0<br>redis&gt; GET mykey<br>“hello”<br>redis&gt;</p>
-</blockquote>
-<h1 id="使用SETNX实现分布式锁"><a href="#使用SETNX实现分布式锁" class="headerlink" title="使用SETNX实现分布式锁"></a>使用SETNX实现分布式锁</h1><p>多个进程执行以下Redis命令：</p>
-<p><code>SETNX lock.foo &lt;current Unix time + lock timeout + 1&gt;</code></p>
-<p>如果 SETNX 返回1，说明该进程获得锁，SETNX将键 lock.foo 的值设置为锁的超时时间（当前时间 + 锁的有效时间）。<br>如果 SETNX 返回0，说明其他进程已经获得了锁，进程不能进入临界区。进程可以在一个循环中不断地尝试 SETNX 操作，以获得锁。</p>
-<a id="more"></a>
-<h2 id="解决死锁"><a href="#解决死锁" class="headerlink" title="解决死锁"></a>解决死锁</h2><p>考虑一种情况，如果进程获得锁后，断开了与 Redis 的连接（可能是进程挂掉，或者网络中断），如果没有有效的释放锁的机制，那么其他进程都会处于一直等待的状态，即出现“死锁”。</p>
-<p>上面在使用 SETNX 获得锁时，我们将键 lock.foo 的值设置为锁的有效时间，进程获得锁后，其他进程还会不断的检测锁是否已超时，如果超时，那么等待的进程也将有机会获得锁。</p>
-<p>然而，锁超时时，我们不能简单地使用 DEL 命令删除键 lock.foo 以释放锁。考虑以下情况，进程P1已经首先获得了锁 lock.foo，然后进程P1挂掉了。进程P2，P3正在不断地检测锁是否已释放或者已超时，执行流程如下：</p>
-<ul>
-<li>P2和P3进程读取键 lock.foo 的值，检测锁是否已超时（通过比较当前时间和键 lock.foo 的值来判断是否超时）</li>
-<li>P2和P3进程发现锁 lock.foo 已超时</li>
-<li>P2执行 DEL lock.foo命令</li>
-<li>P2执行 SETNX lock.foo命令，并返回1，即P2获得锁</li>
-<li>P3执行 DEL lock.foo命令将P2刚刚设置的键 lock.foo 删除（这步是由于P3刚才已检测到锁已超时）</li>
-<li>P3执行 SETNX lock.foo命令，并返回1，即P3获得锁</li>
-<li>P2和P3同时获得了锁</li>
-</ul>
-<p>从上面的情况可以得知，在检测到锁超时后，进程不能直接简单地执行 DEL 删除键的操作以获得锁。</p>
-<p>为了解决上述算法可能出现的多个进程同时获得锁的问题，我们再来看以下的算法。<br>我们同样假设进程P1已经首先获得了锁 lock.foo，然后进程P1挂掉了。接下来的情况：</p>
-<ul>
-<li>进程P4执行 SETNX lock.foo 以尝试获取锁</li>
-<li>由于进程P1已获得了锁，所以P4执行 SETNX lock.foo 返回0，即获取锁失败</li>
-<li>P4执行 GET lock.foo 来检测锁是否已超时，如果没超时，则等待一段时间，再次检测</li>
-<li>如果P4检测到锁已超时，即当前的时间大于键 lock.foo 的值，P4会执行以下操作<br><code>GETSET lock.foo &lt;current Unix timestamp + lock timeout + 1&gt;</code></li>
-<li>由于 GETSET 操作在设置键的值的同时，还会返回键的旧值，通过比较键 lock.foo 的旧值是否小于当前时间，可以判断进程是否已获得锁</li>
-<li>假如另一个进程P5也检测到锁已超时，并在P4之前执行了 GETSET 操作，那么P4的 GETSET 操作返回的是一个大于当前时间的时间戳，这样P4就不会获得锁而继续等待。注意到，即使P4接下来将键 lock.foo 的值设置了比P5设置的更大的值也没影响。</li>
-</ul>
-<p>另外，值得注意的是，在进程释放锁，即执行 DEL lock.foo 操作前，需要先判断锁是否已超时。如果锁已超时，那么锁可能已由其他进程获得，这时直接执行 DEL lock.foo 操作会导致把其他进程已获得的锁释放掉。</p>
-<h1 id="程序代码"><a href="#程序代码" class="headerlink" title="程序代码"></a>程序代码</h1><p>用以下python代码来实现上述的使用 SETNX 命令作分布式锁的算法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">LOCK_TIMEOUT = 3</div><div class="line">lock = 0</div><div class="line">lock_timeout = 0</div><div class="line">lock_key = &apos;lock.foo&apos;</div><div class="line"></div><div class="line"># 获取锁</div><div class="line">while lock != 1:</div><div class="line">    now = int(time.time())</div><div class="line">    lock_timeout = now + LOCK_TIMEOUT + 1</div><div class="line">    lock = redis_client.setnx(lock_key, lock_timeout)</div><div class="line">    if lock == 1 or (now &gt; int(redis_client.get(lock_key))) and now &gt; int(redis_client.getset(lock_key, lock_timeout)):</div><div class="line">        break</div><div class="line">    else:</div><div class="line">        time.sleep(0.001)</div><div class="line"></div><div class="line"># 已获得锁</div><div class="line">do_job()</div><div class="line"></div><div class="line"># 释放锁</div><div class="line">now = int(time.time())</div><div class="line">if now &lt; lock_timeout:</div><div class="line">    redis_client.delete(lock_key)</div></pre></td></tr></table></figure>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li><a href="http://redis.io/commands/setnx" target="_blank" rel="external">http://redis.io/commands/setnx</a></li>
-<li><a href="http://redis.io/topics/distlock" target="_blank" rel="external">http://redis.io/topics/distlock</a></li>
-<li><a href="http://redis.io/commands/getset" target="_blank" rel="external">http://redis.io/commands/getset</a></li>
-<li><a href="http://redis.readthedocs.org/en/latest/string/setnx.html" target="_blank" rel="external">http://redis.readthedocs.org/en/latest/string/setnx.html</a></li>
-<li><a href="http://my.oschina.net/u/1995545/blog/366381" target="_blank" rel="external">http://my.oschina.net/u/1995545/blog/366381</a></li>
-</ul>
+        <p>本文讲述实现负载均衡的常用算法。</p>
+<h1 id="轮询法（Round-Robin）"><a href="#轮询法（Round-Robin）" class="headerlink" title="轮询法（Round Robin）"></a>轮询法（Round Robin）</h1><p>轮询法是负载均衡中最常用的算法，它容易理解也容易实现。<br>轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。<br>假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这个请求分派到后端服务器2。然后第三个请求到达，由于只有两台后端服务器，故请求3会被分派到后端服务器1。依次类推，其示意图如图1所示。</p>
+<p><img src="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图1：轮询法负载均衡</p>
+<h1 id="加权轮询法（Weighted-Round-Robin）"><a href="#加权轮询法（Weighted-Round-Robin）" class="headerlink" title="加权轮询法（Weighted Round Robin）"></a>加权轮询法（Weighted Round Robin）</h1><p>简单的轮询法并不考虑后端机器的性能和负载差异。给性能高、负载低的机器配置较高的权重，让其处理较多的请求；而性能低、负载高的机器，配置较低的权重，让其处理较少的请求。加权轮询法可以很好地处理这一问题，它将请求顺序且按照权重分派到后端服务器。<br>假设有6个客户端请求，2台后端服务器。后端服务器1被赋予权值5，后端服务器2被赋予赋予权值1。这样一来，客户端请求1，2，3，4，5都被分派到服务器1处理；客户端请求6被分派到服务器2处理。接下来，请求7，8，9，10，11被分派到服务器1，请求12被分派到服务器2，依次类推。这个请求分派的过程可以用图2来表示。</p>
+<p><img src="http://img.blog.csdn.net/20170123194118520?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图2：加权轮询法负载均衡<br><a id="more"></a></p>
+<h1 id="最小连接数法（Least-Connections）"><a href="#最小连接数法（Least-Connections）" class="headerlink" title="最小连接数法（Least Connections）"></a>最小连接数法（Least Connections）</h1><p>即使后端机器的性能和负载一样，不同客户端请求复杂度不一样导致处理时间也不一样。最小连接数法根据后端服务器当前的连接数情况，动态地选取其中积压连接数最小的一台服务器来处理当前的请求，尽可能提高后端服务器的利用效率，合理地将请求分流到每一台服务器。<br>为什么根据连接数可以合理地利用服务器处理请求呢？<br>考虑一个客户端请求的处理逻辑较复杂，需要服务器的处理时间较长，由于客户端需要等待服务器的响应，故需要保持与服务器的连接，这样一来，客户端就需要与服务器保持较长时间的连接。<br>假设客户端请求1，2，3，4，5已被分派给服务器1和服务器2，其分派的情况如图3所示：</p>
+<p><img src="http://img.blog.csdn.net/20170123194129305?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图3：最小连接法示意图（1）</p>
+<p>此时，服务器上的请求1，请求3已处理完毕，与客户端的连接已断开。而请求2，4，5还在服务器上处理，即服务器还保持与这些请求的客户端的连接。<br>如果再把请求分派到服务器2，则会导致服务器的请求更多，服务器2的负载更高。如果考虑服务器的连接数，当前服务器1的连接数为1，服务器2的连接数为2，将请求分派到服务器1，则负载相对均衡。采用最小连接数法的分派方法如图4所示：</p>
+<p><img src="http://img.blog.csdn.net/20170123194139665?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图4：最小连接法示意图（2）</p>
+<h1 id="随机法（Random）"><a href="#随机法（Random）" class="headerlink" title="随机法（Random）"></a>随机法（Random）</h1><p>随机法也很简单，就是随机选择一台后端服务器进行请求的处理。由于每次服务器被挑中的概率都一样，客户端的请求可以被均匀地分派到所有的后端服务器上。</p>
+<h1 id="源地址哈希法（Source-Hashing）"><a href="#源地址哈希法（Source-Hashing）" class="headerlink" title="源地址哈希法（Source Hashing）"></a>源地址哈希法（Source Hashing）</h1><p>源地址哈希的思想是根据获取客户端的IP地址，通过哈希函数计算得到的一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是客服端要访问服务器的序号。采用源地址哈希法进行负载均衡，同一IP地址的客户端，当后端服务器列表不变时，它每次都会映射到同一台后端服务器进行访问。<br>如果后端服务器是一缓存系统，当后端服务器增加或者减少时，采用简单的哈希取模的方法，会使得命中率大大降低，这个问题可以采用一致性哈希的方法来解决。<br>关于一致性哈希的介绍，可以参考文件 <a href="http://blog.csdn.net/lihao21/article/details/54193868" target="_blank" rel="external">一致性Hash(Consistent Hashing)原理剖析</a>。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="http://www.jscape.com/blog/load-balancing-algorithms" target="_blank" rel="external">http://www.jscape.com/blog/load-balancing-algorithms</a></li>
+<li>大型网站技术架构——核心原理与安全分析，李智慧著，电子工业出版社</li>
+<li><a href="http://www.cnblogs.com/SmartLee/p/5161415.html" target="_blank" rel="external">http://www.cnblogs.com/SmartLee/p/5161415.html</a></li>
+<li>一致性Hash(Consistent Hashing)原理剖析，<a href="http://blog.csdn.net/lihao21/article/details/54193868" target="_blank" rel="external">http://blog.csdn.net/lihao21/article/details/54193868</a></li>
+</ol>
 
       
     </div>
@@ -479,9 +425,7 @@ SETNX key value
       
         <div class="post-tags">
           
-            <a href="/tags/Redis/" rel="tag"># Redis</a>
-          
-            <a href="/tags/分布式锁/" rel="tag"># 分布式锁</a>
+            <a href="/tags/负载均衡/" rel="tag"># 负载均衡</a>
           
         </div>
       
@@ -490,8 +434,8 @@ SETNX key value
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/01/24/C-虚函数表剖析/" rel="next" title="C++虚函数表剖析">
-                <i class="fa fa-chevron-left"></i> C++虚函数表剖析
+              <a href="/2017/01/24/负载均衡（Load-Balancing）学习笔记-二/" rel="next" title="负载均衡（Load Balancing）学习笔记(二)">
+                <i class="fa fa-chevron-left"></i> 负载均衡（Load Balancing）学习笔记(二)
               </a>
             
           </div>
@@ -499,10 +443,6 @@ SETNX key value
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/01/24/负载均衡（Load-Balancing）学习笔记-二/" rel="prev" title="负载均衡（Load Balancing）学习笔记(二)">
-                负载均衡（Load Balancing）学习笔记(二) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -528,8 +468,8 @@ SETNX key value
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/01/24/使用Redis-SETNX-命令实现分布式锁/"
-           data-title="使用Redis SETNX 命令实现分布式锁" data-url="http://leehao.io/2017/01/24/使用Redis-SETNX-命令实现分布式锁/">
+      <div class="ds-thread" data-thread-key="2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/"
+           data-title="负载均衡（Load Balancing）学习笔记三——负载均衡算法" data-url="http://leehao.io/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/">
       </div>
     
   </div>
@@ -629,7 +569,7 @@ SETNX key value
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SETNX命令简介"><span class="nav-number">1.</span> <span class="nav-text">SETNX命令简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#命令格式"><span class="nav-number">1.1.</span> <span class="nav-text">命令格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#返回值"><span class="nav-number">1.2.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">1.3.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用SETNX实现分布式锁"><span class="nav-number">2.</span> <span class="nav-text">使用SETNX实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解决死锁"><span class="nav-number">2.1.</span> <span class="nav-text">解决死锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#程序代码"><span class="nav-number">3.</span> <span class="nav-text">程序代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#轮询法（Round-Robin）"><span class="nav-number">1.</span> <span class="nav-text">轮询法（Round Robin）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#加权轮询法（Weighted-Round-Robin）"><span class="nav-number">2.</span> <span class="nav-text">加权轮询法（Weighted Round Robin）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最小连接数法（Least-Connections）"><span class="nav-number">3.</span> <span class="nav-text">最小连接数法（Least Connections）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#随机法（Random）"><span class="nav-number">4.</span> <span class="nav-text">随机法（Random）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源地址哈希法（Source-Hashing）"><span class="nav-number">5.</span> <span class="nav-text">源地址哈希法（Source Hashing）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
