@@ -556,9 +556,9 @@
         
           <p>本文讲述实现负载均衡的常用算法。</p>
 <h1 id="轮询法（Round-Robin）"><a href="#轮询法（Round-Robin）" class="headerlink" title="轮询法（Round Robin）"></a>轮询法（Round Robin）</h1><p>轮询法是负载均衡中最常用的算法，它容易理解也容易实现。<br>轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。<br>假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这个请求分派到后端服务器2。然后第三个请求到达，由于只有两台后端服务器，故请求3会被分派到后端服务器1。依次类推，其示意图如图1所示。</p>
-<p><img src="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图1：轮询法负载均衡</p>
+<p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg" alt="轮询法负载均衡"><br>图1：轮询法负载均衡</p>
 <h1 id="加权轮询法（Weighted-Round-Robin）"><a href="#加权轮询法（Weighted-Round-Robin）" class="headerlink" title="加权轮询法（Weighted Round Robin）"></a>加权轮询法（Weighted Round Robin）</h1><p>简单的轮询法并不考虑后端机器的性能和负载差异。给性能高、负载低的机器配置较高的权重，让其处理较多的请求；而性能低、负载高的机器，配置较低的权重，让其处理较少的请求。加权轮询法可以很好地处理这一问题，它将请求顺序且按照权重分派到后端服务器。<br>假设有6个客户端请求，2台后端服务器。后端服务器1被赋予权值5，后端服务器2被赋予赋予权值1。这样一来，客户端请求1，2，3，4，5都被分派到服务器1处理；客户端请求6被分派到服务器2处理。接下来，请求7，8，9，10，11被分派到服务器1，请求12被分派到服务器2，依次类推。这个请求分派的过程可以用图2来表示。</p>
-<p><img src="http://img.blog.csdn.net/20170123194118520?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图2：加权轮询法负载均衡<br>
+<p><img src="https://ww3.sinaimg.cn/large/006tNbRwgy1fc21i5rxi3j30gm0dawfd.jpg" alt=""><br>图2：加权轮询法负载均衡<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/01/24/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/#more" rel="contents">

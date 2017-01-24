@@ -92,16 +92,16 @@
 <meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="本文讲述实现负载均衡的常用算法。
 轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
-<meta property="og:image" content="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:image" content="http://img.blog.csdn.net/20170123194118520?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:image" content="http://img.blog.csdn.net/20170123194129305?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:image" content="http://img.blog.csdn.net/20170123194139665?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
-<meta property="og:updated_time" content="2017-01-24T08:48:27.000Z">
+<meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg">
+<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNbRwgy1fc21i5rxi3j30gm0dawfd.jpg">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNbRwgy1fc21i5nuamj30gm0daq3t.jpg">
+<meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21i5ml49j30gm0dagmh.jpg">
+<meta property="og:updated_time" content="2017-01-24T13:28:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记三——负载均衡算法">
 <meta name="twitter:description" content="本文讲述实现负载均衡的常用算法。
 轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
-<meta name="twitter:image" content="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta name="twitter:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg">
 
 
 
@@ -387,13 +387,13 @@
       
         <p>本文讲述实现负载均衡的常用算法。</p>
 <h1 id="轮询法（Round-Robin）"><a href="#轮询法（Round-Robin）" class="headerlink" title="轮询法（Round Robin）"></a>轮询法（Round Robin）</h1><p>轮询法是负载均衡中最常用的算法，它容易理解也容易实现。<br>轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。<br>假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这个请求分派到后端服务器2。然后第三个请求到达，由于只有两台后端服务器，故请求3会被分派到后端服务器1。依次类推，其示意图如图1所示。</p>
-<p><img src="http://img.blog.csdn.net/20170123194107227?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图1：轮询法负载均衡</p>
+<p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg" alt="轮询法负载均衡"><br>图1：轮询法负载均衡</p>
 <h1 id="加权轮询法（Weighted-Round-Robin）"><a href="#加权轮询法（Weighted-Round-Robin）" class="headerlink" title="加权轮询法（Weighted Round Robin）"></a>加权轮询法（Weighted Round Robin）</h1><p>简单的轮询法并不考虑后端机器的性能和负载差异。给性能高、负载低的机器配置较高的权重，让其处理较多的请求；而性能低、负载高的机器，配置较低的权重，让其处理较少的请求。加权轮询法可以很好地处理这一问题，它将请求顺序且按照权重分派到后端服务器。<br>假设有6个客户端请求，2台后端服务器。后端服务器1被赋予权值5，后端服务器2被赋予赋予权值1。这样一来，客户端请求1，2，3，4，5都被分派到服务器1处理；客户端请求6被分派到服务器2处理。接下来，请求7，8，9，10，11被分派到服务器1，请求12被分派到服务器2，依次类推。这个请求分派的过程可以用图2来表示。</p>
-<p><img src="http://img.blog.csdn.net/20170123194118520?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图2：加权轮询法负载均衡<br><a id="more"></a></p>
+<p><img src="https://ww3.sinaimg.cn/large/006tNbRwgy1fc21i5rxi3j30gm0dawfd.jpg" alt=""><br>图2：加权轮询法负载均衡<br><a id="more"></a></p>
 <h1 id="最小连接数法（Least-Connections）"><a href="#最小连接数法（Least-Connections）" class="headerlink" title="最小连接数法（Least Connections）"></a>最小连接数法（Least Connections）</h1><p>即使后端机器的性能和负载一样，不同客户端请求复杂度不一样导致处理时间也不一样。最小连接数法根据后端服务器当前的连接数情况，动态地选取其中积压连接数最小的一台服务器来处理当前的请求，尽可能提高后端服务器的利用效率，合理地将请求分流到每一台服务器。<br>为什么根据连接数可以合理地利用服务器处理请求呢？<br>考虑一个客户端请求的处理逻辑较复杂，需要服务器的处理时间较长，由于客户端需要等待服务器的响应，故需要保持与服务器的连接，这样一来，客户端就需要与服务器保持较长时间的连接。<br>假设客户端请求1，2，3，4，5已被分派给服务器1和服务器2，其分派的情况如图3所示：</p>
-<p><img src="http://img.blog.csdn.net/20170123194129305?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图3：最小连接法示意图（1）</p>
+<p><img src="https://ww2.sinaimg.cn/large/006tNbRwgy1fc21i5nuamj30gm0daq3t.jpg" alt=""><br>图3：最小连接法示意图（1）</p>
 <p>此时，服务器上的请求1，请求3已处理完毕，与客户端的连接已断开。而请求2，4，5还在服务器上处理，即服务器还保持与这些请求的客户端的连接。<br>如果再把请求分派到服务器2，则会导致服务器的请求更多，服务器2的负载更高。如果考虑服务器的连接数，当前服务器1的连接数为1，服务器2的连接数为2，将请求分派到服务器1，则负载相对均衡。采用最小连接数法的分派方法如图4所示：</p>
-<p><img src="http://img.blog.csdn.net/20170123194139665?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbGloYW8yMQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"><br>图4：最小连接法示意图（2）</p>
+<p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21i5ml49j30gm0dagmh.jpg" alt=""><br>图4：最小连接法示意图（2）</p>
 <h1 id="随机法（Random）"><a href="#随机法（Random）" class="headerlink" title="随机法（Random）"></a>随机法（Random）</h1><p>随机法也很简单，就是随机选择一台后端服务器进行请求的处理。由于每次服务器被挑中的概率都一样，客户端的请求可以被均匀地分派到所有的后端服务器上。</p>
 <h1 id="源地址哈希法（Source-Hashing）"><a href="#源地址哈希法（Source-Hashing）" class="headerlink" title="源地址哈希法（Source Hashing）"></a>源地址哈希法（Source Hashing）</h1><p>源地址哈希的思想是根据获取客户端的IP地址，通过哈希函数计算得到的一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是客服端要访问服务器的序号。采用源地址哈希法进行负载均衡，同一IP地址的客户端，当后端服务器列表不变时，它每次都会映射到同一台后端服务器进行访问。<br>如果后端服务器是一缓存系统，当后端服务器增加或者减少时，采用简单的哈希取模的方法，会使得命中率大大降低，这个问题可以采用一致性哈希的方法来解决。<br>关于一致性哈希的介绍，可以参考文件 <a href="http://blog.csdn.net/lihao21/article/details/54193868" target="_blank" rel="external">一致性Hash(Consistent Hashing)原理剖析</a>。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
