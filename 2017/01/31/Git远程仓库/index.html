@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNc79gy1fc9iqihdtaj30q208ujs8.jpg">
 <meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNc79gy1fc9iqub5hkj30cc08sglw.jpg">
 <meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNc79gy1fc9ir6wfg7j30oq0qswfy.jpg">
-<meta property="og:updated_time" content="2017-01-31T00:43:41.000Z">
+<meta property="og:updated_time" content="2017-01-31T01:31:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git远程仓库">
 <meta name="twitter:description" content="Git 支持在本地仓库进行程序项目的版本管理，这个本地的 git 仓库在程序项目的文件夹内（也就是 “.git” 文件夹内）。随着程序项目的推进，我们会把不同阶段的文件内容加入到这个 git 仓库中。这个仓库由我们直接操控，我们将它称之为“本地 git 仓库”。除了“本地 git 仓库”外，如果需要与他人共同开发这个程序项目，还需要一个“远程 git 仓库”。程序项目，本地 git 仓库和远程 g">
@@ -383,33 +383,19 @@
       
         <p>Git 支持在本地仓库进行程序项目的版本管理，这个本地的 git 仓库在程序项目的文件夹内（也就是 “.git” 文件夹内）。随着程序项目的推进，我们会把不同阶段的文件内容加入到这个 git 仓库中。这个仓库由我们直接操控，我们将它称之为“本地 git 仓库”。<br>除了“本地 git 仓库”外，如果需要与他人共同开发这个程序项目，还需要一个“远程 git 仓库”。程序项目，本地 git 仓库和远程 git 仓库之间的关系如图1所示。<br><img src="https://ww3.sinaimg.cn/large/006tNc79gy1fc9iqihdtaj30q208ujs8.jpg" alt=""><br>图1：程序项目，本地仓库，远程仓库之间的关系</p>
 <p>远程 git 仓库并不一定存储在另一台计算机中。很多人知道 git 支持 HTTP/HTTPS，SSH等协议，以允许本地 git 仓库与存在于另一台计算机中的远程 git 仓库之间传送数据。但实际上，远程 git 仓库也可以跟本地 git 仓库处于同一台电脑中，使用本地协议来进行数据的传送。</p>
-<h1 id="创建远程-git-仓库"><a href="#创建远程-git-仓库" class="headerlink" title="创建远程 git 仓库"></a>创建远程 git 仓库</h1><p>以下命令可以创建一个远程 git 仓库：</p>
-<blockquote>
-<p>git init –bare git仓库文件夹名称</p>
-</blockquote>
-<p>即在<code>git init</code>命令加上<code>--bare</code>选项。这是因为远程 git 仓库也称为bare类型的仓库。例如以下命令会创建一个名为 lee.git 的远程仓库：</p>
-<blockquote>
-<p>git init –bare lee.git</p>
-</blockquote>
+<h1 id="创建远程-git-仓库"><a href="#创建远程-git-仓库" class="headerlink" title="创建远程 git 仓库"></a>创建远程 git 仓库</h1><p>以下命令可以创建一个远程 git 仓库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git init --bare git仓库文件夹名称</div></pre></td></tr></table></figure></p>
+<p>即在<code>git init</code>命令加上<code>--bare</code>选项。这是因为远程 git 仓库也称为bare类型的仓库。例如以下命令会创建一个名为 lee.git 的远程仓库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git init --bare lee.git</div></pre></td></tr></table></figure></p>
 <p>执行以上命令后，可以看到当前目录下多了一个 lee.git 目录，打开 lee.git 目录，可以看到目录的结构：<br><img src="https://ww4.sinaimg.cn/large/006tNc79gy1fc9iqub5hkj30cc08sglw.jpg" alt=""><br>图2：bare类型的git仓库</p>
 <p>可以看到 lee.git 目录下并没有 .git 这个子文件夹。</p>
 <h1 id="从远程仓库复制出本地仓库"><a href="#从远程仓库复制出本地仓库" class="headerlink" title="从远程仓库复制出本地仓库"></a>从远程仓库复制出本地仓库</h1><p>使用 <code>git clone</code> 命令，可以从远程仓库复制出一个本地仓库。例如如下命令：</p>
-<blockquote>
-<p>git clone ./lee.git local</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone ./lee.git local</div></pre></td></tr></table></figure>
 <p>这样就从 lee.git 复制出一个名为 local 的本地仓库。进入 local 这个目录，可以看到 .git 子文件夹，也就是说，这个复制得到的 git 仓库是一般的 git 仓库，并不是 bare 类型，我们可以在这上面进行程序项目的开发。</p>
 <h1 id="本地仓库和远程仓库的同步"><a href="#本地仓库和远程仓库的同步" class="headerlink" title="本地仓库和远程仓库的同步"></a>本地仓库和远程仓库的同步</h1><p>在本地仓库的配置文件 config 中，有一个 origin 的属性，用来记录本地仓库与远程仓库之间的关系。使用<code>git config -l</code>可以列出 git 的配置信息：</p>
 <blockquote>
 <p>…（其他属性）<br>remote.origin.url=/Users/lihao/Code/Git/./lee.git/<br>remote.origin.fetch=+refs/heads/<em>:refs/remotes/origin/</em><br>…（其他属性）</p>
 </blockquote>
-<p>如果我们对本地仓库 local 进行了修改，现在需要推送到远程仓库，可以使用以下命令：</p>
-<blockquote>
-<p>git push origin master</p>
-</blockquote>
-<p>即把 master 分支的最新数据，推送到远程仓库存储。需要指出的是，执行这个命令，不会在配置文件中记录本地仓库的分支和远程仓库分支之间的关系。如果加上<code>--set-upstream</code>选项（或者使用短选项<code>-u</code>）如下，git 就会在配置文件中记录本地仓库的分支和远程仓库的分支之间的关系。</p>
-<blockquote>
-<p>git push –set-upstream origin master</p>
-</blockquote>
+<p>如果我们对本地仓库 local 进行了修改，现在需要推送到远程仓库，可以使用以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git push origin master</div></pre></td></tr></table></figure></p>
+<p>即把 master 分支的最新数据，推送到远程仓库存储。需要指出的是，执行这个命令，不会在配置文件中记录本地仓库的分支和远程仓库分支之间的关系。如果加上<code>--set-upstream</code>选项（或者使用短选项<code>-u</code>）如下，git 就会在配置文件中记录本地仓库的分支和远程仓库的分支之间的关系。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git push --set-upstream origin master</div></pre></td></tr></table></figure></p>
 <p>执行此命令后，再使用<code>git config -l | grep branch</code>可以看到以下结果，这个对应关系会被下次<code>git push</code>使用。</p>
 <blockquote>
 <p>branch.master.remote=origin<br>branch.master.merge=refs/heads/master</p>
@@ -419,27 +405,16 @@
 <blockquote>
 <p><code>*</code>master<br>remotes/origin/master</p>
 </blockquote>
-<p>remotes 开头的分支是用来跟踪远程仓库的状态。由于远程仓库可能已被他人修改，因此，我们需要将远程仓库的最新状态同步到本地仓库。使用命令<code>git pull</code>可以更新本地仓库状态：</p>
-<blockquote>
-<p>git pull</p>
-</blockquote>
+<p>remotes 开头的分支是用来跟踪远程仓库的状态。由于远程仓库可能已被他人修改，因此，我们需要将远程仓库的最新状态同步到本地仓库。使用命令<code>git pull</code>可以更新本地仓库状态：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git pull</div></pre></td></tr></table></figure></p>
 <p>具体来说，<code>git pull</code>命令会执行两个操作：</p>
 <ol>
 <li>git fetch<br>从远程仓库取回当前所在分支的最新数据。完成这项操作后，可以将本地计算机上的远程仓库的分支状态更新至最新。</li>
 <li>git merge<br>把远程仓库的分支合并到本地仓库的分支。<br>执行第2个操作可能会导致冲突，如果出现冲突，需要先解决冲突，才能将本地仓库的修改通过<code>git push</code>到远程仓库。</li>
 </ol>
 <h1 id="远程仓库的-remote-操作"><a href="#远程仓库的-remote-操作" class="headerlink" title="远程仓库的 remote 操作"></a>远程仓库的 remote 操作</h1><h2 id="添加远程仓库"><a href="#添加远程仓库" class="headerlink" title="添加远程仓库"></a>添加远程仓库</h2><p>前面我们提到的本地仓库与远程仓库的操作，都是假设先有远程仓库，再复制一个本地仓库，这也是团队开发的一个标准模式。但有时程序项目并不一开始就由团队共同开发，而是先由某一个程序开发人员开头，而后才逐步过渡到团队开发的模式。<br>使用<code>git clone --bare 程序项目文件夹名称 远程仓库路径</code>命令，可以从本地仓库复制出一下远程仓库。例如使用以下命令，可以从 local 本地仓库创建一个 server.git 远程仓库。</p>
-<blockquote>
-<p>git clone –bare local server.git</p>
-</blockquote>
-<p>但是，本地仓库 local 并不会自动记录其远程仓库的属性，为此，先进入 local 本地仓库目录，然后使用以下命令来添加远程仓库：</p>
-<blockquote>
-<p>git remote add origin ../server.git</p>
-</blockquote>
-<p>这样，就为本地仓库添加了一个远程仓库的属性，其远程仓库的名称为 origin。但是，使用<code>git remote add</code>命令，只是设置了仓库之间的对应关系，还没创建远程仓库的追踪分支。如果使用<code>git branch -a</code>命令，只会看到本地仓库的分支，并没有任何远程仓库的追踪分支。为此，还需要执行</p>
-<blockquote>
-<p>git remote update</p>
-</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone --bare local server.git</div></pre></td></tr></table></figure>
+<p>但是，本地仓库 local 并不会自动记录其远程仓库的属性，为此，先进入 local 本地仓库目录，然后使用以下命令来添加远程仓库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote add origin ../server.git</div></pre></td></tr></table></figure></p>
+<p>这样，就为本地仓库添加了一个远程仓库的属性，其远程仓库的名称为 origin。但是，使用<code>git remote add</code>命令，只是设置了仓库之间的对应关系，还没创建远程仓库的追踪分支。如果使用<code>git branch -a</code>命令，只会看到本地仓库的分支，并没有任何远程仓库的追踪分支。为此，还需要执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote update</div></pre></td></tr></table></figure></p>
 <p>让 git 在本地仓库创建追踪分支。</p>
 <p><code>git remote add</code>命令有两点需要注意：</p>
 <ol>
@@ -448,39 +423,18 @@
 </ol>
 <p>关于第2点，可以参考下图3。<br>假设 origin 这个远程仓库原来就已经存在，现在我们需要创建另一个远程仓库，并把 master 和 bug 分支推送到这个新的远程仓库中。</p>
 <p><img src="https://ww4.sinaimg.cn/large/006tNc79gy1fc9ir6wfg7j30oq0qswfy.jpg" alt=""><br>图3：本地仓库对应多个远程仓库的例子</p>
-<p>要完成这项工作，需要按以下顺序执行。首先，创建一个新的远程仓库。</p>
-<blockquote>
-<p>git init –bare lee2.git</p>
-</blockquote>
-<p>这样便创建一个名称 lee2.git 的仓库。接下来，在本地计算地按顺序执行：</p>
-<blockquote>
-<p>git remote add new-repo ../lee2.git<br>git push new-repo master<br>git push new-repo bug</p>
-</blockquote>
+<p>要完成这项工作，需要按以下顺序执行。首先，创建一个新的远程仓库。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git init --bare lee2.git</div></pre></td></tr></table></figure></p>
+<p>这样便创建一个名称 lee2.git 的仓库。接下来，在本地计算地按顺序执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">git remote add new-repo ../lee2.git</div><div class="line">git push new-repo master</div><div class="line">git push new-repo bug</div></pre></td></tr></table></figure></p>
 <p><code>git remote add new-repo ../lee2.git</code> 命令假设我们在本地仓库的目录执行该命令，且远程仓库的路径跟本地仓库路径处于同一级目录，new-repo为我们自己取的名称，也可以起其他的名称。<br>下面的两个<code>git push</code>命令会将 master 和 bug 分支推送到新创建的仓库，并自动创建远程仓库的两个追踪分支。<br>这时，如果使用<code>git branch -a</code>命令，可以显示以下的追踪分支信息：</p>
 <blockquote>
 <p>…（其他分支）<br>remotes/new-repo/master<br>remotes/new-repo/bug</p>
 </blockquote>
-<h2 id="删除远程仓库"><a href="#删除远程仓库" class="headerlink" title="删除远程仓库"></a>删除远程仓库</h2><p>与<code>git remote add</code>相反的是<code>git remote rm</code>命令。例如，现在我们需要删除上面添加的new-repo远程仓库：</p>
-<blockquote>
-<p>git remote rm new-repo</p>
-</blockquote>
+<h2 id="删除远程仓库"><a href="#删除远程仓库" class="headerlink" title="删除远程仓库"></a>删除远程仓库</h2><p>与<code>git remote add</code>相反的是<code>git remote rm</code>命令。例如，现在我们需要删除上面添加的new-repo远程仓库：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote rm new-repo</div></pre></td></tr></table></figure></p>
 <p>删除远程仓库后，本地所有属于它的追踪分支也会一起消失。如果需要还原回来，只需再使用<code>git remote add</code>和<code>git remote update</code>命令即可。</p>
-<h2 id="其他远程仓库操作"><a href="#其他远程仓库操作" class="headerlink" title="其他远程仓库操作"></a>其他远程仓库操作</h2><p>更改远程仓库名称：</p>
-<blockquote>
-<p>git remote rename 旧名称 新名称</p>
-</blockquote>
-<p>更新远程仓库地址：</p>
-<blockquote>
-<p>git remote set-url 远程仓库名称 新的地址</p>
-</blockquote>
-<p>显示和远程仓库相关的设置：</p>
-<blockquote>
-<p>git remote -v</p>
-</blockquote>
-<p>删除远程仓库分支：</p>
-<blockquote>
-<p>git push 远程仓库的名称 –delete 分支名称</p>
-</blockquote>
+<h2 id="其他远程仓库操作"><a href="#其他远程仓库操作" class="headerlink" title="其他远程仓库操作"></a>其他远程仓库操作</h2><p>更改远程仓库名称：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote rename 旧名称 新名称</div></pre></td></tr></table></figure></p>
+<p>更新远程仓库地址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote set-url 远程仓库名称 新的地址</div></pre></td></tr></table></figure></p>
+<p>显示和远程仓库相关的设置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git remote -v</div></pre></td></tr></table></figure></p>
+<p>删除远程仓库分支：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git push 远程仓库的名称 --delete 分支名称</div></pre></td></tr></table></figure></p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
 <li>完全学会Git GitHub Git Server的24堂课, 孙宏明著, 清华大学出版社, 2016年</li>
 <li>Git Pro, <a href="https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control" target="_blank" rel="external">https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control</a></li>
