@@ -1,0 +1,799 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="traits classes," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)
+什么是 traits？我们先来看下 C++ 之父的回答：
+
+Think of a trait as a small object">
+<meta property="og:type" content="article">
+<meta property="og:title" content="细说 C++ Traits Classes">
+<meta property="og:url" content="http://leehao.me/2017/02/14/细说-C-Traits-Classes/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)
+什么是 traits？我们先来看下 C++ 之父的回答：
+
+Think of a trait as a small object">
+<meta property="og:updated_time" content="2017-02-14T13:03:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="细说 C++ Traits Classes">
+<meta name="twitter:description" content="最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)
+什么是 traits？我们先来看下 C++ 之父的回答：
+
+Think of a trait as a small object">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://leehao.me/2017/02/14/细说-C-Traits-Classes/"/>
+
+
+
+
+
+  <title> 细说 C++ Traits Classes | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Leo的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">记录开发的点滴</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://leehao.me/2017/02/14/细说-C-Traits-Classes/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                细说 C++ Traits Classes
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-14T21:01:58+08:00">
+                2017-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/14/细说-C-Traits-Classes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/细说-C-Traits-Classes/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)</p>
+<p>什么是 traits？我们先来看下 C++ 之父的回答：</p>
+<blockquote>
+<p>Think of a trait as a small object whose main purpose is to carry information used by another object or algorithm to determine “policy” or “implementation details”. - Bjarne Stroustrup</p>
+</blockquote>
+<p>在 C++ 中，traits 习惯上总是被实现为 <code>struct</code> ，但它们往往被称为 traits classes。Traits classes 的作用主要是用来为使用者提供类型信息。</p>
+<a id="more"></a>
+<h1 id="模板特化（Template-Specialization）"><a href="#模板特化（Template-Specialization）" class="headerlink" title="模板特化（Template Specialization）"></a>模板特化（Template Specialization）</h1><p>为了清晰理解 traits 的原理，我们先来看 traits 使用的关键技术 —— 模板的特化与偏特化。</p>
+<p>我们先来看下一函数模板的通用定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_void &#123;</div><div class="line">static const bool value = false;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>然后，针对 <code>void</code> 类型，我们有以以下的特化版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;&gt;</div><div class="line">struct my_is_void&lt;void&gt; &#123;</div><div class="line">static const bool value = true;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_void&lt;bool&gt; t1;</div><div class="line">cout &lt;&lt; t1.value &lt;&lt; endl;  // 输出0</div><div class="line">my_is_void&lt;void&gt; t2;</div><div class="line">cout &lt;&lt; t2.value &lt;&lt; endl;  // 输出1</div></pre></td></tr></table></figure>
+<p>当声明 <code>my_is_void&lt;void&gt; t2;</code> 时，使用的是特化版本，故其 <code>value</code> 值为 1。</p>
+<h1 id="偏特化（Patial-Spcialization）"><a href="#偏特化（Patial-Spcialization）" class="headerlink" title="偏特化（Patial Spcialization）"></a>偏特化（Patial Spcialization）</h1><p>模板特化时，可以只指定一部分而非所有模板参数，或者是参数的一部分而非全部特性，这叫做模板的偏特化。一个类模板的偏特化本身是一个模板，使用它时用户还必须为那些在特例化版本中未指定的模板参数提供实参。</p>
+<p>我们以另一个例子来说明模板的偏特化。先来看通用的原始模板。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_pointer &#123;</div><div class="line">static const bool value = false;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们对模板参数<code>T</code>进行限制，要求其为一个指针的类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_pointer&lt;T*&gt; &#123;</div><div class="line">static const bool value = true;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_pointer&lt;int&gt; p1;</div><div class="line">cout &lt;&lt; p1.value &lt;&lt; endl;  // 输出 0，使用原始模板</div><div class="line">my_is_pointer&lt;int*&gt; p2;</div><div class="line">cout &lt;&lt; p2.value &lt;&lt; endl;  // 输出 1，使偏特化模板，因为指定了 int * 类型的参数</div></pre></td></tr></table></figure>
+<h1 id="typename-关键字"><a href="#typename-关键字" class="headerlink" title="typename 关键字"></a>typename 关键字</h1><p>提问一个问题，以下模板的声明中， <code>class</code> 和  <code>typename</code> 有什么不同？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template&lt;class T&gt; class Test;</div><div class="line">template&lt;typename T&gt; class Test;</div></pre></td></tr></table></figure>
+<p>答案：没有不同。然而，C++ 并不总是把 class 和 typename 视为等价。有时候我们一定得使用 typename。<br>默认情况下，C++ 语言假定通过作用域运算符访问的名字不是类型。因此，如果我们希望使用一个模板类型参数的类型成员，就必须显式告诉编译器该名字是一个类型。我们通过使用关键字 typename 来实现这一点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">typename T::value_type top(const T &amp;c)</div><div class="line">&#123;</div><div class="line">if (!c.empty())</div><div class="line">return c.back();</div><div class="line">else</div><div class="line">return typename T::value_type();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>top</code> 函数期待一个容器类型的实参，它使用 typename 指明其返回类型，并在 <code>c</code> 中没有元素时生成一个初始值的元素，并返回给调用者。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">vector&lt;int&gt; vec;</div><div class="line">vec.push_back(1);</div><div class="line">vec.push_back(2);</div><div class="line">vec.push_back(3);</div><div class="line">cout &lt;&lt; top&lt;vector&lt;int&gt; &gt;(vec) &lt;&lt; endl;</div></pre></td></tr></table></figure>
+<p>在这里我们只需要记住一点，当我们希望通知编译器一个名字表示类型时，必须使用关键字 typename，而不能使用 class。</p>
+<h1 id="实现-Traits-Classes"><a href="#实现-Traits-Classes" class="headerlink" title="实现 Traits Classes"></a>实现 Traits Classes</h1><p>说完了背景知识，我们正式进入 traits 的关键地带。</p>
+<p>我们知道，在 STL 中，容器与算法是分开的，彼此独立设计，容器与算法之间通过迭代器联系在一起。那么，算法是如何从迭代器类中萃取出容器元素的类型的？没错，这正是我们要说的 traits classes 的功能。<br>迭代器所指对象的类型，称为该迭代器的 value_type。我们来简单模拟一个迭代器 traits classes 的实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;class IterT&gt;</div><div class="line">struct my_iterator_traits &#123;</div><div class="line">typedef typename IterT::value_type value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>my_iterator_traits 其实就是个类模板，其中包含一个类型的声明。有上面 <code>typename</code> 的基础，相信大家不难理解 <code>typedef typename IterT::value_type value_type;</code> 的含义：将迭代器的<code>value_type</code> 通过 <code>typedef</code> 为 <code>value_type</code>。</p>
+<p>对于<code>my_iterator_traits</code>，我们再声明一个偏特化版本。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;class IterT&gt;</div><div class="line">struct my_iterator_traits&lt;IterT*&gt; &#123;</div><div class="line">typedef IterT value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>即如果 <code>my_iterator_traits</code> 的实参为指针类型时，直接使用指针所指元素类型作为 <code>value_type</code>。</p>
+<p>为了测试 <code>my_iterator_traits</code> 能否正确萃取迭代器元素的类型，我们先编写以下的测试函数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">void fun(int a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(int) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void fun(double a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(double) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void fun(char a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(char) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们通过函数重载的方式，来测试元素的类型。</p>
+<p>测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type a;</div><div class="line">fun(a);  // 输出 fun(int) is called</div><div class="line">my_iterator_traits&lt;vector&lt;double&gt;::iterator&gt;::value_type b;</div><div class="line">fun(b);  // 输出 fun(double) is called</div><div class="line">my_iterator_traits&lt;char*&gt;::value_type c;</div><div class="line">fun(c);  // 输出 fun(char) is called</div></pre></td></tr></table></figure>
+<p>为了便于理解，我们这里贴出 vector 迭代器声明代码的简化版本：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">template &lt;class T, ...&gt;</div><div class="line">class vector &#123;</div><div class="line">public:</div><div class="line">class iterator &#123;</div><div class="line">public:</div><div class="line">typedef T value_type;</div><div class="line">...</div><div class="line">&#125;;</div><div class="line">...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>我们来解释 <code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type a;</code> 语句的含义。<br><code>vector&lt;int&gt;::iterator</code> 为<code>vector&lt;int&gt;</code> 的迭代器，该迭代器包含了 <code>value_type</code> 的声明，由 vector 的代码可以知道该迭代器的<code>value_type</code> 即为 int 类型。<br>接着，<code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;</code> 会采用 <code>my_iterator_traits</code> 的通用版本，即 <code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type</code> 使用 <code>typename IterT::value_type</code> 这一类型声明，这里 <code>IterT</code> 为 <code>vector&lt;int&gt;::iterator</code>，故整个语句萃取出来的类型为 int 类型。</p>
+<p>对 double 类型的 vector 迭代器的萃取也是类似的过程。</p>
+<p>而 <code>my_iterator_traits&lt;char*&gt;::value_type</code> 则使用 <code>my_iterator_traits</code> 的偏特化版本，直接返回 char 类型。</p>
+<p>由此看来，通过 <code>my_iterator_traits</code> ，我们正确萃取出了迭代器所指元素的类型。</p>
+<p>总结一下我们设计并实现一个 traits class 的过程：<br>1）确认若干我们希望将来可取得的类型相关信息，例如，对于上面的迭代器，我们希望取得迭代器所指元素的类型；<br>2）为该信息选择一个名称，例如，上面我们起名为 value_type；<br>3）提供一个 template 和一组特化版本（例如，我们上面的 <code>my_iterator_traits</code>），内容包含我们希望支持的类型相关信息。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="https://accu.org/index.php/journals/442" target="_blank" rel="external">https://accu.org/index.php/journals/442</a></li>
+<li>Effective C++，第三版，Scott Meyers 著，侯捷译</li>
+<li>STL 源码剖析，侯捷著</li>
+<li><a href="http://www.bogotobogo.com/cplusplus/template_specialization_traits.php" target="_blank" rel="external">http://www.bogotobogo.com/cplusplus/template_specialization_traits.php</a></li>
+<li><a href="http://www.bogotobogo.com/cplusplus/template_specialization_function_class.php" target="_blank" rel="external">http://www.bogotobogo.com/cplusplus/template_specialization_function_class.php</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/traits-classes/" rel="tag"># traits classes</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/31/体验-gRPC-那些事儿/" rel="next" title="体验 gRPC 那些事儿">
+                <i class="fa fa-chevron-left"></i> 体验 gRPC 那些事儿
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/14/细说-C-Traits-Classes/"
+           data-title="细说 C++ Traits Classes" data-url="http://leehao.me/2017/02/14/细说-C-Traits-Classes/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+          <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#模板特化（Template-Specialization）"><span class="nav-number">1.</span> <span class="nav-text">模板特化（Template Specialization）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#偏特化（Patial-Spcialization）"><span class="nav-number">2.</span> <span class="nav-text">偏特化（Patial Spcialization）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#typename-关键字"><span class="nav-number">3.</span> <span class="nav-text">typename 关键字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现-Traits-Classes"><span class="nav-number">4.</span> <span class="nav-text">实现 Traits Classes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    备案号:粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"leehao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
