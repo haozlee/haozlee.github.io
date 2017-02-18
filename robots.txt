@@ -8,5 +8,5 @@ Disallow: /fonts/
 Disallow: /vendors/
 Disallow: /fancybox/
 
-Sitemap: http://leehao.me/sitemap.xml
-Sitemap: http://leehao.me/baidusitemap.xml
+Sitemap: https://leehao.me/sitemap.xml
+Sitemap: https://leehao.me/baidusitemap.xml
