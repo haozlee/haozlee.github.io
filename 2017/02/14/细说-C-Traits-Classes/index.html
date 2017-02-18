@@ -90,13 +90,13 @@
 Think of a trait as a small object">
 <meta property="og:type" content="article">
 <meta property="og:title" content="细说 C++ Traits Classes">
-<meta property="og:url" content="http://leehao.me/2017/02/14/细说-C-Traits-Classes/index.html">
+<meta property="og:url" content="https://leehao.me/2017/02/14/细说-C-Traits-Classes/index.html">
 <meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)
 什么是 traits？我们先来看下 C++ 之父的回答：
 
 Think of a trait as a small object">
-<meta property="og:updated_time" content="2017-02-14T13:03:31.000Z">
+<meta property="og:updated_time" content="2017-02-15T03:47:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="细说 C++ Traits Classes">
 <meta name="twitter:description" content="最近在看侯捷的《STL源码剖析》，看到第三章有关 traits 的介绍，被搞得一头雾水，看了半天不知所云。为了彻底了解这个技法的原理，硬着头皮上网查了资料，并结合 Scott Meyers 的 《Effective C++》，总算是把 traits 的原理搞明白了:)
@@ -130,7 +130,7 @@ Think of a trait as a small object">
 
 
 
-  <link rel="canonical" href="http://leehao.me/2017/02/14/细说-C-Traits-Classes/"/>
+  <link rel="canonical" href="https://leehao.me/2017/02/14/细说-C-Traits-Classes/"/>
 
 
 
@@ -279,7 +279,7 @@ Think of a trait as a small object">
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://leehao.me/2017/02/14/细说-C-Traits-Classes/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/14/细说-C-Traits-Classes/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -395,40 +395,40 @@ Think of a trait as a small object">
 <a id="more"></a>
 <h1 id="模板特化（Template-Specialization）"><a href="#模板特化（Template-Specialization）" class="headerlink" title="模板特化（Template Specialization）"></a>模板特化（Template Specialization）</h1><p>为了清晰理解 traits 的原理，我们先来看 traits 使用的关键技术 —— 模板的特化与偏特化。</p>
 <p>我们先来看下一函数模板的通用定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_void &#123;</div><div class="line">static const bool value = false;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">struct</span> my_is_void &#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">bool</span> value = <span class="literal">false</span>;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>然后，针对 <code>void</code> 类型，我们有以以下的特化版本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;&gt;</div><div class="line">struct my_is_void&lt;void&gt; &#123;</div><div class="line">static const bool value = true;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;&gt;</div><div class="line"><span class="keyword">struct</span> my_is_void&lt;<span class="keyword">void</span>&gt; &#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">bool</span> value = <span class="literal">true</span>;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>测试代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_void&lt;bool&gt; t1;</div><div class="line">cout &lt;&lt; t1.value &lt;&lt; endl;  // 输出0</div><div class="line">my_is_void&lt;void&gt; t2;</div><div class="line">cout &lt;&lt; t2.value &lt;&lt; endl;  // 输出1</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_void&lt;<span class="keyword">bool</span>&gt; t1;</div><div class="line"><span class="built_in">cout</span> &lt;&lt; t1.value &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// 输出0</span></div><div class="line">my_is_void&lt;<span class="keyword">void</span>&gt; t2;</div><div class="line"><span class="built_in">cout</span> &lt;&lt; t2.value &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// 输出1</span></div></pre></td></tr></table></figure>
 <p>当声明 <code>my_is_void&lt;void&gt; t2;</code> 时，使用的是特化版本，故其 <code>value</code> 值为 1。</p>
 <h1 id="偏特化（Patial-Spcialization）"><a href="#偏特化（Patial-Spcialization）" class="headerlink" title="偏特化（Patial Spcialization）"></a>偏特化（Patial Spcialization）</h1><p>模板特化时，可以只指定一部分而非所有模板参数，或者是参数的一部分而非全部特性，这叫做模板的偏特化。一个类模板的偏特化本身是一个模板，使用它时用户还必须为那些在特例化版本中未指定的模板参数提供实参。</p>
 <p>我们以另一个例子来说明模板的偏特化。先来看通用的原始模板。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_pointer &#123;</div><div class="line">static const bool value = false;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">struct</span> my_is_pointer &#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">bool</span> value = <span class="literal">false</span>;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>我们对模板参数<code>T</code>进行限制，要求其为一个指针的类型：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">struct my_is_pointer&lt;T*&gt; &#123;</div><div class="line">static const bool value = true;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">struct</span> my_is_pointer&lt;T*&gt; &#123;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">bool</span> value = <span class="literal">true</span>;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>测试：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_pointer&lt;int&gt; p1;</div><div class="line">cout &lt;&lt; p1.value &lt;&lt; endl;  // 输出 0，使用原始模板</div><div class="line">my_is_pointer&lt;int*&gt; p2;</div><div class="line">cout &lt;&lt; p2.value &lt;&lt; endl;  // 输出 1，使偏特化模板，因为指定了 int * 类型的参数</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">my_is_pointer&lt;<span class="keyword">int</span>&gt; p1;</div><div class="line"><span class="built_in">cout</span> &lt;&lt; p1.value &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// 输出 0，使用原始模板</span></div><div class="line">my_is_pointer&lt;<span class="keyword">int</span>*&gt; p2;</div><div class="line"><span class="built_in">cout</span> &lt;&lt; p2.value &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">// 输出 1，使偏特化模板，因为指定了 int * 类型的参数</span></div></pre></td></tr></table></figure>
 <h1 id="typename-关键字"><a href="#typename-关键字" class="headerlink" title="typename 关键字"></a>typename 关键字</h1><p>提问一个问题，以下模板的声明中， <code>class</code> 和  <code>typename</code> 有什么不同？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">template&lt;class T&gt; class Test;</div><div class="line">template&lt;typename T&gt; class Test;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; <span class="keyword">class</span> Test;</div><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt; <span class="keyword">class</span> Test;</div></pre></td></tr></table></figure>
 <p>答案：没有不同。然而，C++ 并不总是把 class 和 typename 视为等价。有时候我们一定得使用 typename。<br>默认情况下，C++ 语言假定通过作用域运算符访问的名字不是类型。因此，如果我们希望使用一个模板类型参数的类型成员，就必须显式告诉编译器该名字是一个类型。我们通过使用关键字 typename 来实现这一点：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">template&lt;typename T&gt;</div><div class="line">typename T::value_type top(const T &amp;c)</div><div class="line">&#123;</div><div class="line">if (!c.empty())</div><div class="line">return c.back();</div><div class="line">else</div><div class="line">return typename T::value_type();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">typename</span> T::<span class="function">value_type <span class="title">top</span><span class="params">(<span class="keyword">const</span> T &amp;c)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (!c.empty())</div><div class="line">        <span class="keyword">return</span> c.back();</div><div class="line">    <span class="keyword">else</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">typename</span> T::value_type();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p><code>top</code> 函数期待一个容器类型的实参，它使用 typename 指明其返回类型，并在 <code>c</code> 中没有元素时生成一个初始值的元素，并返回给调用者。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">vector&lt;int&gt; vec;</div><div class="line">vec.push_back(1);</div><div class="line">vec.push_back(2);</div><div class="line">vec.push_back(3);</div><div class="line">cout &lt;&lt; top&lt;vector&lt;int&gt; &gt;(vec) &lt;&lt; endl;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; vec;</div><div class="line">vec.push_back(<span class="number">1</span>);</div><div class="line">vec.push_back(<span class="number">2</span>);</div><div class="line">vec.push_back(<span class="number">3</span>);</div><div class="line"><span class="built_in">cout</span> &lt;&lt; top&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &gt;(vec) &lt;&lt; <span class="built_in">endl</span>;</div></pre></td></tr></table></figure>
 <p>在这里我们只需要记住一点，当我们希望通知编译器一个名字表示类型时，必须使用关键字 typename，而不能使用 class。</p>
 <h1 id="实现-Traits-Classes"><a href="#实现-Traits-Classes" class="headerlink" title="实现 Traits Classes"></a>实现 Traits Classes</h1><p>说完了背景知识，我们正式进入 traits 的关键地带。</p>
 <p>我们知道，在 STL 中，容器与算法是分开的，彼此独立设计，容器与算法之间通过迭代器联系在一起。那么，算法是如何从迭代器类中萃取出容器元素的类型的？没错，这正是我们要说的 traits classes 的功能。<br>迭代器所指对象的类型，称为该迭代器的 value_type。我们来简单模拟一个迭代器 traits classes 的实现。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;class IterT&gt;</div><div class="line">struct my_iterator_traits &#123;</div><div class="line">typedef typename IterT::value_type value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> IterT&gt;</div><div class="line"><span class="keyword">struct</span> my_iterator_traits &#123;</div><div class="line">    <span class="keyword">typedef</span> <span class="keyword">typename</span> IterT::value_type value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>my_iterator_traits 其实就是个类模板，其中包含一个类型的声明。有上面 <code>typename</code> 的基础，相信大家不难理解 <code>typedef typename IterT::value_type value_type;</code> 的含义：将迭代器的<code>value_type</code> 通过 <code>typedef</code> 为 <code>value_type</code>。</p>
 <p>对于<code>my_iterator_traits</code>，我们再声明一个偏特化版本。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">template&lt;class IterT&gt;</div><div class="line">struct my_iterator_traits&lt;IterT*&gt; &#123;</div><div class="line">typedef IterT value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> IterT&gt;</div><div class="line"><span class="keyword">struct</span> my_iterator_traits&lt;IterT*&gt; &#123;</div><div class="line">    <span class="keyword">typedef</span> IterT value_type;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>即如果 <code>my_iterator_traits</code> 的实参为指针类型时，直接使用指针所指元素类型作为 <code>value_type</code>。</p>
 <p>为了测试 <code>my_iterator_traits</code> 能否正确萃取迭代器元素的类型，我们先编写以下的测试函数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">void fun(int a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(int) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void fun(double a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(double) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">void fun(char a) &#123;</div><div class="line">cout &lt;&lt; &quot;fun(char) is called&quot; &lt;&lt; endl;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> a)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"fun(int) is called"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(<span class="keyword">double</span> a)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"fun(double) is called"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(<span class="keyword">char</span> a)</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"fun(char) is called"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>我们通过函数重载的方式，来测试元素的类型。</p>
 <p>测试代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type a;</div><div class="line">fun(a);  // 输出 fun(int) is called</div><div class="line">my_iterator_traits&lt;vector&lt;double&gt;::iterator&gt;::value_type b;</div><div class="line">fun(b);  // 输出 fun(double) is called</div><div class="line">my_iterator_traits&lt;char*&gt;::value_type c;</div><div class="line">fun(c);  // 输出 fun(char) is called</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">my_iterator_traits&lt;<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;::iterator&gt;::value_type a;</div><div class="line">fun(a);  <span class="comment">// 输出 fun(int) is called</span></div><div class="line">my_iterator_traits&lt;<span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt;::iterator&gt;::value_type b;</div><div class="line">fun(b);  <span class="comment">// 输出 fun(double) is called</span></div><div class="line">my_iterator_traits&lt;<span class="keyword">char</span>*&gt;::value_type c;</div><div class="line">fun(c);  <span class="comment">// 输出 fun(char) is called</span></div></pre></td></tr></table></figure>
 <p>为了便于理解，我们这里贴出 vector 迭代器声明代码的简化版本：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">template &lt;class T, ...&gt;</div><div class="line">class vector &#123;</div><div class="line">public:</div><div class="line">class iterator &#123;</div><div class="line">public:</div><div class="line">typedef T value_type;</div><div class="line">...</div><div class="line">&#125;;</div><div class="line">...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> T, ...&gt;</div><div class="line"><span class="keyword">class</span> <span class="built_in">vector</span> &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="keyword">class</span> iterator &#123;</div><div class="line">    <span class="keyword">public</span>:</div><div class="line">        <span class="keyword">typedef</span> T value_type;</div><div class="line">        ...</div><div class="line">    &#125;;</div><div class="line">    ...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>我们来解释 <code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type a;</code> 语句的含义。<br><code>vector&lt;int&gt;::iterator</code> 为<code>vector&lt;int&gt;</code> 的迭代器，该迭代器包含了 <code>value_type</code> 的声明，由 vector 的代码可以知道该迭代器的<code>value_type</code> 即为 int 类型。<br>接着，<code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;</code> 会采用 <code>my_iterator_traits</code> 的通用版本，即 <code>my_iterator_traits&lt;vector&lt;int&gt;::iterator&gt;::value_type</code> 使用 <code>typename IterT::value_type</code> 这一类型声明，这里 <code>IterT</code> 为 <code>vector&lt;int&gt;::iterator</code>，故整个语句萃取出来的类型为 int 类型。</p>
 <p>对 double 类型的 vector 迭代器的萃取也是类似的过程。</p>
 <p>而 <code>my_iterator_traits&lt;char*&gt;::value_type</code> 则使用 <code>my_iterator_traits</code> 的偏特化版本，直接返回 char 类型。</p>
@@ -504,6 +504,10 @@ Think of a trait as a small object">
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/" rel="prev" title="RPC 基本原理与 Apach Thrift 初体验">
+                RPC 基本原理与 Apach Thrift 初体验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -529,7 +533,7 @@ Think of a trait as a small object">
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2017/02/14/细说-C-Traits-Classes/"
-           data-title="细说 C++ Traits Classes" data-url="http://leehao.me/2017/02/14/细说-C-Traits-Classes/">
+           data-title="细说 C++ Traits Classes" data-url="https://leehao.me/2017/02/14/细说-C-Traits-Classes/">
       </div>
     
   </div>
@@ -576,7 +580,7 @@ Think of a trait as a small object">
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-count">12</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -594,7 +598,7 @@ Think of a trait as a small object">
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -659,7 +663,7 @@ Think of a trait as a small object">
 
 <div>
   <a href="http://www.miitbeian.gov.cn/" target="_blank">
-    备案号:粤ICP备17015212号-1
+    粤ICP备17015212号-1
   </a>
 </div>
 
@@ -791,6 +795,21 @@ Think of a trait as a small object">
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
 

@@ -1,0 +1,822 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RPC,Thrift," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="概述RPC（Remote Procedure Call，远程过程调用）是一个计算机通信协议，此协议允许进程间通信。简单来说，当机器 A 上的进程调用机器 B 上的进程时，A 上的调用进程被挂起，而 B 上的被调用进程开始执行。调用方可以通过参数将信息传送给被调用方，然后可以通过被调用方传回的结果得到返回。RPC 框架屏蔽了底层传输方式（TCP/UDP）、序列化和反序列化（XML/JSON/二进制）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RPC 基本原理与 Apach Thrift 初体验">
+<meta property="og:url" content="https://leehao.me/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="概述RPC（Remote Procedure Call，远程过程调用）是一个计算机通信协议，此协议允许进程间通信。简单来说，当机器 A 上的进程调用机器 B 上的进程时，A 上的调用进程被挂起，而 B 上的被调用进程开始执行。调用方可以通过参数将信息传送给被调用方，然后可以通过被调用方传回的结果得到返回。RPC 框架屏蔽了底层传输方式（TCP/UDP）、序列化和反序列化（XML/JSON/二进制）">
+<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNbRwgy1fcqegss89tj30dw08qmy8.jpg">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNbRwgy1fcqeh9s7dpj30f60rfwhh.jpg">
+<meta property="og:image" content="https://ww1.sinaimg.cn/large/006tNbRwgy1fcqehk9aqhj30f008adgf.jpg">
+<meta property="og:updated_time" content="2017-02-18T04:02:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RPC 基本原理与 Apach Thrift 初体验">
+<meta name="twitter:description" content="概述RPC（Remote Procedure Call，远程过程调用）是一个计算机通信协议，此协议允许进程间通信。简单来说，当机器 A 上的进程调用机器 B 上的进程时，A 上的调用进程被挂起，而 B 上的被调用进程开始执行。调用方可以通过参数将信息传送给被调用方，然后可以通过被调用方传回的结果得到返回。RPC 框架屏蔽了底层传输方式（TCP/UDP）、序列化和反序列化（XML/JSON/二进制）">
+<meta name="twitter:image" content="https://ww3.sinaimg.cn/large/006tNbRwgy1fcqegss89tj30dw08qmy8.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/"/>
+
+
+
+
+
+  <title> RPC 基本原理与 Apach Thrift 初体验 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Leo的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">记录开发的点滴</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                RPC 基本原理与 Apach Thrift 初体验
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-14T23:06:59+08:00">
+                2017-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式架构/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>RPC（Remote Procedure Call，远程过程调用）是一个计算机通信协议，此协议允许进程间通信。简单来说，当机器 A 上的进程调用机器 B 上的进程时，A 上的调用进程被挂起，而 B 上的被调用进程开始执行。调用方可以通过参数将信息传送给被调用方，然后可以通过被调用方传回的结果得到返回。RPC 框架屏蔽了底层传输方式（TCP/UDP）、序列化和反序列化（XML/JSON/二进制）等内容，使用框架只需要知道被调用者的地址和接口就可以了，无须额外地为这些底层内部编程。<br>目前主流的 RPC 框架有如下几种。</p>
+<ul>
+<li>Thrift：Facebook 开源的跨语言框架</li>
+<li>gRPC：Google 基于 HTTP/2 和 Protobuf 的能用框架</li>
+<li>Avro：Hadoop 的子项目</li>
+</ul>
+<p>本文讲述 RPC 的基本原理并以 Thrift 框架为例说明 RPC 的使用。<br><a id="more"></a></p>
+<h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><p><img src="https://ww3.sinaimg.cn/large/006tNbRwgy1fcqegss89tj30dw08qmy8.jpg" alt=""><br>图1：客户端与服务器之间的 RPC 通信过程</p>
+<p>图1描述了客户端与服务器 RPC 通信的基本过程，具体来说，包括几下步骤：<br>（1）客户过程以正常方式调用客户桩（client stub，一段代码）；<br>（2）客户桩生成一个消息，然后调用本地操作系统；<br>（3）客户端操作系统将消息发送给远程操作系统；<br>（4）远程操作系统将消息交给服务器桩（server stub，一段代码）；<br>（5）服务器桩将参数提取出来，然后调用服务器过程；<br>（6）服务器执行要求的操作，操作完成后将结果返回给服务器桩；<br>（7）服务器桩将结果打包成一个消息，然后调用本地操作系统；<br>（8）服务器操作系统将含有结果的消息发送回客户端操作系统；<br>（9）客户端操作系统将消息交给客户桩；<br>（10）客户桩将结果从从消息中提取出来，返回给调用它的客户过程。<br>所有这些步骤的效果是，将客户过程对客户桩发出的本地调用转换成对服务器过程的本地调用，而客户端和服务器都不会意识到有中间步骤的存在。<br>这个时候，你可能会想，既然是调用另一台机器的服务，使用 RESTful API 也可以实现啊，为什么要选择 RPC 呢？我们可以从两个方面对比：</p>
+<ul>
+<li>资源粒度。RPC 就像本地方法调用，RESTful API 每一次添加接口都可能需要额外地组织开放接口的数据，这相当于在应用视图中再写了一次方法调用，而且它还需要维护开发接口的资源粒度、权限等。</li>
+<li>流量消耗。RESTful API 在应用层使用 HTTP 协议，哪怕使用轻型、高效、传输效率高的 JSON 也会消耗较大的流量，而 RPC 传输既可以使用 TCP 也可以使用 UDP，而且协议一般使用二制度编码，大大降低了数据的大小，减少流量消耗。</li>
+</ul>
+<p>对接异构第三方服务时，通常使用 HTPP/RESTful 等公有协议，对于内部的服务调用，应用选择性能更高的二进制私有协议。</p>
+<h1 id="Thrift-架构"><a href="#Thrift-架构" class="headerlink" title="Thrift 架构"></a>Thrift 架构</h1><p>说完 RPC 的一般性原理，我们再来看目前流行的 RPC 框架—— Apache Thrift。Apache Thrift 最初是 Facebook 实现的一种支持多种编程语言、高效的远程服务器调用框架，它于 2008 年进入 Apache 开源项目。Apache Thrift 采用接口描述语言（IDL）定义 RPC 接口和数据类型，通过编译器生成不同语言的代码（支持 C++，Java，Python，Ruby等），其数据传输采用二进制格式，相对 XML 和 JSON 来说体积更小，对于高并发、大数据量和多语言的环境更有优势。在 Facebook，Apache Thrift 正是使用于其内部服务的通信，其稳定性和高性能已在生产环境中得到证明的。<br>Apache Thrift 的架构如图2所示。</p>
+<p><img src="https://ww2.sinaimg.cn/large/006tNbRwgy1fcqeh9s7dpj30f60rfwhh.jpg" alt=""><br>图2：Apache Thrift 客户/服务器架构</p>
+<p>由图2可以看到，Apache Thrift 仍然是基于图1所示的 RPC 通信的原理。图2黄色部分是用户实现的业务逻辑，接下来两层是 Apache Thrift 根据 IDL 生成的客户端和服务端代码（其中红色部分用来实现数据的读写操作），对应于图1中的 client stub 和 server stub。TProtocol 用来对数据进行序列化与反序列化，具体方法包括二进制，JSON 或者 Apache Thrift 定义的格式。TTransport 提供数据传输功能，使用 Apache Thrift 可以方便地定义一个服务并选择不同的传输协议。</p>
+<h1 id="Thrift-使用"><a href="#Thrift-使用" class="headerlink" title="Thrift 使用"></a>Thrift 使用</h1><p>废话少说，我们来看下 Thrift 是如何使用的。</p>
+<h2 id="安装-Thrift"><a href="#安装-Thrift" class="headerlink" title="安装 Thrift"></a>安装 Thrift</h2><p>我们以 Mac OS 为例，说明如何安装 Thrift ，安装过程具体可以参考  <a href="http://thrift.apache.org/docs/install/os_x" target="_blank" rel="external">http://thrift.apache.org/docs/install/os_x</a> 。<br>（1）安装 boost<br>（2）安装 libevent<br>（3）安装 thrift<br>安装过程还算顺利，如果出现 openssl 头文件找不到的情况，可以通过给 <code>make</code> 命令添加参数的方式解决，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make CPPFLAGS=&quot;-I/usr/local/Cellar/openssl/1.0.2h_1/include&quot; LDFLAGS=&quot;-L/usr/local/Cellar/openssl/1.0.2h_1/lib&quot;</div></pre></td></tr></table></figure></p>
+<p>安装完成后，使用命令来测试一下安装是否成功：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ thrift -version</div></pre></td></tr></table></figure></p>
+<p>可以看到输出：</p>
+<blockquote>
+<p>Thrift version 0.10.0</p>
+</blockquote>
+<p>说明已正确安装。</p>
+<h2 id="定义-IDL-文件"><a href="#定义-IDL-文件" class="headerlink" title="定义 IDL 文件"></a>定义 IDL 文件</h2><p>安装好 Thrift 后，我们便可以编写 IDL 文件。Thrift 使用 <code>.thrift</code> 文件来定义接口和数据类型。<br>下面是一个简单的 <code>.thrift</code> 文件示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">typedef i32 int</div><div class="line">service MultiplicationService</div><div class="line">&#123;</div><div class="line">int multiply(1:int n1, 2:int n2),</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>为了简单起见，我们只定义了一个接口。解析一下 <code>.thrift</code> 文件的语法：</p>
+<ul>
+<li>typedef 用来定义 Thrift 类型名称的别名。Thrift 中拥有自己的类型系统，其中 <code>i32</code> 为32位有符号整形。</li>
+<li>service 用来定义 Thrift 的服务接品，在上面我们定义一个 <code>MultiplicationService</code>，其中包含了一个接口：<code>multiply</code>。接口的第一个字段表示接口返回的类型比如上面返回一个 <code>i32</code> 类型。接口的参数需要定义其类型和顺序。</li>
+</ul>
+<p>编写好 <code>.thrift</code> 文件后，将上面的文件保存为 <code>multiplication.thrift</code>，然后，便可以使用 <code>thrift</code> 命令来对其进行编译。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">thrift --gen py multiplication.thrift</div></pre></td></tr></table></figure></p>
+<p>执行此命令后，会在当前目录生成一个 <code>gen-py</code> 的目录，进入 <code>gen-py</code> 目录，可以看到其中包含以下的文件：</p>
+<p><img src="https://ww1.sinaimg.cn/large/006tNbRwgy1fcqehk9aqhj30f008adgf.jpg" alt=""><br>图3：编译 <code>.thrift</code> 文件后生成的 Python 代码 </p>
+<p>生成的 <code>MultiplicationService.py</code> 包含了 RPC 通信所需的客户端和服务端代码，以及数据 read/write 操作代码。</p>
+<h2 id="实现服务端"><a href="#实现服务端" class="headerlink" title="实现服务端"></a>实现服务端</h2><p>我们在 <code>gen-py</code> 相同的目录下编写服务端与客户端的实现代码。首先是服务端代码 <code>multiserver.py</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line">sys.path.append(<span class="string">'gen-py'</span>)</div><div class="line"><span class="keyword">from</span> multiplication <span class="keyword">import</span> MultiplicationService</div><div class="line"><span class="keyword">from</span> multiplication.ttypes <span class="keyword">import</span> *</div><div class="line"></div><div class="line"><span class="keyword">from</span> thrift.transport <span class="keyword">import</span> TSocket</div><div class="line"><span class="keyword">from</span> thrift.transport <span class="keyword">import</span> TTransport</div><div class="line"><span class="keyword">from</span> thrift.protocol <span class="keyword">import</span> TBinaryProtocol</div><div class="line"><span class="keyword">from</span> thrift.server <span class="keyword">import</span> TServer</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiplicationHandler</span><span class="params">(object)</span>:</span></div><div class="line"><span class="comment"># multiplication.thrift 文件中已对 `multiploy` 方法进行了定义，参数为两个整型</span></div><div class="line"><span class="comment"># 返回值为一整型</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multiply</span><span class="params">(self, n1, n2)</span>:</span></div><div class="line">print(<span class="string">'multify n1 * n2, n1: %s, n2: %s, result: %s'</span> %</div><div class="line">(n1, n2, n1 * n2))</div><div class="line"><span class="keyword">return</span> n1 * n2</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">handler = MultiplicationHandler()</div><div class="line"><span class="comment"># Processor 用来从连接中读取数据，将处理授权给 handler（自己实现），</span></div><div class="line"><span class="comment"># 最后将结果写到连接上</span></div><div class="line">processor = MultiplicationService.Processor(handler)</div><div class="line"><span class="comment"># 服务端使用 9090 端口， transport 是网络读写抽象层，为到来的连接创建传输对象</span></div><div class="line">transport = TSocket.TServerSocket(port=<span class="number">9090</span>)</div><div class="line">tfactory = TTransport.TBufferedTransportFactory()</div><div class="line">pfactory = TBinaryProtocol.TBinaryProtocolFactory()</div><div class="line">server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)</div><div class="line">print(<span class="string">'Starting the server...'</span>)</div><div class="line">server.serve()</div><div class="line">print(<span class="string">'done.'</span>)</div></pre></td></tr></table></figure>
+<p><code>multiserver.py</code> 首先对 multiplication.thrift 文件中的 <code>multiply</code> 方法进行了实现，这样当服务端接收到客户端请求后会调用此方法进行处理。<br><code>Processor</code> 类则主要完成两个事情：从连接中读取数据，往连接中写入数据。当然中间会将数据交给 <code>handler</code> 处理。<br>服务端启动后，会监听 9090 端口，接受客户端的连接。</p>
+<h2 id="实现客户端"><a href="#实现客户端" class="headerlink" title="实现客户端"></a>实现客户端</h2><p>我们在 <code>multiclient.py</code> 实现客户端的代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"><span class="keyword">import</span> sys</div><div class="line">sys.path.append(<span class="string">'gen-py'</span>)</div><div class="line"><span class="keyword">from</span> multiplication <span class="keyword">import</span> MultiplicationService</div><div class="line"><span class="keyword">from</span> multiplication.ttypes <span class="keyword">import</span> *</div><div class="line"></div><div class="line"><span class="keyword">from</span> thrift <span class="keyword">import</span> Thrift</div><div class="line"><span class="keyword">from</span> thrift.transport <span class="keyword">import</span> TSocket</div><div class="line"><span class="keyword">from</span> thrift.transport <span class="keyword">import</span> TTransport</div><div class="line"><span class="keyword">from</span> thrift.protocol <span class="keyword">import</span> TBinaryProtocol</div><div class="line"></div><div class="line"><span class="keyword">try</span>:</div><div class="line"><span class="comment"># 同样使用 9090 端口，使用阻塞式 I/O 进行传输，是最常见的模式</span></div><div class="line">transport = TSocket.TSocket(<span class="string">'localhost'</span>, <span class="number">9090</span>)</div><div class="line">transport = TTransport.TBufferedTransport(transport)</div><div class="line"><span class="comment"># 封装协议，使用二进制编码格式进行传输</span></div><div class="line">protocol = TBinaryProtocol.TBinaryProtocol(transport)</div><div class="line"><span class="comment"># 创建一个 client</span></div><div class="line">client = MultiplicationService.Client(protocol)</div><div class="line"><span class="comment"># 打开连接</span></div><div class="line">transport.open()</div><div class="line"></div><div class="line">n1 = <span class="number">5</span></div><div class="line">n2 = <span class="number">7</span></div><div class="line">product = client.multiply(n1, n2)</div><div class="line"><span class="keyword">print</span> <span class="string">'%s * %s = %s'</span> % (n1, n2, product)</div><div class="line"></div><div class="line"><span class="comment"># 关闭连接</span></div><div class="line">transport.close()</div><div class="line"><span class="keyword">except</span> Thrift.TException, tx:</div><div class="line"><span class="keyword">print</span> <span class="string">'%s'</span> % (tx.message)</div></pre></td></tr></table></figure>
+<p>在上面的代码中，我们创建了一个 <code>Client</code> 对象，<code>Client</code> 类的代码由 <code>.thrift</code> 生成。然后我们调用 <code>multiply</code> 发送 RPC 请求，并取得返回值。</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>打开一个终端，执行命令，运行服务端程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python multiserver.py</div></pre></td></tr></table></figure></p>
+<p>打开另一个终端，执行命令，运行客户端程序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">python multiclient.py</div></pre></td></tr></table></figure></p>
+<p>此时，服务端终端输出：</p>
+<blockquote>
+<p>multify n1 * n2, n1: 5, n2: 7, result: 35</p>
+</blockquote>
+<p>客户端终端输出：</p>
+<blockquote>
+<p>5 * 7 = 35</p>
+</blockquote>
+<p>说明客户端已正常发送 RPC 请求，并由服务端处理，客户端成功接收返回。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文简述了 RPC 的基本原理与 Apache Thrift 的使用步骤。通过此文章，希望大家对于 RPC 和 Apache Thrift 有个初步的了解。对于 Apache Thrift 更深入的分析，可以参考本人的系列文章。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
+<li><a href="http://thrift.apache.org" target="_blank" rel="external">http://thrift.apache.org</a></li>
+<li>Python Web开发实践，董伟明著，中国工信出版集团，电子工业出版社</li>
+<li><a href="https://www.cs.rutgers.edu/~pxk/417/notes/03-rpc.html" target="_blank" rel="external">https://www.cs.rutgers.edu/~pxk/417/notes/03-rpc.html</a></li>
+<li><a href="https://www.zhihu.com/question/25536695" target="_blank" rel="external">https://www.zhihu.com/question/25536695</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Apache_Thrift" target="_blank" rel="external">https://en.wikipedia.org/wiki/Apache_Thrift</a></li>
+<li><a href="http://thrift.apache.org/docs/install/os_x" target="_blank" rel="external">http://thrift.apache.org/docs/install/os_x</a></li>
+<li><a href="http://thrift-tutorial.readthedocs.io/en/latest/usage-example.html" target="_blank" rel="external">http://thrift-tutorial.readthedocs.io/en/latest/usage-example.html</a></li>
+<li><a href="http://www.thrift.pl" target="_blank" rel="external">http://www.thrift.pl</a></li>
+<li><a href="http://techlabs.emag.ro/introduction-to-apache-thrift/" target="_blank" rel="external">http://techlabs.emag.ro/introduction-to-apache-thrift/</a></li>
+<li><a href="https://thrift.apache.org/static/files/thrift-20070401.pdf" target="_blank" rel="external">https://thrift.apache.org/static/files/thrift-20070401.pdf</a></li>
+<li><a href="http://jnb.ociweb.com/jnb/jnbJun2009.html" target="_blank" rel="external">http://jnb.ociweb.com/jnb/jnbJun2009.html</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RPC/" rel="tag"># RPC</a>
+          
+            <a href="/tags/Thrift/" rel="tag"># Thrift</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/14/细说-C-Traits-Classes/" rel="next" title="细说 C++ Traits Classes">
+                <i class="fa fa-chevron-left"></i> 细说 C++ Traits Classes
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/"
+           data-title="RPC 基本原理与 Apach Thrift 初体验" data-url="https://leehao.me/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+          <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本原理"><span class="nav-number">2.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Thrift-架构"><span class="nav-number">3.</span> <span class="nav-text">Thrift 架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Thrift-使用"><span class="nav-number">4.</span> <span class="nav-text">Thrift 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-Thrift"><span class="nav-number">4.1.</span> <span class="nav-text">安装 Thrift</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义-IDL-文件"><span class="nav-number">4.2.</span> <span class="nav-text">定义 IDL 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现服务端"><span class="nav-number">4.3.</span> <span class="nav-text">实现服务端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现客户端"><span class="nav-number">4.4.</span> <span class="nav-text">实现客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">4.5.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"leehao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
