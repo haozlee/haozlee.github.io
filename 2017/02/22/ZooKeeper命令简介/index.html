@@ -1,0 +1,827 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ZooKeeper,命令," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：
+1bin/zkCli.sh -server ip:port">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper命令简介">
+<meta property="og:url" content="https://leehao.me/2017/02/22/ZooKeeper命令简介/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：
+1bin/zkCli.sh -server ip:port">
+<meta property="og:updated_time" content="2017-02-22T00:21:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ZooKeeper命令简介">
+<meta name="twitter:description" content="ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：
+1bin/zkCli.sh -server ip:port">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/2017/02/22/ZooKeeper命令简介/"/>
+
+
+
+
+
+  <title> ZooKeeper命令简介 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Leo的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">记录开发的点滴</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/ZooKeeper命令简介/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ZooKeeper命令简介
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-22T08:12:10+08:00">
+                2017-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ZooKeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">ZooKeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/22/ZooKeeper命令简介/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/ZooKeeper命令简介/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkCli.sh -server ip:port</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>执行此命令，客户端成功连接上zk，会有类似以下的输出，其中，包括“Welcome to ZooKeeper!”的欢迎语，以及其他一些连接的信息等。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">lihaodeMacBook-Pro:bin lihao$ ./zkCli.sh -server 127.0.0.1:2182</div><div class="line">Connecting to 127.0.0.1:2182</div><div class="line">2016-06-29 07:51:39,679 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.8--1, built on 02/06/2016 03:18 GMT</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=192.168.31.107</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.8.0_77</div><div class="line">2016-06-29 07:51:39,684 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">……</div><div class="line">2016-06-29 07:51:39,686 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=127.0.0.1:2182 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@531d72ca</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-29 07:51:39,715 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1032] - Opening socket connection to server 127.0.0.1/127.0.0.1:2182. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-29 07:51:39,797 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@876] - Socket connection established to 127.0.0.1/127.0.0.1:2182, initiating session</div><div class="line">[zk: 127.0.0.1:2182(CONNECTING) 0] 2016-06-29 07:51:39,830 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1299] - Session establishment complete on server 127.0.0.1/127.0.0.1:2182, sessionid = 0x155996605050000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div></pre></td></tr></table></figure></p>
+<p>连接成功后，便可以使用命令与zk服务进行交互。</p>
+<h2 id="help"><a href="#help" class="headerlink" title="help"></a>help</h2><p>help命令会输出zk支持的所有命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">[zk: 127.0.0.1:2182(CONNECTED) 0] help</div><div class="line">ZooKeeper -server host:port cmd args</div><div class="line">stat path [watch]</div><div class="line">set path data [version]</div><div class="line">ls path [watch]</div><div class="line">delquota [-n|-b] path</div><div class="line">ls2 path [watch]</div><div class="line">setAcl path acl</div><div class="line">setquota -n|-b val path</div><div class="line">history </div><div class="line">redo cmdno</div><div class="line">printwatches on|off</div><div class="line">delete path [version]</div><div class="line">sync path</div><div class="line">listquota path</div><div class="line">rmr path</div><div class="line">get path [watch]</div><div class="line">create [-s] [-e] path data acl</div><div class="line">addauth scheme auth</div><div class="line">quit </div><div class="line">getAcl path</div><div class="line">close </div><div class="line">connect host:port</div></pre></td></tr></table></figure></p>
+<h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>查看指定路径下包含的节点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 2] ls /</div><div class="line">[zookeeper]</div></pre></td></tr></table></figure></p>
+<h2 id="create"><a href="#create" class="headerlink" title="create"></a>create</h2><p>创建一个节点，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 3] create /zk mydata</div><div class="line">Created /zk</div></pre></td></tr></table></figure>
+<p>以上命令创建一个/zk节点，且其内容为 “myData”</p>
+<h2 id="get"><a href="#get" class="headerlink" title="get"></a>get</h2><p>显示指定路径下节点的信息，例如，我们检查一下上面的/zk节点最否创建成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 4] get /zk</div><div class="line">mydata</div><div class="line">cZxid = 0xb59</div><div class="line">ctime = Thu Jun 30 11:13:24 CST 2016</div><div class="line">mZxid = 0xb59</div><div class="line">mtime = Thu Jun 30 11:13:24 CST 2016</div><div class="line">pZxid = 0xb59</div><div class="line">cversion = 0</div><div class="line">dataVersion = 0</div><div class="line">aclVersion = 0</div><div class="line">ephemeralOwner = 0x0</div><div class="line">dataLength = 6</div><div class="line">numChildren = 0</div></pre></td></tr></table></figure></p>
+<p>可以看到/zk节点的内容为”myData”，且输出包含了znode的其他信息。有关各个字段的具体含义，请参见了本博客对znode的介绍。</p>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><p>设置节点的内容，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 6] set /zk &quot;anotherData&quot;</div><div class="line">……</div><div class="line">[zk: localhost:2181(CONNECTED) 7] get /zk</div><div class="line">&quot;anotherData&quot;</div><div class="line">……</div></pre></td></tr></table></figure></p>
+<h2 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h2><p>删除一个节点，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 8] delete /zk</div><div class="line">[zk: localhost:2181(CONNECTED) 9] get /zk</div><div class="line">Node does not exist: /zk</div></pre></td></tr></table></figure></p>
+<p>以上就是zk客户端最常用的几个命令，从这几个命令我们也可以看到zk提供的API设计的简单。</p>
+<h2 id="四字母命令"><a href="#四字母命令" class="headerlink" title="四字母命令"></a>四字母命令</h2><p>ZooKeeper提供了多个由4个字母构成的命令，可以使用nc或者telnet来使用这些命令。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">telnet 127.0.0.1 2181</div></pre></td></tr></table></figure>
+<p>成功连接zk后，输入conf<br>会看到以下输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">clientPort=2181</div><div class="line">dataDir=D:\Soft\zookeeper-3.4.6\data\version-2</div><div class="line">dataLogDir=D:\Soft\zookeeper-3.4.6\data\version-2</div><div class="line">tickTime=2000</div><div class="line">maxClientCnxns=60</div><div class="line">minSessionTimeout=4000</div><div class="line">maxSessionTimeout=40000</div><div class="line">serverId=0</div></pre></td></tr></table></figure></p>
+<p>或者使用nc来向zk发送4字母命令，例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo conf | nc 192.168.229.161 2181</div></pre></td></tr></table></figure></p>
+<p>其他常用的四字母命令如下表格所示：</p>
+<p>表格：ZooKeeper提供的四字母命令</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>conf</td>
+<td style="text-align:left">zk服务配置的详细信息</td>
+</tr>
+<tr>
+<td>stat</td>
+<td style="text-align:left">客户端与zk连接的简要信息</td>
+</tr>
+<tr>
+<td>srvr</td>
+<td style="text-align:left">zk服务的详细信息</td>
+</tr>
+<tr>
+<td>cons</td>
+<td style="text-align:left">客户端与zk连接的详细信息</td>
+</tr>
+<tr>
+<td>mntr</td>
+<td style="text-align:left">zk服务目前的性能状况</td>
+</tr>
+<tr>
+<td>wchs</td>
+<td style="text-align:left">watch的简要信息</td>
+</tr>
+<tr>
+<td>wchc</td>
+<td style="text-align:left">watch的详细信息，客户端 -&gt; watch的映射，线上环境要小心使用</td>
+</tr>
+<tr>
+<td>wchp</td>
+<td style="text-align:left">watch的详细信息, znode -&gt; 客户端的映射，线上环境要小心使用</td>
+</tr>
+</tbody>
+</table>
+<p>例如，mntr 命令的输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">echo mntr | nc 192.168.229.161 2181</div><div class="line">zk_version	3.4.6-1569965, built on 02/20/2014 09:09 GMT</div><div class="line">zk_avg_latency	0</div><div class="line">zk_max_latency	565</div><div class="line">zk_min_latency	0</div><div class="line">zk_packets_received	95353</div><div class="line">zk_packets_sent	95713</div><div class="line">zk_num_alive_connections	3</div><div class="line">zk_outstanding_requests	0</div><div class="line">zk_server_state	leader</div><div class="line">zk_znode_count	20</div><div class="line">zk_watch_count	12</div><div class="line">zk_ephemerals_count	9</div><div class="line">zk_approximate_data_size	1465</div><div class="line">zk_open_file_descriptor_count	37</div><div class="line">zk_max_file_descriptor_count	65535</div><div class="line">zk_followers	2		- 只有leader进程才有此项输出</div><div class="line">zk_synced_followers	2	- 只有leader进程才有此项输出</div><div class="line">zk_pending_syncs	0	- 只有leader进程才有此项输出</div></pre></td></tr></table></figure></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://www.programering.com/a/MTOxUjMwATI.html" target="_blank" rel="external">http://www.programering.com/a/MTOxUjMwATI.html</a></li>
+<li><a href="https://zookeeper.apache.org/doc/r3.4.8/zookeeperStarted.html" target="_blank" rel="external">https://zookeeper.apache.org/doc/r3.4.8/zookeeperStarted.html</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ZooKeeper/" rel="tag"># ZooKeeper</a>
+          
+            <a href="/tags/命令/" rel="tag"># 命令</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/22/ZooKeeper的安装与部署/" rel="next" title="ZooKeeper的安装与部署">
+                <i class="fa fa-chevron-left"></i> ZooKeeper的安装与部署
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/22/ZooKeeper的Znode剖析/" rel="prev" title="ZooKeeper的Znode剖析">
+                ZooKeeper的Znode剖析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/22/ZooKeeper命令简介/"
+           data-title="ZooKeeper命令简介" data-url="https://leehao.me/2017/02/22/ZooKeeper命令简介/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+          <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#help"><span class="nav-number">1.</span> <span class="nav-text">help</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ls"><span class="nav-number">2.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#create"><span class="nav-number">3.</span> <span class="nav-text">create</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#get"><span class="nav-number">4.</span> <span class="nav-text">get</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">5.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delete"><span class="nav-number">6.</span> <span class="nav-text">delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四字母命令"><span class="nav-number">7.</span> <span class="nav-text">四字母命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">8.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"leehao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

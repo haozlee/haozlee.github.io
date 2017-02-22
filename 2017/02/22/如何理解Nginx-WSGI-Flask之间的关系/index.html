@@ -1,0 +1,803 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Nginx,WSGI,uWSGI,Flask," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="概览
+图：web服务器，web框架与WSGI的三层关系
+一般地，客户端从发送一个请求到Flask处理请求，分别经过了web服务器层，WSGI层，web框架层。下面简要介绍各层的作用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何理解Nginx, WSGI, Flask之间的关系">
+<meta property="og:url" content="https://leehao.me/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="概览
+图：web服务器，web框架与WSGI的三层关系
+一般地，客户端从发送一个请求到Flask处理请求，分别经过了web服务器层，WSGI层，web框架层。下面简要介绍各层的作用。">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg">
+<meta property="og:updated_time" content="2017-02-21T23:21:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何理解Nginx, WSGI, Flask之间的关系">
+<meta name="twitter:description" content="概览
+图：web服务器，web框架与WSGI的三层关系
+一般地，客户端从发送一个请求到Flask处理请求，分别经过了web服务器层，WSGI层，web框架层。下面简要介绍各层的作用。">
+<meta name="twitter:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/"/>
+
+
+
+
+
+  <title> 如何理解Nginx, WSGI, Flask之间的关系 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Leo的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">记录开发的点滴</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                如何理解Nginx, WSGI, Flask之间的关系
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-22T07:16:14+08:00">
+                2017-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nginx/" itemprop="url" rel="index">
+                    <span itemprop="name">Nginx</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg" alt="web服务器，web框架与WSGI的三层关系"></p>
+<p>图：web服务器，web框架与WSGI的三层关系</p>
+<p>一般地，客户端从发送一个请求到Flask处理请求，分别经过了web服务器层，WSGI层，web框架层。下面简要介绍各层的作用。</p>
+<a id="more"></a>
+<h1 id="Web-服务器层"><a href="#Web-服务器层" class="headerlink" title="Web 服务器层"></a>Web 服务器层</h1><p>对于传统的客户端 - 服务器架构，客户端向服务器发送请求，服务器接收请求，处理请求，最后给客户端返回请求的响应，即简单来说，一个服务器的作用是：</p>
+<ol>
+<li>接收请求</li>
+<li>处理请求</li>
+<li>返回响应</li>
+</ol>
+<p>此文我们探讨web服务器，常见的web服务器有Nginx，Apache等。在这个三层结构中，web 服务器是最先接收到用户的请求的。</p>
+<h1 id="Web框架层"><a href="#Web框架层" class="headerlink" title="Web框架层"></a>Web框架层</h1><p>常见的web框架有Flask，Django等，我们以Flask框架为例子，展示web框架的作用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">from flask import Flask</div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line">@app.route(&apos;/&apos;)</div><div class="line">def hello_world():</div><div class="line">return &apos;Hello World!&apos;</div><div class="line"></div><div class="line">if __name__ == &apos;__main__&apos;:</div><div class="line">app.run()</div></pre></td></tr></table></figure>
+<p>以上简单的几行代码，就创建了一个web应用程序对象<code>app</code>。<br>Web框架为我们提供路由管理，cookies管理等功能，让我们只需要关心业务的逻辑，提高开发的效率。</p>
+<h1 id="WSGI层"><a href="#WSGI层" class="headerlink" title="WSGI层"></a>WSGI层</h1><p>WSGI不是服务器，也不是用于与程序交互的API，更新不真实的代码，而只是一种接口。它只适用于Python语言，其全称为Web Server Gateway Interface，定义了web服务器和web应用之间的接口规范。也就是说，只要web服务器和web应用都遵守WSGI协议，那么web服务器和web应用就可以随意的组合。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">def application(env, start_response):</div><div class="line">start_response(&apos;200 OK&apos;, [(&apos;Content-Type&apos;, &apos;text/html&apos;)])</div><div class="line">return [b&quot;Hello World&quot;]</div></pre></td></tr></table></figure>
+<p>代码中的<code>env</code>，<code>start_response</code>变量由web服务器传入，其中，<code>env</code>是一个字典，包含了类似HTTP_HOST，HOST_USER_AGENT，SERVER_PROTOCO等环境变量。<code>start_response</code>则是方法，接受两个参数，分别是<code>status</code>，<code>response_headers</code>。<code>application</code>方法设置http响应的状态码和Content-Type等头部信息，并返回响应具体结果。</p>
+<p>上述代码就是一个完整的WSGI应用，当一个支持WSGI的web服务器（例如Nginx）接收到客户端的请求后，便会调用这个<code>application</code>方法。WSGI层并不需要关心<code>env</code>，<code>start_response</code>这两个变量是如何实现的，直接使用即可。</p>
+<p>值得指出的是，WSGI是一种协议，需要区分几个相近的名词：</p>
+<ul>
+<li>uwsgi<br>同wsgi一样也是一种协议，uWSGI服务器正是使用了uwsgi协议</li>
+<li>uWSGI<br>实现了uwsgi和WSGI两种协议的web服务器。注意uWSGI本质上也是一种web服务器，处于上面描述的三层结构中的web服务器层。</li>
+<li>CGI<br>通用网关接口，并不限于python语言，定义了web服务器是如何向客户端提供动态的内容。例如，规定了客户端如何将参数传递给web服务器，web服务器如何将参数传递给web应用，web应用如何将它的输出如何发送给客户端，等等。<br>生产环境下的web应用都不使用CGI了，CGI进程（类似Python解释器）针对每个请求创建，用完就抛弃，效率低下。WSGI正是为了替代CGI而出现的。</li>
+</ul>
+<p>说到这，我们基本理清了WSGI在web服务器与web框架之间作用：WSGI就像一条纽带，将web服务器与web框架连接起来。回到本文的题目，Nginx属于一种web服务器，Flask属于一种web框架，因此，WSGI与Nginx、Flask的作用就不明而喻了。</p>
+<p>最后以Nginx，WSGI，Flask之间的对话结束本文。<br><strong>Nginx</strong>：Hey，WSGI，我刚收到了一个请求，我需要你作些准备，然后由Flask来处理这个请求。<br><strong>WSGI</strong>：OK，Nginx。我会设置好环境变量，然后将这个请求传递给Flask处理。<br><strong>Flask</strong>：Thanks WSGI！给我一些时间，我将会把请求的响应返回给你。<br><strong>WSGI</strong>：Alright，那我等你。<br><strong>Flask</strong>：Okay，我完成了，这里是请求的响应结果，请求把结果传递给Nginx。<br><strong>WSGI</strong>：Good job！Nginx，这里是响应结果，已经按照要求给你传递回来了。<br><strong>Nginx</strong>：Cool，我收到了，我把响应结果返回给客户端。大家合作愉快~</p>
+<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><ol>
+<li><a href="http://hackerxu.com/2015/05/10/flask011.html" target="_blank" rel="external">http://hackerxu.com/2015/05/10/flask011.html</a></li>
+<li><a href="https://www.quora.com/What-are-good-ways-to-understand-WSGI-flup-fastcgi-CGI-and-Django" target="_blank" rel="external">https://www.quora.com/What-are-good-ways-to-understand-WSGI-flup-fastcgi-CGI-and-Django</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface" target="_blank" rel="external">https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface</a></li>
+<li><a href="http://flask.pocoo.org/docs/0.10/quickstart/" target="_blank" rel="external">http://flask.pocoo.org/docs/0.10/quickstart/</a></li>
+<li><a href="http://stackoverflow.com/questions/219110/how-python-web-frameworks-wsgi-and-cgi-fit-together" target="_blank" rel="external">http://stackoverflow.com/questions/219110/how-python-web-frameworks-wsgi-and-cgi-fit-together</a></li>
+<li><a href="https://www.python.org/dev/peps/pep-0333/" target="_blank" rel="external">https://www.python.org/dev/peps/pep-0333/</a></li>
+<li>《Python核心编程（第3版）》Wesley Chun著</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+          
+            <a href="/tags/WSGI/" rel="tag"># WSGI</a>
+          
+            <a href="/tags/uWSGI/" rel="tag"># uWSGI</a>
+          
+            <a href="/tags/Flask/" rel="tag"># Flask</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/" rel="next" title="RPC 基本原理与 Apach Thrift 初体验">
+                <i class="fa fa-chevron-left"></i> RPC 基本原理与 Apach Thrift 初体验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/22/ZooKeeper概览/" rel="prev" title="ZooKeeper概览">
+                ZooKeeper概览 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/"
+           data-title="如何理解Nginx, WSGI, Flask之间的关系" data-url="https://leehao.me/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+          <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web-服务器层"><span class="nav-number">2.</span> <span class="nav-text">Web 服务器层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web框架层"><span class="nav-number">3.</span> <span class="nav-text">Web框架层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WSGI层"><span class="nav-number">4.</span> <span class="nav-text">WSGI层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">5.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"leehao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
