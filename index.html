@@ -174,7 +174,7 @@
     </a>
   </div>
     
-      <p class="site-subtitle">记录开发的点滴</p>
+      <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
     
 </div>
 
@@ -242,6 +242,16 @@
           </a>
         </li>
       
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
 
       
     </ul>
@@ -271,7 +281,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/ZooKeeper的Znode剖析/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-Sentinel-学习笔记/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -291,17 +301,174 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/22/ZooKeeper的Znode剖析/" itemprop="url">
+                <a class="post-title-link" href="/Redis-Sentinel-学习笔记/" itemprop="url">
+                  Redis Sentinel 学习笔记
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-04T23:07:28+08:00">
+                2017-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Redis-Sentinel-学习笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="Redis-Sentinel-学习笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>Redis Sentinel</strong> 是用来实现 Redis 高可用的一套解决方案。Redis Sentinel 由两个部分组成：由一个或者多个 Sentinel 实例组成 Sentinel 系统；由一个主 Redis 服务器（master redis）和多个从 Redis 服务器（slave redis）组成主从备份的 Redis 系统。Sentinel 系统本身是一个分布式的系统，它的作用是监视 redis 服务器，在 master redis 下线时，自动将某个 slave redis 上升为新的主服务器。Redis 系统由 master redis 处理客户端的命令请求，slave redis 作为主服务器的备份而存在。Redis Sentinel 的系统架构如图 1 所示。</p>
+<p><img src="https://ww4.sinaimg.cn/large/006tKfTcgy1fdb6nxsatoj30jy0emmy3.jpg" alt="Redis Sentinel 架构图"></p>
+<p>图1：Redis Sentinel 架构图</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Redis-Sentinel-学习笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper的Znode剖析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/ZooKeeper的Znode剖析/" itemprop="url">
                   ZooKeeper的Znode剖析
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -354,8 +521,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/22/ZooKeeper的Znode剖析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/ZooKeeper的Znode剖析/" itemprop="commentCount"></span>
+                <a href="/ZooKeeper的Znode剖析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="ZooKeeper的Znode剖析/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -386,7 +553,7 @@
 <p><img src="https://ww4.sinaimg.cn/large/006tNc79gy1fcyxsxwf4dj30i30a8jrq.jpg" alt="ZooKeeper的层级树状结构"><br>图1：ZooKeeper的层级树状结构</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/22/ZooKeeper的Znode剖析/#more" rel="contents">
+            <a class="btn" href="/ZooKeeper的Znode剖析/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -427,7 +594,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/ZooKeeper命令简介/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper命令简介/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -447,17 +614,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/22/ZooKeeper命令简介/" itemprop="url">
+                <a class="post-title-link" href="/ZooKeeper命令简介/" itemprop="url">
                   ZooKeeper命令简介
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -510,8 +677,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/22/ZooKeeper命令简介/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/ZooKeeper命令简介/" itemprop="commentCount"></span>
+                <a href="/ZooKeeper命令简介/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="ZooKeeper命令简介/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -540,9 +707,12 @@
         
           <p>ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkCli.sh -server ip:port</div></pre></td></tr></table></figure>
+<p>执行此命令，客户端成功连接上zk，会有类似以下的输出，其中，包括“Welcome to ZooKeeper!”的欢迎语，以及其他一些连接的信息等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">lihaodeMacBook-Pro:bin lihao$ ./zkCli.sh -server 127.0.0.1:2182</div><div class="line">Connecting to 127.0.0.1:2182</div><div class="line">2016-06-29 07:51:39,679 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.8--1, built on 02/06/2016 03:18 GMT</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=192.168.31.107</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.8.0_77</div><div class="line">2016-06-29 07:51:39,684 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">……</div><div class="line">2016-06-29 07:51:39,686 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=127.0.0.1:2182 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@531d72ca</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-29 07:51:39,715 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1032] - Opening socket connection to server 127.0.0.1/127.0.0.1:2182. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-29 07:51:39,797 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@876] - Socket connection established to 127.0.0.1/127.0.0.1:2182, initiating session</div><div class="line">[zk: 127.0.0.1:2182(CONNECTING) 0] 2016-06-29 07:51:39,830 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1299] - Session establishment complete on server 127.0.0.1/127.0.0.1:2182, sessionid = 0x155996605050000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div></pre></td></tr></table></figure>
+<p>连接成功后，便可以使用命令与zk服务进行交互。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/22/ZooKeeper命令简介/#more" rel="contents">
+            <a class="btn" href="/ZooKeeper命令简介/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -583,7 +753,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/ZooKeeper的安装与部署/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper的安装与部署/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -603,17 +773,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/22/ZooKeeper的安装与部署/" itemprop="url">
+                <a class="post-title-link" href="/ZooKeeper的安装与部署/" itemprop="url">
                   ZooKeeper的安装与部署
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -666,8 +836,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/22/ZooKeeper的安装与部署/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/ZooKeeper的安装与部署/" itemprop="commentCount"></span>
+                <a href="/ZooKeeper的安装与部署/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="ZooKeeper的安装与部署/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -735,7 +905,7 @@
 </table>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/22/ZooKeeper的安装与部署/#more" rel="contents">
+            <a class="btn" href="/ZooKeeper的安装与部署/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -776,7 +946,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/ZooKeeper概览/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper概览/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -796,17 +966,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/22/ZooKeeper概览/" itemprop="url">
+                <a class="post-title-link" href="/ZooKeeper概览/" itemprop="url">
                   ZooKeeper概览
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -859,8 +1029,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/22/ZooKeeper概览/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/ZooKeeper概览/" itemprop="commentCount"></span>
+                <a href="/ZooKeeper概览/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="ZooKeeper概览/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -891,7 +1061,7 @@
 <p>我们知道，由于资源竞争等因素的影响，维护分布式服务的正常运行是一项极具挑战的事情。图1形象地说明了道路交通中没有信号灯的指挥协调导致出现交通阻塞混乱的情况出现。对于分布式系统来说，如果没有一个协调者的角色对各个分布式应用进行协调，分布式系统同样会出现一团糟的情况。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/22/ZooKeeper概览/#more" rel="contents">
+            <a class="btn" href="/ZooKeeper概览/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -932,7 +1102,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/如何理解Nginx-WSGI-Flask之间的关系/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -952,17 +1122,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/" itemprop="url">
+                <a class="post-title-link" href="/如何理解Nginx-WSGI-Flask之间的关系/" itemprop="url">
                   如何理解Nginx, WSGI, Flask之间的关系
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -1015,8 +1185,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/" itemprop="commentCount"></span>
+                <a href="/如何理解Nginx-WSGI-Flask之间的关系/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="如何理解Nginx-WSGI-Flask之间的关系/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1043,12 +1213,12 @@
 
       
         
-          <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg" alt="web服务器，web框架与WSGI的三层关系"></p>
-<p>图：web服务器，web框架与WSGI的三层关系</p>
-<p>一般地，客户端从发送一个请求到Flask处理请求，分别经过了web服务器层，WSGI层，web框架层。下面简要介绍各层的作用。</p>
+          <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>之前对 Nginx，WSGI（或者 uWSGI，uwsgi），Flask(或者 Django），这几者的关系一存存在疑惑。通过查阅了些资料，总算把它们的关系理清了。<br>总括来说，客户端从发送一个 HTTP 请求到 Flask 处理请求，分别经过了 web服务器层，WSGI层，web框架层，这三个层次。不同的层次其作用也不同，下面简要介绍各层的作用。</p>
+<p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg" alt="web服务器，web框架与WSGI的三层关系"></p>
+<p>图1：web服务器，web框架与 WSGI 的三层关系</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/22/如何理解Nginx-WSGI-Flask之间的关系/#more" rel="contents">
+            <a class="btn" href="/如何理解Nginx-WSGI-Flask之间的关系/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1089,7 +1259,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/RPC-基本原理与-Apach-Thrift-初体验/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -1109,17 +1279,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/" itemprop="url">
+                <a class="post-title-link" href="/RPC-基本原理与-Apach-Thrift-初体验/" itemprop="url">
                   RPC 基本原理与 Apach Thrift 初体验
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -1172,8 +1342,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/" itemprop="commentCount"></span>
+                <a href="/RPC-基本原理与-Apach-Thrift-初体验/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="RPC-基本原理与-Apach-Thrift-初体验/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1209,7 +1379,7 @@
 <p>本文讲述 RPC 的基本原理并以 Thrift 框架为例说明 RPC 的使用。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/14/RPC-基本原理与-Apach-Thrift-初体验/#more" rel="contents">
+            <a class="btn" href="/RPC-基本原理与-Apach-Thrift-初体验/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1250,7 +1420,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/02/14/细说-C-Traits-Classes/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/细说-C-Traits-Classes/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -1270,17 +1440,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/02/14/细说-C-Traits-Classes/" itemprop="url">
+                <a class="post-title-link" href="/细说-C-Traits-Classes/" itemprop="url">
                   细说 C++ Traits Classes
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -1333,8 +1503,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/02/14/细说-C-Traits-Classes/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/14/细说-C-Traits-Classes/" itemprop="commentCount"></span>
+                <a href="/细说-C-Traits-Classes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="细说-C-Traits-Classes/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1369,7 +1539,7 @@
 <p>在 C++ 中，traits 习惯上总是被实现为 <code>struct</code> ，但它们往往被称为 traits classes。Traits classes 的作用主要是用来为使用者提供类型信息。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/02/14/细说-C-Traits-Classes/#more" rel="contents">
+            <a class="btn" href="/细说-C-Traits-Classes/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1410,7 +1580,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/01/31/体验-gRPC-那些事儿/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/体验-gRPC-那些事儿/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -1430,17 +1600,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/01/31/体验-gRPC-那些事儿/" itemprop="url">
+                <a class="post-title-link" href="/体验-gRPC-那些事儿/" itemprop="url">
                   体验 gRPC 那些事儿
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -1493,8 +1663,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/01/31/体验-gRPC-那些事儿/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/31/体验-gRPC-那些事儿/" itemprop="commentCount"></span>
+                <a href="/体验-gRPC-那些事儿/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="体验-gRPC-那些事儿/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1534,7 +1704,7 @@
 </ul>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/01/31/体验-gRPC-那些事儿/#more" rel="contents">
+            <a class="btn" href="/体验-gRPC-那些事儿/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1575,7 +1745,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/01/31/Git远程仓库/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/Git远程仓库/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -1595,17 +1765,17 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
+          <h2 class="post-title" itemprop="name headline">
             
             
               
                 
-                <a class="post-title-link" href="/2017/01/31/Git远程仓库/" itemprop="url">
+                <a class="post-title-link" href="/Git远程仓库/" itemprop="url">
                   Git远程仓库
                 </a>
               
             
-          </h1>
+          </h2>
         
 
         <div class="post-meta">
@@ -1658,8 +1828,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/01/31/Git远程仓库/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/31/Git远程仓库/" itemprop="commentCount"></span>
+                <a href="/Git远程仓库/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="Git远程仓库/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1690,164 +1860,7 @@
 <p>远程 git 仓库并不一定存储在另一台计算机中。很多人知道 git 支持 HTTP/HTTPS，SSH等协议，以允许本地 git 仓库与存在于另一台计算机中的远程 git 仓库之间传送数据。但实际上，远程 git 仓库也可以跟本地 git 仓库处于同一台电脑中，使用本地协议来进行数据的传送。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/01/31/Git远程仓库/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/2017/01/26/MongoDB-Java使用指南/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="Leo">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.jpg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Leo的博客">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/01/26/MongoDB-Java使用指南/" itemprop="url">
-                  MongoDB Java使用指南
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-26T07:26:24+08:00">
-                2017-01-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MongoDB/" itemprop="url" rel="index">
-                    <span itemprop="name">MongoDB</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/01/26/MongoDB-Java使用指南/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/01/26/MongoDB-Java使用指南/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>MongoDB是当今非常流行的一款NoSQL数据库，本文介绍如何使用MongoDB的Java驱动来操作MongoDB。<br><img src="https://ww2.sinaimg.cn/large/006tNbRwgy1fc3ohlzjrwj30iw0e6t93.jpg" alt="MongoDB图标"></p>
-<h1 id="一、引入MongoDB-Java-Driver包"><a href="#一、引入MongoDB-Java-Driver包" class="headerlink" title="一、引入MongoDB Java Driver包"></a>一、引入MongoDB Java Driver包</h1><p>如果需要操作MongoDB的Java项目是一个Maven项目，可以在依赖中加上以下的配置。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mongodb<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mongo-java-driver<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.13.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>或者通过直接下载jar包的方式使用，下载地址：<a href="https://oss.sonatype.org/content/repositories/releases/org/mongodb/mongo-java-driver/2.13.2/">mongo-java-driver-2.13.2.jar</a>。<br>详细的如何引入MongoDB jar包的方法可以参考<a href="http://mongodb.github.io/mongo-java-driver/2.13/getting-started/installation-guide/">官方文档</a>。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/01/26/MongoDB-Java使用指南/#more" rel="contents">
+            <a class="btn" href="/Git远程仓库/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1926,7 +1939,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1944,7 +1957,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
