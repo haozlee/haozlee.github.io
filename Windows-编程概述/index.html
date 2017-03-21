@@ -94,7 +94,7 @@
 <meta property="og:description" content="本文对windows编程中涉及的一些基本概念作一个简单的概述。
 事件驱动Windows 应用程序基于事件驱动模型，windows应用程序启动后会一直等待事件的发生。常见的事件包括，键盘某个按键被按下，鼠标单击，窗口按钮被点击，窗口可见，等等。
 消息与消息队列Windows 操作系统使用消息来通知应用程序事件的发生。当一个事件发生时，windows 会为该事件所对应的应用程序发送一条消息，然后，这条">
-<meta property="og:updated_time" content="2017-03-19T07:15:44.000Z">
+<meta property="og:updated_time" content="2017-03-21T15:47:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Windows 编程概述">
 <meta name="twitter:description" content="本文对windows编程中涉及的一些基本概念作一个简单的概述。
@@ -388,7 +388,7 @@
 <h2 id="消息与消息队列"><a href="#消息与消息队列" class="headerlink" title="消息与消息队列"></a>消息与消息队列</h2><p>Windows 操作系统使用消息来通知应用程序事件的发生。当一个事件发生时，windows 会为该事件所对应的应用程序发送一条消息，然后，这条消息就被加入到应用程序的消息队列中。<br>每个应用程序都有属于自己的消息队列，消息队列包含了windows操作系统向该应用程序发送的所有消息。</p>
 <h2 id="消息循环"><a href="#消息循环" class="headerlink" title="消息循环"></a>消息循环</h2><p>应用程序在一个消息循环里面不断地检查消息队列，如果消息队列里面存在消息，则将其取出来，并交由对应的窗口过程处理。<br>消息循环的代码如下所示：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span>(::GetMessage(&amp;msg, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)) &#123;</div><div class="line">    ::TranslateMessage(&amp;msg);</div><div class="line">    ::DispatchMessage(&amp;msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
-<h2 id="窗口过程"><a href="#窗口过程" class="headerlink" title="窗口过程"></a>窗口过程</h2><p>窗口过程实质是一个函数，用于处理消息队列中的消息。<br>每个窗口对应一个窗口过程（在创建窗口时指定窗口对应的窗口过程），但一个窗口过程可能对应于多个窗口，即多个窗口共用一个窗口过程。<br>一个窗口过程中可能包含的消息代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> WM_KEYDOWN:</div><div class="line">    <span class="keyword">if</span> (wParam == VK_ESCAPE)</div><div class="line">        ::DestroyWindow(MainWindowHandle);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div></pre></td></tr></table></figure></p>
+<h2 id="窗口过程"><a href="#窗口过程" class="headerlink" title="窗口过程"></a>窗口过程</h2><p>窗口过程实质是一个函数，用于处理消息队列中的消息。<br>每个窗口对应一个窗口过程（在创建窗口时指定窗口对应的窗口过程），但一个窗口过程可能对应于多个窗口，即多个窗口共用一个窗口过程。<br>一个窗口过程中可能包含的消息处理代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> WM_KEYDOWN:</div><div class="line">    <span class="keyword">if</span> (wParam == VK_ESCAPE)</div><div class="line">        ::DestroyWindow(MainWindowHandle);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -536,7 +536,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">24</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -554,7 +554,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
