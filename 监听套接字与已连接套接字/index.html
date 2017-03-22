@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="负载均衡," />
+  <meta name="keywords" content="socket,监听套接字,已连接套接字," />
 
 
 
@@ -84,24 +84,22 @@
 
 
 
-<meta name="description" content="本文讲述实现负载均衡的常用算法。
-轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
+<meta name="description" content="监听套接字（listening socket）和已连接套接字（connected socket）之间的区别常会使很多人感到迷惑。本文简要描述一下这两者的区别。
+为了说明监听套接字与已连接套接字的区别，我们先来看一下套接字在连接中的含义。从内核的角度来看，一个套接字就是通信的一个端点。一个连接由它两端的套接了地址唯一确定，这对套接字地址叫做套接字对（socket pair），由下列4元组来表示：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="负载均衡（Load Balancing）学习笔记三——负载均衡算法">
-<meta property="og:url" content="https://leehao.me/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/index.html">
+<meta property="og:title" content="监听套接字与已连接套接字">
+<meta property="og:url" content="https://leehao.me/监听套接字与已连接套接字/index.html">
 <meta property="og:site_name" content="Leo的博客">
-<meta property="og:description" content="本文讲述实现负载均衡的常用算法。
-轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
-<meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg">
-<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNbRwgy1fc21i5rxi3j30gm0dawfd.jpg">
-<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNbRwgy1fc21i5nuamj30gm0daq3t.jpg">
-<meta property="og:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21i5ml49j30gm0dagmh.jpg">
-<meta property="og:updated_time" content="2017-02-18T04:02:15.000Z">
+<meta property="og:description" content="监听套接字（listening socket）和已连接套接字（connected socket）之间的区别常会使很多人感到迷惑。本文简要描述一下这两者的区别。
+为了说明监听套接字与已连接套接字的区别，我们先来看一下套接字在连接中的含义。从内核的角度来看，一个套接字就是通信的一个端点。一个连接由它两端的套接了地址唯一确定，这对套接字地址叫做套接字对（socket pair），由下列4元组来表示：">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNc79gy1fdvvggiwlej30n40akq48.jpg">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fdvxmypw2tj30xe0k6wgy.jpg">
+<meta property="og:updated_time" content="2017-03-22T13:44:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记三——负载均衡算法">
-<meta name="twitter:description" content="本文讲述实现负载均衡的常用算法。
-轮询法（Round Robin）轮询法是负载均衡中最常用的算法，它容易理解也容易实现。轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这">
-<meta name="twitter:image" content="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg">
+<meta name="twitter:title" content="监听套接字与已连接套接字">
+<meta name="twitter:description" content="监听套接字（listening socket）和已连接套接字（connected socket）之间的区别常会使很多人感到迷惑。本文简要描述一下这两者的区别。
+为了说明监听套接字与已连接套接字的区别，我们先来看一下套接字在连接中的含义。从内核的角度来看，一个套接字就是通信的一个端点。一个连接由它两端的套接了地址唯一确定，这对套接字地址叫做套接字对（socket pair），由下列4元组来表示：">
+<meta name="twitter:image" content="https://ww2.sinaimg.cn/large/006tNc79gy1fdvvggiwlej30n40akq48.jpg">
 
 
 
@@ -129,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://leehao.me/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/"/>
+  <link rel="canonical" href="https://leehao.me/监听套接字与已连接套接字/"/>
 
 
 
 
 
-  <title> 负载均衡（Load Balancing）学习笔记三——负载均衡算法 | Leo的博客 </title>
+  <title> 监听套接字与已连接套接字 | Leo的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -278,7 +276,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/监听套接字与已连接套接字/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Leo">
@@ -302,7 +300,7 @@
             
             
               
-                负载均衡（Load Balancing）学习笔记三——负载均衡算法
+                监听套接字与已连接套接字
               
             
           </h1>
@@ -317,8 +315,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-24T16:47:43+08:00">
-                2017-01-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-22T21:42:32+08:00">
+                2017-03-22
               </time>
             
 
@@ -340,8 +338,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式架构/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式架构</span>
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
                   </a>
                 </span>
 
@@ -358,8 +356,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="负载均衡（Load-Balancing）学习笔记三——负载均衡算法/" itemprop="commentCount"></span>
+                <a href="/监听套接字与已连接套接字/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="监听套接字与已连接套接字/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -385,23 +383,31 @@
       
 
       
-        <p>本文讲述实现负载均衡的常用算法。</p>
-<h1 id="轮询法（Round-Robin）"><a href="#轮询法（Round-Robin）" class="headerlink" title="轮询法（Round Robin）"></a>轮询法（Round Robin）</h1><p>轮询法是负载均衡中最常用的算法，它容易理解也容易实现。<br>轮询法是指负载均衡服务器（load balancer）将客户端请求按顺序轮流分配到后端服务器上，以达到负载均衡的目的。<br>假设现在有6个客户端请求，2台后端服务器。当第一个请求到达负载均衡服务器时，负载均衡服务器会将这个请求分派到后端服务器1；当第二个请求到害时，负载均衡服务器会将这个请求分派到后端服务器2。然后第三个请求到达，由于只有两台后端服务器，故请求3会被分派到后端服务器1。依次类推，其示意图如图1所示。</p>
-<p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg" alt="轮询法负载均衡"><br>图1：轮询法负载均衡<br><a id="more"></a></p>
-<h1 id="加权轮询法（Weighted-Round-Robin）"><a href="#加权轮询法（Weighted-Round-Robin）" class="headerlink" title="加权轮询法（Weighted Round Robin）"></a>加权轮询法（Weighted Round Robin）</h1><p>简单的轮询法并不考虑后端机器的性能和负载差异。给性能高、负载低的机器配置较高的权重，让其处理较多的请求；而性能低、负载高的机器，配置较低的权重，让其处理较少的请求。加权轮询法可以很好地处理这一问题，它将请求顺序且按照权重分派到后端服务器。<br>假设有6个客户端请求，2台后端服务器。后端服务器1被赋予权值5，后端服务器2被赋予赋予权值1。这样一来，客户端请求1，2，3，4，5都被分派到服务器1处理；客户端请求6被分派到服务器2处理。接下来，请求7，8，9，10，11被分派到服务器1，请求12被分派到服务器2，依次类推。这个请求分派的过程可以用图2来表示。</p>
-<p><img src="https://ww3.sinaimg.cn/large/006tNbRwgy1fc21i5rxi3j30gm0dawfd.jpg" alt=""><br>图2：加权轮询法负载均衡</p>
-<h1 id="最小连接数法（Least-Connections）"><a href="#最小连接数法（Least-Connections）" class="headerlink" title="最小连接数法（Least Connections）"></a>最小连接数法（Least Connections）</h1><p>即使后端机器的性能和负载一样，不同客户端请求复杂度不一样导致处理时间也不一样。最小连接数法根据后端服务器当前的连接数情况，动态地选取其中积压连接数最小的一台服务器来处理当前的请求，尽可能提高后端服务器的利用效率，合理地将请求分流到每一台服务器。<br>为什么根据连接数可以合理地利用服务器处理请求呢？<br>考虑一个客户端请求的处理逻辑较复杂，需要服务器的处理时间较长，由于客户端需要等待服务器的响应，故需要保持与服务器的连接，这样一来，客户端就需要与服务器保持较长时间的连接。<br>假设客户端请求1，2，3，4，5已被分派给服务器1和服务器2，其分派的情况如图3所示：</p>
-<p><img src="https://ww2.sinaimg.cn/large/006tNbRwgy1fc21i5nuamj30gm0daq3t.jpg" alt=""><br>图3：最小连接法示意图（1）</p>
-<p>此时，服务器上的请求1，请求3已处理完毕，与客户端的连接已断开。而请求2，4，5还在服务器上处理，即服务器还保持与这些请求的客户端的连接。<br>如果再把请求分派到服务器2，则会导致服务器的请求更多，服务器2的负载更高。如果考虑服务器的连接数，当前服务器1的连接数为1，服务器2的连接数为2，将请求分派到服务器1，则负载相对均衡。采用最小连接数法的分派方法如图4所示：</p>
-<p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21i5ml49j30gm0dagmh.jpg" alt=""><br>图4：最小连接法示意图（2）</p>
-<h1 id="随机法（Random）"><a href="#随机法（Random）" class="headerlink" title="随机法（Random）"></a>随机法（Random）</h1><p>随机法也很简单，就是随机选择一台后端服务器进行请求的处理。由于每次服务器被挑中的概率都一样，客户端的请求可以被均匀地分派到所有的后端服务器上。</p>
-<h1 id="源地址哈希法（Source-Hashing）"><a href="#源地址哈希法（Source-Hashing）" class="headerlink" title="源地址哈希法（Source Hashing）"></a>源地址哈希法（Source Hashing）</h1><p>源地址哈希的思想是根据获取客户端的IP地址，通过哈希函数计算得到的一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是客服端要访问服务器的序号。采用源地址哈希法进行负载均衡，同一IP地址的客户端，当后端服务器列表不变时，它每次都会映射到同一台后端服务器进行访问。<br>如果后端服务器是一缓存系统，当后端服务器增加或者减少时，采用简单的哈希取模的方法，会使得命中率大大降低，这个问题可以采用一致性哈希的方法来解决。<br>关于一致性哈希的介绍，可以参考文件 <a href="http://blog.csdn.net/lihao21/article/details/54193868" target="_blank" rel="external">一致性Hash(Consistent Hashing)原理剖析</a>。</p>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
-<li><a href="http://www.jscape.com/blog/load-balancing-algorithms" target="_blank" rel="external">http://www.jscape.com/blog/load-balancing-algorithms</a></li>
-<li>大型网站技术架构——核心原理与安全分析，李智慧著，电子工业出版社</li>
-<li><a href="http://www.cnblogs.com/SmartLee/p/5161415.html" target="_blank" rel="external">http://www.cnblogs.com/SmartLee/p/5161415.html</a></li>
-<li><a href="http://blog.csdn.net/lihao21/article/details/54193868" target="_blank" rel="external">http://blog.csdn.net/lihao21/article/details/54193868</a></li>
-</ol>
+        <p>监听套接字（listening socket）和已连接套接字（connected socket）之间的区别常会使很多人感到迷惑。本文简要描述一下这两者的区别。</p>
+<p>为了说明监听套接字与已连接套接字的区别，我们先来看一下套接字在连接中的含义。<br>从内核的角度来看，一个套接字就是通信的一个端点。一个连接由它两端的套接了地址唯一确定，这对套接字地址叫做套接字对（socket pair），由下列4元组来表示：</p>
+<blockquote>
+<p>（clientip:clientport， serverip:serverport）</p>
+</blockquote>
+<p>其中，clientip 是客户端的IP地址，clientport 是客户端的端口，serverip 是服务器的IP地址，而 serverport 是服务器的端口。</p>
+<p><img src="https://ww2.sinaimg.cn/large/006tNc79gy1fdvvggiwlej30n40akq48.jpg" alt=""><br>图1：套接字对4元组示意图</p>
+<p>上图1展示了一个套接字对4元组，即一个客户端与一个服务器之间的连接。在这个示例中，客户端套接字为</p>
+<a id="more"></a>
+<blockquote>
+<p>128.2.194.242:51234</p>
+</blockquote>
+<p>服务器套接字地址为</p>
+<blockquote>
+<p>114.113.200.133:80</p>
+</blockquote>
+<p>给定客户端和服务器地址，客户和服务器之间的连接就由下列套接字对唯一确定了：</p>
+<blockquote>
+<p>(128.2.194.242:51234, 114.113.200.133:80)</p>
+</blockquote>
+<p>在上面的例子中，客户端是发起连接请求的主动实体，服务器是等待来自客户端连接请求的被动实体。我们知道，<code>socket</code>函数可以创建一个套接字。默认情况，内核会认为<code>socket</code>函数创建的套接字是主动套接字（active socket），它存在于一个连接的客户端。而服务器调用<code>listen</code>函数告诉内核，该套接字是被服务器而不是客户端使用的，即<code>listen</code>函数将一个主动套接字转化为<strong>监听套接字</strong>（下文以 listenfd 表示）。监听套接字可以接受来自客户端的连接请求。<br>服务器通过<code>accept</code>函数等待来自客户端的连接请求到达监听套接字 listenfd，并返回一个<strong>已连接套接字</strong>（下文以 connfd 表示）。利用 I/O 函数，这个 connfd 可以被用来与客户端进行通信。</p>
+<p>上面就是监听套接字与已连接套接字的基本区别了。具体来说，监听套接字，是服务器作为客户端连接请求的一个端点，它被创建一次，并存在于服务器的整个生命周期。已连接套接字是客户端与服务器之间已经建立起来了的连接的一个端点，服务器每次接受连接请求时都会创建一次已连接套接字，它只存在于服务器为一个客户端服务的过程中。<br>值得指出的是，无论是监听套接字，还是已连接套接字，都是只存在于服务器端。</p>
+<p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fdvxmypw2tj30xe0k6wgy.jpg" alt=""><br>图2：监听套接字与已连接套接字的角色</p>
+<p>图2描绘了监听套接字和已连接套接字的角色。在第一步中，服务器调用<code>accept</code>，等待连接请求到达监听套接字 listenfd，假设该监听套接字的文字描述符为3（0，1，2已预留给标准文件使用）。在第二步中，客户端调用<code>connect</code>函数，发送一个连接请求到 listenfd。第三步，<code>accept</code>函数打开一个新的已连接套接字 connfd （假设套接字的文件描述符为4）,在 clientfd 和 connfd 之间建立连接，并且随后返回给服务器应用程序。客户端也从<code>connect</code>函数返回。此时，客户端和服务器就可以分别通过读写 clientfd 和 connfd 来回传送数据了。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>《深入理解计算机系统》，第2版，机械工业出版社</p>
 
       
     </div>
@@ -446,7 +452,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/负载均衡/" rel="tag"># 负载均衡</a>
+            <a href="/tags/socket/" rel="tag"># socket</a>
+          
+            <a href="/tags/监听套接字/" rel="tag"># 监听套接字</a>
+          
+            <a href="/tags/已连接套接字/" rel="tag"># 已连接套接字</a>
           
         </div>
       
@@ -455,8 +465,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/负载均衡（Load-Balancing）学习笔记-二/" rel="next" title="负载均衡（Load Balancing）学习笔记(二)">
-                <i class="fa fa-chevron-left"></i> 负载均衡（Load Balancing）学习笔记(二)
+              <a href="/TCP套接字编程入门/" rel="next" title="TCP套接字编程入门">
+                <i class="fa fa-chevron-left"></i> TCP套接字编程入门
               </a>
             
           </div>
@@ -464,10 +474,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/Python-Requests库简明使用教程/" rel="prev" title="Python Requests库简明使用教程">
-                Python Requests库简明使用教程 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -493,8 +499,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="负载均衡（Load-Balancing）学习笔记三——负载均衡算法/"
-           data-title="负载均衡（Load Balancing）学习笔记三——负载均衡算法" data-url="https://leehao.me/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/">
+      <div class="ds-thread" data-thread-key="监听套接字与已连接套接字/"
+           data-title="监听套接字与已连接套接字" data-url="https://leehao.me/监听套接字与已连接套接字/">
       </div>
     
   </div>
@@ -594,7 +600,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#轮询法（Round-Robin）"><span class="nav-number">1.</span> <span class="nav-text">轮询法（Round Robin）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#加权轮询法（Weighted-Round-Robin）"><span class="nav-number">2.</span> <span class="nav-text">加权轮询法（Weighted Round Robin）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#最小连接数法（Least-Connections）"><span class="nav-number">3.</span> <span class="nav-text">最小连接数法（Least Connections）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#随机法（Random）"><span class="nav-number">4.</span> <span class="nav-text">随机法（Random）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源地址哈希法（Source-Hashing）"><span class="nav-number">5.</span> <span class="nav-text">源地址哈希法（Source Hashing）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
