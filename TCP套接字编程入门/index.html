@@ -95,7 +95,7 @@
 图：基本的TCP客户/服务器应用程序的套接字函数
 图中展示了一对TCP客户与服务器进程之间进行通信时调用套接字函数的交互情况。服务器首先启动，然后监听客户的连接。稍后客户试图连接服务器，客户连接成功后，客户给服务器发送请求，服务器处理请求，并且返回给客户一个响应。这个过程一直持续下">
 <meta property="og:image" content="https://ww4.sinaimg.cn/large/006tKfTcgy1fduv967xu3j30l80q6mz1.jpg">
-<meta property="og:updated_time" content="2017-03-21T15:53:27.000Z">
+<meta property="og:updated_time" content="2017-03-23T11:01:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP套接字编程入门">
 <meta name="twitter:description" content="概述套接字（socket）是一种通信机制，凭借这种机制，客户与服务器的通信既可以在本地单机上进行，也可以跨网络进行。
@@ -413,7 +413,7 @@
 <p>每种套接字域都有其自己的格式，对于 AF_INET 域来说，套接字地址由结构 <code>socket_in</code>来指定，它至少包含以下几个成员：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> sockaddr_in &#123;</div><div class="line">    <span class="keyword">short</span> <span class="keyword">int</span> sin_family;         <span class="comment">// AF_INET</span></div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> <span class="keyword">int</span> sin_port;  <span class="comment">// 端口号</span></div><div class="line">    <span class="keyword">struct</span> in_addr  sin_addr;     <span class="comment">// IP地址</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
 <p>成员<code>sin_port</code>表示套接字的端口号。对于客户套接字，我们一般不需要指定套接字的端口号，而对于服务器套接字，我们需要指定套接字的端口号以便让客户正确向服务器发送数据。如果不需要指定端口号，可以将<code>sin_port</code>的值赋为0。</p>
-<p>成员<code>sin_addr</code>表示套接字的地址，即机器的IP地址。如果我们没特别为套接字绑定IP地址，操作系统会我们选择一个机器IP地址，这时<code>sin_addr</code>使用地址0.0.0.0，使用INADDR_ANY来表示这个地址常量。</p>
+<p>成员<code>sin_addr</code>表示套接字的地址，即机器的IP地址。如果我们没特别为套接字绑定IP地址，操作系统会为我们选择一个机器IP地址，这时<code>sin_addr</code>使用地址0.0.0.0，使用INADDR_ANY来表示这个地址常量。</p>
 <p>对一个套接字进行命名的示例代码如下，该代码创建一个TCP套接字，并监听机器的6240端口。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/socket.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/in.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">// 创建套接字</span></div><div class="line">    <span class="keyword">int</span> fd = socket(AF_INET, SOCK_STREAM, <span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (fd &lt; <span class="number">0</span>) &#123;</div><div class="line">        perror(<span class="string">"cannot create socket"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"created socket, fd: %d\n"</span>, fd);</div><div class="line"></div><div class="line">    <span class="comment">// 命名套接字</span></div><div class="line">    <span class="keyword">struct</span> sockaddr_in myaddr;</div><div class="line">    <span class="built_in">memset</span>((<span class="keyword">void</span> *)&amp;myaddr, <span class="number">0</span>, <span class="keyword">sizeof</span>(myaddr));</div><div class="line">    myaddr.sin_family = AF_INET;</div><div class="line">    myaddr.sin_addr.s_addr = htonl(INADDR_ANY);</div><div class="line">    myaddr.sin_port = htons(<span class="number">6240</span>);</div><div class="line">    <span class="keyword">if</span> (bind(fd, (<span class="keyword">struct</span> sockaddr *)&amp;myaddr, <span class="keyword">sizeof</span>(myaddr)) &lt; <span class="number">0</span>) &#123;</div><div class="line">        perror(<span class="string">"bind failed"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"bind complete, port number: %d\n"</span>, ntohs(myaddr.sin_port));</div><div class="line"></div><div class="line">    <span class="built_in">exit</span>(<span class="number">0</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>输出：</p>
@@ -601,7 +601,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -619,7 +619,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">62</span>
+                <span class="site-state-item-count">64</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
