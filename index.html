@@ -271,6 +271,164 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/epoll-水平触发与边缘触发/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/epoll-水平触发与边缘触发/" itemprop="url">
+                  epoll 水平触发与边缘触发
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-28T08:40:15+08:00">
+                2017-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/epoll-水平触发与边缘触发/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="epoll-水平触发与边缘触发/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>epoll也是实现I/O多路利用的一种方法，为了深入了解epoll的原理，我们先来看下epoll水平触发（level trigger, LT，LT为epoll的默认工作模式）与边缘触发（edge trigger, ET）两种工作模式。</p>
+<p>使用脉冲信号来解释LT和ET可能更加贴切。Level是指信号只需要处于水平，就一直会触发；而edge则是指信号为上升沿或者下降沿时触发。说得还有点玄乎，我们以生活中的一个例子来类比LT和ET是如何确定<strong>读操作</strong>是否就绪的。</p>
+<p><strong>水平触发</strong><br>儿子：妈妈，我收到了500元的压岁钱。<br>妈妈：嗯，省着点花。<br>儿子：妈妈，我今天花了200元买了个变形金刚。<br>妈妈：以后不要乱花钱。<br>儿子：妈妈，我今天买了好多好吃的，还剩下100元。<br>妈妈：用完了这些钱，我可不会再给你钱了。<br>儿子：妈妈，那100元我没花，我攒起来了<br>妈妈：这才是明智的做法！<br>儿子：妈妈，那100元我还没花，我还有钱的。<br>妈妈：嗯，继续保持。<br>儿子：妈妈，我还有100元钱。<br>妈妈：…</p>
+<p>接下来的情形就是没完没了了：只要儿子一直有钱，他就一直会向他的妈妈汇报。LT模式下，只要内核缓冲区中还有未读数据，就会一直返回描述符的就绪状态，即不断地唤醒应用进程。在上面的例子中，儿子是缓冲区，钱是数据，妈妈则是应用进程了解儿子的压岁钱状况（读操作）。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/epoll-水平触发与边缘触发/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="https://leehao.me/I-O多路复用之POLL系统调用/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1703,165 +1861,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="https://leehao.me/Google-Protocol-Buffers-体验日志/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="Leo">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.jpg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="Leo的博客">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/Google-Protocol-Buffers-体验日志/" itemprop="url">
-                  Google Protocol Buffers 体验日志
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-12T08:16:54+08:00">
-                2017-03-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式架构/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式架构</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/Google-Protocol-Buffers-体验日志/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="Google-Protocol-Buffers-体验日志/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>最近在看RPC的相关的实现，其中google的 <a href="https://github.com/grpc/grpc">gRPC</a> 默认使用 <a href="https://github.com/google/protobuf">Protocol Buffers</a> 来作为其接口描述语言（IDL，Interface Definition Language）以及使用 Protocol Buffers 实现消息的序列化与反序列化。因此，很有必要对 protocol buffers 作个初步的了解。<br>下文以 protobuf 来简称 protocol buffer。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>由于自己使用的是 Mac OS，因此，这里讲述 Mac OS 下如何安装 protobuf。<br>可以在以下链接下载最新版本的 protobuf ，<a href="https://github.com/google/protobuf/releases">下载链接</a>。可以直接下载其源代码，然后进行编译安装。</p>
-<p>源代码下载后，进入其目录，然后执行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">$ ./configure</div><div class="line">$ make</div><div class="line">$ make check</div><div class="line">$ sudo make install</div></pre></td></tr></table></figure></p>
-<p>编译好后，使用以下命令来测试是否已成功安装：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ protoc --version</div><div class="line">libprotoc 3.2.0</div></pre></td></tr></table></figure></p>
-<p>说明已成功安装。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Google-Protocol-Buffers-体验日志/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1909,7 +1908,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1927,7 +1926,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">65</span>
+                <span class="site-state-item-count">69</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
