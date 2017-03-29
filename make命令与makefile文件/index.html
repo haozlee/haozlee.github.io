@@ -1,0 +1,826 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="make,makefile,依赖," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一、多个源文件带来的问题在编写c/c++测试程序时，我们习惯每次修改一处代码，然后就马上编译运行来查看运行的结果。这种编译方式对于小程序来说是没有多大问题的，可对于大型程序来说，由于包含了大量的源文件，如果每次改动一个地方都需要编译所有的源文件，这个简单的直接编译所有源文件方式对程序员来说简直是噩耗。我们看一个例子：
+12345678910// main.c#include &quot;a.h&quot;// 2.c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="make命令与makefile文件">
+<meta property="og:url" content="https://leehao.me/make命令与makefile文件/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="一、多个源文件带来的问题在编写c/c++测试程序时，我们习惯每次修改一处代码，然后就马上编译运行来查看运行的结果。这种编译方式对于小程序来说是没有多大问题的，可对于大型程序来说，由于包含了大量的源文件，如果每次改动一个地方都需要编译所有的源文件，这个简单的直接编译所有源文件方式对程序员来说简直是噩耗。我们看一个例子：
+12345678910// main.c#include &quot;a.h&quot;// 2.c">
+<meta property="og:updated_time" content="2017-03-29T13:33:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="make命令与makefile文件">
+<meta name="twitter:description" content="一、多个源文件带来的问题在编写c/c++测试程序时，我们习惯每次修改一处代码，然后就马上编译运行来查看运行的结果。这种编译方式对于小程序来说是没有多大问题的，可对于大型程序来说，由于包含了大量的源文件，如果每次改动一个地方都需要编译所有的源文件，这个简单的直接编译所有源文件方式对程序员来说简直是噩耗。我们看一个例子：
+12345678910// main.c#include &quot;a.h&quot;// 2.c">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/make命令与makefile文件/"/>
+
+
+
+
+
+  <title> make命令与makefile文件 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Leo的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">记录开发的点滴</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://leehao.me/make命令与makefile文件/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Leo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Leo的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Leo的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                make命令与makefile文件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-29T21:32:05+08:00">
+                2017-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/make命令与makefile文件/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="make命令与makefile文件/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、多个源文件带来的问题"><a href="#一、多个源文件带来的问题" class="headerlink" title="一、多个源文件带来的问题"></a>一、多个源文件带来的问题</h2><p>在编写c/c++测试程序时，我们习惯每次修改一处代码，然后就马上编译运行来查看运行的结果。这种编译方式对于小程序来说是没有多大问题的，可对于大型程序来说，由于包含了大量的源文件，如果每次改动一个地方都需要编译所有的源文件，这个简单的直接编译所有源文件方式对程序员来说简直是噩耗。<br>我们看一个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// main.c</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"a.h"</span></span></div><div class="line"></div><div class="line"><span class="comment">// 2.c</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"a.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"b.h"</span></span></div><div class="line"></div><div class="line"><span class="comment">// 3.c</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"b.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"c.h"</span></span></div></pre></td></tr></table></figure>
+<p>如果程序员只修改了头文件<code>c.h</code>，则源文件<code>main.c</code>和<code>2.c</code>都无需编译，因为它们不依赖这个头文件。而对<code>3.c</code>来说，由于它包含了<code>c.h</code>,所以在头文件<code>c.h</code>改动后，就必须得新编译。<br>而如果改动了<code>b.h</code>可是忘记编译了<code>2.c</code>，那么最终的程序就可能无法正常工作。<br>make 工具就是为了解决上述问题而出现的，它会在必要时重新编译所有受改动影响的源文件。</p>
+<a id="more"></a>
+<h2 id="二、make-命令"><a href="#二、make-命令" class="headerlink" title="二、make 命令"></a>二、make 命令</h2><p><code>make</code>命令本身支持许多选项，最常用的是<code>-f</code>选项。如果我们直接运行</p>
+<blockquote>
+<p>make</p>
+</blockquote>
+<p>那么<code>make</code>命令会首先在当前目录查找名为<code>makefile</code>的文件，如果找不到，就会查找名为<code>Makefile</code>的文件。<br>为了指示<code>make</code>命令将哪个文件作为makefile文件，可以使用 <code>-f</code> 选项：</p>
+<blockquote>
+<p>make -f Makefile1</p>
+</blockquote>
+<h2 id="三、makefile-文件"><a href="#三、makefile-文件" class="headerlink" title="三、makefile 文件"></a>三、makefile 文件</h2><p>上面提到makefile文件，那么什么是makefile文件呢？<br><code>make</code>命令功能虽然十分强大，但是光凭其自身无法了解如何构建应用程序的。这时，makefile就出来了，它告诉<code>make</code>应用程序如何构建的。<code>make</code>命令和makefile文件的结合提供了一个在管理项目的十分强大的工具，它们不仅用于控制源文件的编译，而且还提供了将应用程序安装到目标目录等其他功能。</p>
+<h3 id="3-1-依赖关系"><a href="#3-1-依赖关系" class="headerlink" title="3.1 依赖关系"></a>3.1 依赖关系</h3><p>依赖关系定义了应用程序里面每个文件与其他源文件之间的关系。例如在上面的例子中，我们可以定义最终应用程序依赖于目标文件<code>main.o</code>，<code>2.o</code>和<code>3.o</code>。同样，<code>main.o</code>依赖于<code>main.c</code>和<code>a.h</code>，<code>2.o</code>依赖于<code>2.c</code>，<code>a.h</code>和<code>b.h</code>，<code>3.o</code>依赖于<code>3.c</code>，<code>b.h</code>和<code>c.h</code>。<br>在makefile文件中，依赖关系的写法是：先写目标的名称，然后紧跟一个冒号，接着是空格或者制表符tab，最后是用空格或者制表符tab隔开的文件列表。上面的例子的依赖关系如下：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">myapp: main.o 2.o 3.o</div><div class="line">main.o: main.c a.h</div><div class="line">2.o: 2.c a.h b.h</div><div class="line">3.o: 3.c b.h c.h</div></pre></td></tr></table></figure>
+<p>这组依赖关系形成一个层次结构，展示了源文件之间的关系。例如，如果源文件<code>b.h</code>发生改变，就需要重新编译<code>2.o</code>和<code>3.o</code>，接下来还需要重新编译<code>myapp</code>。</p>
+<h3 id="3-2-规则"><a href="#3-2-规则" class="headerlink" title="3.2 规则"></a>3.2 规则</h3><p>makefiel文件中的规则定义了目标的创建方式。在上面的例子中，我们使用<code>gcc -c 2.c</code>创建<code>2.o</code>。这个<code>gcc</code>命令即是目标<code>2.o</code>的创建方式，也即是规则。<br>在makefile文件中，规则都必须以tab开头。<br>在源文件所在的目录下创建<code>Makefile1</code>文件，其内容如下。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">myapp: main.o 2.o 3.o</div><div class="line">	gcc -o myapp main.o 2.o 3.o</div><div class="line">main.o: main.c a.h</div><div class="line">	gcc -c main.c</div><div class="line">2.o: 2.c a.h b.h</div><div class="line">	gcc -c 2.c</div><div class="line">3.o: 3.c b.h c.h</div><div class="line">	gcc -c 3.c</div></pre></td></tr></table></figure>
+<p>三个头文件<code>a.h</code>，<code>b.h</code>，<code>c.h</code>内容都为空，源文件的内容如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* main.c */</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"a.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">function_two</span><span class="params">()</span></span>;</div><div class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">function_three</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    function_two();</div><div class="line">    function_three();</div><div class="line">    <span class="built_in">exit</span>(EXIT_SUCCESS);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* 2.c */</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"a.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"b.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">function_two</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"function two\n"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* 3.c */</span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"b.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"c.h"</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">function_three</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"function three\n"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行<code>make</code>命令，：</p>
+<blockquote>
+<p>$ make -f Makefile1<br>gcc -c main.c<br>gcc -c 2.c<br>gcc -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
+</blockquote>
+<p>运行应用程序：</p>
+<blockquote>
+<p>$ ./myapp<br>function two<br>function three</p>
+</blockquote>
+<p>从输出可以说明应用程序已被正确构建。</p>
+<p>如果改变<code>b.h</code>头文件，makefile能够正确处理这一变化，只有<code>2.c</code>和<code>3.c</code>发生重新编译：</p>
+<blockquote>
+<p>$ touch b.h </p>
+<p>$ make -f Makefile1<br>gcc -c 2.c<br>gcc -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
+</blockquote>
+<h3 id="3-3-注释"><a href="#3-3-注释" class="headerlink" title="3.3 注释"></a>3.3 注释</h3><p>makefile文件使用<code>#</code>来表示注释，一直延续到这一行的结束。</p>
+<h3 id="3-4-宏"><a href="#3-4-宏" class="headerlink" title="3.4 宏"></a>3.4 宏</h3><p>不同的平台下可能使用不同的编译器，不同的环境（例如开发与线上环境）也可能使用不同的编译器选项，为了便于修改makefile这些可变的参数，我们可以使用宏来实现makefile。<br>makefile引用宏定义的方法为<code>$(MACRONAME)</code>。我们来看如何使用宏来改写上面的makefile文件。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">all: myapp</div><div class="line"></div><div class="line"><span class="comment"># 编译器</span></div><div class="line">CC = gcc</div><div class="line"></div><div class="line"><span class="comment"># include的搜索路径</span></div><div class="line">INCLUDE = .</div><div class="line"></div><div class="line"><span class="comment"># 编译器参数</span></div><div class="line">CFLAGS = -g -Wall -ansi</div><div class="line"></div><div class="line">myapp: main.o 2.o 3.o</div><div class="line">	<span class="variable">$(CC)</span> -o myapp main.o 2.o 3.o</div><div class="line">main.o: main.c a.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c main.c</div><div class="line"></div><div class="line">2.o: 2.c a.h b.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 2.c</div><div class="line"></div><div class="line">3.o: 3.c b.h c.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 3.c</div></pre></td></tr></table></figure>
+<p>我们习惯在makefile文件中将第一个目标定义为<code>all</code>，然后再列出其他从属的目标，上面的makefile也遵循这个约定。</p>
+<p>运行<code>make</code>命令：</p>
+<blockquote>
+<p>$ make -f Makefile2<br>gcc -I. -g -Wall -ansi -c main.c<br>gcc -I. -g -Wall -ansi -c 2.c<br>gcc -I. -g -Wall -ansi -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
+</blockquote>
+<p>同样也正确构建了应用程序<code>myapp</code>。</p>
+<h3 id="3-5-多个目标"><a href="#3-5-多个目标" class="headerlink" title="3.5 多个目标"></a>3.5 多个目标</h3><p>makefile文件除了定义编译的目标外，还可以定义其他的目标。例如，增加一个<code>clean</code>选项来删除不需要的目标文件，增加一个<code>install</code>选项来将编译成功的应用程序安装到另一个目录下，等等。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">all: myapp</div><div class="line"></div><div class="line">CC = gcc</div><div class="line"></div><div class="line">INSTDIR = /usr/local/bin</div><div class="line"></div><div class="line">INCLUDE = .</div><div class="line"></div><div class="line">CFLAGS = -g -Wall -ansi</div><div class="line"></div><div class="line">myapp: main.o 2.o 3.o</div><div class="line">	<span class="variable">$(CC)</span> -o myapp main.o 2.o 3.o</div><div class="line">main.o: main.c a.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c main.c</div><div class="line">2.o: 2.c a.h b.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 2.c</div><div class="line">3.o: 3.c b.h c.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 3.c</div><div class="line"></div><div class="line"><span class="section">clean:</span></div><div class="line">	-rm main.o 2.o 3.o</div><div class="line"></div><div class="line">install: myapp</div><div class="line">	@if [ -d <span class="variable">$(INSTDIR)</span> ]; \</div><div class="line">		then \</div><div class="line">		cp myapp <span class="variable">$(INSTDIR)</span>;\</div><div class="line">		chmod a+x <span class="variable">$(INSTDIR)</span>/myapp;\</div><div class="line">		chmod og-w <span class="variable">$(INSTDIR)</span>/myapp;\</div><div class="line">		echo <span class="string">"Install in $(INSTDIR)"</span>;\</div><div class="line">	else \</div><div class="line">		echo <span class="string">"sorry, $(INSTDIR) does not exist"</span>;\</div><div class="line">	fi</div></pre></td></tr></table></figure>
+<p>上面的makefile文件有几点需要注意的。<br>（1）特殊目标<code>all</code>只指定了<code>myapp</code>这个目标，因此，在执行<code>make</code>命令时未指定目标，它的默认行为就是创建目标<code>myapp</code>。<br>（2）目标<code>clean</code>用来测试编译过程中产生的中间文件。<br>（3）目标<code>install</code>用于将应用程序安装到指定目录，它依赖于<code>myapp</code>，即执行<code>install</code>前须先创建<code>myapp</code>。<code>install</code>目标由shell脚本组成，由于<code>make</code>命令在执行规则时会调用一个shell，并且会针对每个规则使用一个新的shell，所以必须在上面每行代码的结尾加上一个<code>\</code>，让所有的shell脚本都处于同一行。<br>脚本以<code>@</code>开头，说明<code>make</code>在执行这些规则之前不会在标准输出显示命令本身。</p>
+<p>创建<code>myapp</code>：</p>
+<blockquote>
+<p>$ make -f Makefile3<br>gcc -I. -g -Wall -ansi -c main.c<br>gcc -I. -g -Wall -ansi -c 2.c<br>gcc -I. -g -Wall -ansi -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
+</blockquote>
+<p>将<code>myapp</code>安装到指到目录：</p>
+<blockquote>
+<p>$ make -f Makefile3 install<br>Install in /usr/local/bin</p>
+</blockquote>
+<p>然后可以直接执行<code>myapp</code>:</p>
+<blockquote>
+<p>$ myapp<br>function two<br>function three</p>
+</blockquote>
+<p>删除中间文件：</p>
+<blockquote>
+<p>$ make -f Makefile3 clean<br>rm main.o 2.o 3.o</p>
+</blockquote>
+<h2 id="四、参考资料"><a href="#四、参考资料" class="headerlink" title="四、参考资料"></a>四、参考资料</h2><ol>
+<li>Linux程序设计（第4版），Neil Matthew等著，人民邮电出版社，2010年</li>
+<li><a href="http://mrbook.org/blog/tutorials/make/" target="_blank" rel="external">http://mrbook.org/blog/tutorials/make/</a></li>
+<li><a href="http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/" target="_blank" rel="external">http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/make/" rel="tag"># make</a>
+          
+            <a href="/tags/makefile/" rel="tag"># makefile</a>
+          
+            <a href="/tags/依赖/" rel="tag"># 依赖</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/epoll-水平触发与边缘触发/" rel="next" title="epoll 水平触发与边缘触发">
+                <i class="fa fa-chevron-left"></i> epoll 水平触发与边缘触发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="make命令与makefile文件/"
+           data-title="make命令与makefile文件" data-url="https://leehao.me/make命令与makefile文件/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+          <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、多个源文件带来的问题"><span class="nav-number">1.</span> <span class="nav-text">一、多个源文件带来的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、make-命令"><span class="nav-number">2.</span> <span class="nav-text">二、make 命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、makefile-文件"><span class="nav-number">3.</span> <span class="nav-text">三、makefile 文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-依赖关系"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 依赖关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-规则"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-注释"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-宏"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 宏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-多个目标"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 多个目标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、参考资料"><span class="nav-number">4.</span> <span class="nav-text">四、参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"leehao"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
