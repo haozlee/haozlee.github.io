@@ -1,0 +1,851 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RPC,Web服务,Webservice,SOAP,REST,RESTful," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。
+以功能为中心的服务以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web 服务架构类型">
+<meta property="og:url" content="https://leehao.me/Web-服务架构类型/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。
+以功能为中心的服务以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg">
+<meta property="og:updated_time" content="2017-04-16T15:32:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Web 服务架构类型">
+<meta name="twitter:description" content="根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。
+以功能为中心的服务以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Web-服务架构类型/"/>
+
+
+
+
+
+  <title> Web 服务架构类型 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Web-服务架构类型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Web 服务架构类型
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-16T23:30:49+08:00">
+                2017-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/Web-服务架构类型/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。</p>
+<h2 id="以功能为中心的服务"><a href="#以功能为中心的服务" class="headerlink" title="以功能为中心的服务"></a>以功能为中心的服务</h2><p>以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。<br>我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单对象访问协议）等技术都是关注于如何让客户端代码调用一个在远程机器上实现的功能。这么多年过去了，由于良好的扩展性以及得到大公司的支持，在以功能为中心的服务中SOAP 可以说是一枝独秀。 </p>
+<h3 id="SOAP"><a href="#SOAP" class="headerlink" title="SOAP"></a>SOAP</h3><p>SOAP 基于 XML 和 HTTP，使用 XML 来实现消息描述，使用 HTTP 实现消息传输。SOAP 最重要的一个特性是允许 Web 服务基于自身的约定描述完成服务发现并生成集成代码。</p>
+<p>图1所示为 SOAP 的工作原理。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg" alt=""><br>图1：SOAP 的工作原理</p>
+<p>Web 服务提供者暴露一组 XML 资源，诸如 Web 服务定义语言（WSDL）文件，XML 模式定义（XSD）文件。WSDL 描述方法与可用的终端信息，XSD 描述请求与响应中用到的数据结构。这些资源文件就是 Web 服务的约定，客户端代码如何生成，Web 服务如何调用，这些必要的信息全部都在这些资源文件中。</p>
+<p>举个例子，如果我们使用 Java 开发客户端，那么我们可以使用专门的工具和库，下载这些 Web 服务定义资源文件，然后生成 Java 本地客户端代码。这些代码就是一些 Java 类，可以被编译并用在应用程序中。在这些代码的背后，会依赖到 SOAP 相关的一些库，这些库封装了数据序列化，身份认证，路由，错误处理等各种实现细节。客户端无须知道自己调用的是远程 Web 服务，只需要简单地依赖基于 Web 服务约定（WSDL 和 XSD文件）生成的 Java 代码就可以使用这些远程服务器提供的功能了。</p>
+<a id="more"></a>
+<p>SOAP 的另一个重要的特性是其扩展性。一些高级特性，比如事务，身份认证，加密等已被集成到 SOAP 中。SOAP 的这些优点，使得 SOAP 在企业级应用中使用广泛，比如银行，保险之类的企业就大量使用了 SOAP。</p>
+<p>然而，SOAP 对伸缩性却支持不够。我们知道，SOAP 请求是通过 XML 发送的，请求参数和方法名都在 XML 里面。URL 并不包含远程过程调用所需要的全部信息，响应也就没办法在 HTTP 层面基于 URL 进行缓存。也就是说，使用 SOAP 会使应用的伸缩性变差，应用没办法使用反向代理进行缓存。</p>
+<h2 id="以资源为中心的服务"><a href="#以资源为中心的服务" class="headerlink" title="以资源为中心的服务"></a>以资源为中心的服务</h2><p>开发 Web 服务的一个替代方案是将服务的关注点从<strong>功能</strong>转移到<strong>资源</strong>上。<strong>REST</strong>是一个面向资源架构风格的方案，早在 2000 年初就已经提出来。由于其简单和轻量级，REST 已逐渐变成 Web 服务事实上的标准。</p>
+<p>REST 是 Roy Thomas Fielding 在他的 2000 年博士论文中提出的，Fielding 将他对互联网软件的架构原则，定名为 REST，即 Representational State Transfer 的缩写。<br>REST 中资源是指 Web 上一切可以识别的，可命名的，可以被找到并被处理的实体。REST 使用 URI（统一资源定位符）指向资源，使用 HTTP 请求方法操作资源。</p>
+<p>REST 架构风格最重要的架构约束有如下5个。</p>
+<ul>
+<li>客户端-服务器端，即 Client / Server 的架构形式</li>
+<li>无状态，通信的会话状态由客户端负责维护，即请求中包含了全部必要的信息。如果服务器端保持会话，要么保证指定会话使用同一个服务器响应请求，要么创建一个保存会话数据的集中式存储系统</li>
+<li>缓存，由于无状态，故可以使用缓存来提高响应效率</li>
+<li>统一接口，每个 REST 应用都共享一种通用架构，接口的意义统一</li>
+<li>分层系统，根据单一职责将系统分层，常见的分层为：<br>– 应用层：负责返回 JSON 数据<br>– 服务层：为应用层提供服务支持<br>– 数据层：提供数据存取服务</li>
+</ul>
+<p>REST 就是这一系列设计约束的集合，如果一个架构符合 REST 原则，就称它为 RESTful 架构。</p>
+<blockquote>
+<p>REST 不是一种技术，也不是一个标准 / 协议，而是一种使用既有标准（HTTP + URI + JSON）来实现其要求的架构风格。<br>与 REST 对应的不是 SOAP 协议，而是像 RPC 这样的架构风格，即上文我们说的以功能为中心的架构风格。</p>
+</blockquote>
+<p>从 Web 服务发布者的角度看，REST 比 SOAP 更轻量，因为 REST 只需要创建一个在线 wiki 就可以了，在 wiki 里定义各种资源，每种资源的 HTTP 方法，以及请求响应的例子以展示数据格式。 REST 相比于 SOAP 的中另一个好处是无须再去管理 WSDL 及 XSD 这种十分复杂的 API 约定。<br>从客户端角度看，REST 既有优点也有缺点。客户端无法自动生成客户端代码及没法发现 Web 服务，这是缺点。但同时，REST 的方式也降低了使用者的难度，因为不再需要集成自动生成的代码了。<br>从安全的角度看， REST 服务没有 SOAP 服务控制的那么精细。上文提到 SOAP 其扩展性较好，已支持一大批附加的特性，例如事务，身份认证，加密等。<br>从伸缩性角度看， REST 服务是无状态的，意味着可以通过反向代理来处理热门资源，减轻 Web 服务和数据存取的负载压力。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>通过对两种 Web 服务类型的描述，我们看到 REST 并不一定就比 SOAP 好，REST 也不能取代 SOAP，REST 仅仅是在 SOAP 外提供的一个额外选择。<br>从大企业角度看，REST 并不成熟，扩展特性并不丰富。从创业公司看，SOAP 又太过笨重，严格，难以驾驭。这看人需要看我们具体应用的细节和系统集成的需求。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li>互联网创业核心技术——构建可伸缩的Web应用，Artur Ejsmont 著，李智慧 何坤译，电子工业出版社，2016年</li>
+<li>Java RESTful Web Service 实战（第2版），韩陆 著，机械工业出版社，2016年</li>
+<li>Python Web 开发实践，董伟明著，电子工业出版社，2016年</li>
+<li><a href="http://blog.csdn.net/zhuizhuziwo/article/details/8153327" target="_blank" rel="external">http://blog.csdn.net/zhuizhuziwo/article/details/8153327</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RPC/" rel="tag"># RPC</a>
+          
+            <a href="/tags/Web服务/" rel="tag"># Web服务</a>
+          
+            <a href="/tags/Webservice/" rel="tag"># Webservice</a>
+          
+            <a href="/tags/SOAP/" rel="tag"># SOAP</a>
+          
+            <a href="/tags/REST/" rel="tag"># REST</a>
+          
+            <a href="/tags/RESTful/" rel="tag"># RESTful</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/在阿里云部署-Hexo-网站/" rel="next" title="在阿里云部署 Hexo 网站">
+                <i class="fa fa-chevron-left"></i> 在阿里云部署 Hexo 网站
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">37</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">96</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#以功能为中心的服务"><span class="nav-number">1.</span> <span class="nav-text">以功能为中心的服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SOAP"><span class="nav-number">1.1.</span> <span class="nav-text">SOAP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以资源为中心的服务"><span class="nav-number">2.</span> <span class="nav-text">以资源为中心的服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

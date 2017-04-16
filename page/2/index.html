@@ -280,6 +280,161 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/多线程并发服务器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/多线程并发服务器/" itemprop="url">
+                  多线程并发服务器
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-25T16:02:14+08:00">
+                2017-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在多进程并发服务器的应用程序中，父进程<code>accept</code>一个连接，<code>fork</code>一个子进程，该子进程负责处理与该连接对端的客户之间的通信。<br>尽管多进程的编程模型中，各进程拥有独立的地址空间，减少了出错的概率，然而，<code>fork</code>调用却存在一些问题：</p>
+<ul>
+<li><code>fork</code>是昂贵的，<code>fork</code>要把父进程的内存映像复制到子进程，并在子进程中复制所有描述符，这个操作是较重量级的。</li>
+<li><code>fork</code>返回之后父子进程之间信息的传递需要进程间通信（IPC）机制。</li>
+</ul>
+<p>线程则可以解决上述两个问题。线程有时也称为轻量级的进程，线程的创建可能比进程的创建快10-100倍。同一个进程内所有线程共享相同的全局内存，这使得线程之间易于共享信息，但伴随这种简易性而来的是线程安全问题。</p>
+<h2 id="线程函数"><a href="#线程函数" class="headerlink" title="线程函数"></a>线程函数</h2><h3 id="1-pthread-create-函数"><a href="#1-pthread-create-函数" class="headerlink" title="1. pthread_create 函数"></a>1. pthread_create 函数</h3><p>我们介绍的第一个线程的函数是<code>pthread_create</code>，它的作用是创建一个新线程。它的定义如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#include &lt;pthread.h&gt;</div><div class="line">int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);</div></pre></td></tr></table></figure>
+<p>这个函数的定义看起来很复杂，其实用起来很简单。<br>第一个参数是指向<code>pthread_t</code>类型的指针。线程被创建时，这个指针指向的变量将被写入一个标识符（线程ID）我们用该标识符来引用新线程。<br>第二个参数用于设置线程的属性，一般不需要特殊的属性，所以只需要设置该参数为NULL。<br>最后两个参数，分别告诉新线程将要启动执行的函数和传递给该函数的参数。<br><code>pthread_create</code>函数在成功调用时返回0，如果失败则返回失败码。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/多线程并发服务器/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/多进程并发服务器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -382,7 +537,7 @@
 <p>为了了解这是如何工作的，假设我们有两个客户端和一个服务器，服务器正在监听一个监听套接字（比如描述符3）上的连接请求。<br>现在假设服务器接受了客户端1的连接请求，并返回一个已连接套接字（比如描述符4），如图1所示。<br><img src="https://ww3.sinaimg.cn/large/006tKfTcgy1fdwv7cxb9bj30h40aeaah.jpg" alt=""><br>图1：第一步：服务器接受客户端的连接请求</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/多进程并发服务器/#далее" rel="contents">
+            <a class="btn" href="/多进程并发服务器/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -536,7 +691,7 @@
 <p>上图1展示了一个套接字对4元组，即一个客户端与一个服务器之间的连接。在这个示例中，客户端套接字为</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/监听套接字与已连接套接字/#далее" rel="contents">
+            <a class="btn" href="/监听套接字与已连接套接字/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -685,7 +840,7 @@
 <p>图中展示了一对TCP客户与服务器进程之间进行通信时调用套接字函数的交互情况。服务器首先启动，然后监听客户的连接。稍后客户试图连接服务器，客户连接成功后，客户给服务器发送请求，服务器处理请求，并且返回给客户一个响应。这个过程一直持续下去，直到客户关闭客户端的连接，接着服务器也关闭相应的服务器端的连接，接着服务器继续等待新的客户连接。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/TCP套接字编程入门/#далее" rel="contents">
+            <a class="btn" href="/TCP套接字编程入门/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -834,7 +989,7 @@
 <p>上图展示了客户与服务器使用UDP套接字进行通信的过程。在UDP套接字程序中，客户不需要与服务器建立连接，而只管直接使用<code>sendto</code>函数给服务器发送数据报。同样的，服务器不需要接受来自客户的连接，而只管调用<code>recvfrom</code>函数，等待来自某个客户的数据到达。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/UDP-套接字编程入门/#далее" rel="contents">
+            <a class="btn" href="/UDP-套接字编程入门/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -984,7 +1139,7 @@
 <h2 id="消息循环"><a href="#消息循环" class="headerlink" title="消息循环"></a>消息循环</h2><p>应用程序在一个消息循环里面不断地检查消息队列，如果消息队列里面存在消息，则将其取出来，并交由对应的窗口过程处理。<br>消息循环的代码如下所示：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span>(::GetMessage(&amp;msg, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)) &#123;</div><div class="line">    ::TranslateMessage(&amp;msg);</div><div class="line">    ::DispatchMessage(&amp;msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/Windows-编程概述/#далее" rel="contents">
+            <a class="btn" href="/Windows-编程概述/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1143,7 +1298,7 @@
 </ul>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/图解UNIX的I-O模型/#далее" rel="contents">
+            <a class="btn" href="/图解UNIX的I-O模型/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1294,7 +1449,7 @@
 <p>说明已成功安装。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/Google-Protocol-Buffers-体验日志/#далее" rel="contents">
+            <a class="btn" href="/Google-Protocol-Buffers-体验日志/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1449,7 +1604,7 @@
 <p>在面向连接通信中，连接的建立和释放是必不可少的过程。TCP连接的建立采用客户服务器方式，主动发起连接建立的应用进程叫做客户，而被动等待连接的应用进程叫做服务器。<br>本文主要讲述TCP是如何管理连接的建立和连接的释放的。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/TCP的连接管理/#далее" rel="contents">
+            <a class="btn" href="/TCP的连接管理/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1598,155 +1753,7 @@
 <p>图1：Redis Sentinel 架构图</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/Redis-Sentinel-学习笔记/#далее" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper的Znode剖析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/ZooKeeper的Znode剖析/" itemprop="url">
-                  ZooKeeper的Znode剖析
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T08:22:26+08:00">
-                2017-02-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ZooKeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">ZooKeeper</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在ZooKeeper中，节点也称为znode。由于对于程序员来说，对zk的操作主要是对znode的操作，因此，有必要对znode进行深入的了解。<br>ZooKeeper采用了类似文件系统的的数据模型，其节点构成了一个具有层级关系的树状结构。例如，图1展示了zk节点的层级树状结构。</p>
-<p><img src="https://ww4.sinaimg.cn/large/006tNc79gy1fcyxsxwf4dj30i30a8jrq.jpg" alt="ZooKeeper的层级树状结构"><br>图1：ZooKeeper的层级树状结构</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/ZooKeeper的Znode剖析/#далее" rel="contents">
+            <a class="btn" href="/Redis-Sentinel-学习笔记/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1832,7 +1839,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1854,7 +1861,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">91</span>
+                <span class="site-state-item-count">96</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

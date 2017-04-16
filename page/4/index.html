@@ -280,6 +280,170 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-Requests库简明使用教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/Python-Requests库简明使用教程/" itemprop="url">
+                  Python Requests库简明使用教程
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-24T20:11:39+08:00">
+                2017-01-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Requests是一常用的http请求库，它使用python语言编写，可以方便地发送http请求，以及方便地处理响应结果。</p>
+<h1 id="一、安装"><a href="#一、安装" class="headerlink" title="一、安装"></a>一、安装</h1><h2 id="1-1-使用pip进行安装"><a href="#1-1-使用pip进行安装" class="headerlink" title="1.1 使用pip进行安装"></a>1.1 使用pip进行安装</h2><p>要安装requests，最方便快捷的方法是使用pip进行安装。</p>
+<blockquote>
+<p>pip install requests</p>
+</blockquote>
+<p>如果还没有安装pip，这个链接 <a href="http://docs.python-guide.org/en/latest/starting/installation/">Properly Installing Python</a>  详细介绍了在各种平台下如何安装python以及setuptools，pip，virtualenv等常用的python工具，可以参考其中的步骤来进行安装。如果是在Windows平台下使用requests，也可以参考 <a href="http://blog.csdn.net/lihao21/article/details/47003845">《Windows下安装Django》</a> 中有关 pip 安装的介绍来安装pip。</p>
+<h2 id="1-2-使用源代码安装"><a href="#1-2-使用源代码安装" class="headerlink" title="1.2 使用源代码安装"></a>1.2 使用源代码安装</h2><p>可以在github上下载最新的requests的源代码</p>
+<blockquote>
+<p>git clone git://github.com/kennethreitz/requests.git</p>
+</blockquote>
+<p>下载成功后，使用以下命令进行安装</p>
+<blockquote>
+<p>python setup.py install</p>
+</blockquote>
+<h1 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h1><h2 id="2-1-发送http请求"><a href="#2-1-发送http请求" class="headerlink" title="2.1 发送http请求"></a>2.1 发送http请求</h2><p>为了使用requests，需要首先将requests库import进来：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div></pre></td></tr></table></figure></p>
+<p>然后，可以使用requests来发送http请求，例如发送get请求：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">r = requests.get(<span class="string">'http://httpbin.org/ip'</span>)</div></pre></td></tr></table></figure></p>
+<p>执行此行代码，获得一个Response对象<code>r</code>，从<code>r</code>可以获取http请求的响应结果。</p>
+<p>如果要发送post请求，则<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">r = requests.post(<span class="string">'http://httpbin.org/post'</span>, data=&#123;<span class="string">'name'</span>: <span class="string">'leo'</span>&#125;)</div></pre></td></tr></table></figure></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Python-Requests库简明使用教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -383,7 +547,7 @@
 <p><img src="https://ww4.sinaimg.cn/large/006tNbRwgy1fc21fsuh3lj30gk0dat9l.jpg" alt="轮询法负载均衡"><br>图1：轮询法负载均衡<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/#далее" rel="contents">
+            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记三——负载均衡算法/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -540,7 +704,7 @@
 <p>由于存在这些缺点，HTTP重定向通常都会与其他一种或多种负载均衡技术结合使用。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记-二/#далее" rel="contents">
+            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记-二/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -702,7 +866,7 @@
 <p>如果 SETNX 返回1，说明该进程获得锁，SETNX将键 lock.foo 的值设置为锁的超时时间（当前时间 + 锁的有效时间）。<br>如果 SETNX 返回0，说明其他进程已经获得了锁，进程不能进入临界区。进程可以在一个循环中不断地尝试 SETNX 操作，以获得锁。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/使用Redis-SETNX-命令实现分布式锁/#далее" rel="contents">
+            <a class="btn" href="/使用Redis-SETNX-命令实现分布式锁/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -851,7 +1015,7 @@
 <h2 id="二、类的虚表"><a href="#二、类的虚表" class="headerlink" title="二、类的虚表"></a>二、类的虚表</h2><p>每个包含了虚函数的类都包含一个虚表。<br>我们知道，当一个类（A）继承另一个类（B）时，类A会继承类B的函数的调用权。所以如果一个基类包含了虚函数，那么其继承类也可调用这些虚函数，换句话说，一个类继承了包含虚函数的基类，那么这个类也拥有自己的虚表。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/C-虚函数表剖析/#далее" rel="contents">
+            <a class="btn" href="/C-虚函数表剖析/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1010,7 +1174,7 @@
 <p>均匀派发策略假设集群内所有进程具有相同的处理能力，且任务处理用时相同。但实际上，由于进程部署环境的不同，其处理能力一般不同，任务处理时间也不尽相同。因此均匀派发的策略并不能很好地将任务负载均滩到各个进程中。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记-一/#далее" rel="contents">
+            <a class="btn" href="/负载均衡（Load-Balancing）学习笔记-一/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1165,7 +1329,7 @@
 <p>式子1在大部分时候都可以工作得很好，然而，当机器需要扩容或者机器出现宕机的情况下，事情就比较棘手了。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/一致性Hash-Consistent-Hashing-原理剖析/#далее" rel="contents">
+            <a class="btn" href="/一致性Hash-Consistent-Hashing-原理剖析/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1251,7 +1415,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-count">37</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1273,7 +1437,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">91</span>
+                <span class="site-state-item-count">96</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
