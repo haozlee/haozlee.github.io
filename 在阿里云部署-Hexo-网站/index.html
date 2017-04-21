@@ -99,17 +99,17 @@
 网站的总体结构如下图所示：
 
 域名 leehao.me 指向负载均衡 SLB（Server Load Balancer）的 IP，在 SLB 后面部署两台后端服务器 ECS（Elastic Compute Service），ECS 上部">
-<meta property="og:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1fenrmgdpuyj30bu0bi74j.jpg">
-<meta property="og:image" content="http://ww2.sinaimg.cn/large/006tKfTcgy1fenrwp6prbj31780f6q55.jpg">
-<meta property="og:image" content="http://ww2.sinaimg.cn/large/006tKfTcgy1fensr8slpgj30dr0e50sx.jpg">
-<meta property="og:updated_time" content="2017-04-15T16:08:26.000Z">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152418.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152738.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152509.jpg">
+<meta property="og:updated_time" content="2017-04-21T15:27:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="在阿里云部署 Hexo 网站">
 <meta name="twitter:description" content="一开始自己的网站 leehao.me 托管在 GitHub 上面，考虑到 GitHub 的访问可能不稳定，另外，也是抱着学习的目的，就将网站迁移到阿里云上面来了。
 网站的总体结构如下图所示：
 
 域名 leehao.me 指向负载均衡 SLB（Server Load Balancer）的 IP，在 SLB 后面部署两台后端服务器 ECS（Elastic Compute Service），ECS 上部">
-<meta name="twitter:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1fenrmgdpuyj30bu0bi74j.jpg">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152418.jpg">
 
 
 
@@ -403,18 +403,16 @@
       
         <p>一开始自己的网站 <a href="https://leehao.me">leehao.me</a> 托管在 GitHub 上面，考虑到 GitHub 的访问可能不稳定，另外，也是抱着学习的目的，就将网站迁移到阿里云上面来了。</p>
 <p>网站的总体结构如下图所示：</p>
-<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1fenrmgdpuyj30bu0bi74j.jpg" alt=""></p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152418.jpg" alt=""></p>
 <p>域名 leehao.me 指向负载均衡 SLB（Server Load Balancer）的 IP，在 SLB 后面部署两台后端服务器 ECS（Elastic Compute Service），ECS 上部署 Hexo 的静态资源。</p>
-<p>SLB 的监听配置如下：<br><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fenrwp6prbj31780f6q55.jpg" alt=""></p>
-<a id="more"></a>
+<p>SLB 的监听配置如下：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152738.jpg" alt=""><br><a id="more"></a></p>
 <p>由于网站需要支持 HTTPS ，故 SLB 前端需要监听 HTTPS 的 443 端口，此处，我们将前端 443 端口的请求转发到后端服务器的 80 端口处理，将前端的 80 端口的请求转发到后端服务器的 8080 端口处理。</p>
 <p>接下来，我们看下后端服务器 ECS 的配置。</p>
 <p>由于 Hexo 属于静态类的网站，我们直接使用 Nginx 来处理用户的访问请求。<br>对于 Hexo 来说，每次使用<code>hexo g</code>生成好的静态站点内容，都生成在<code>hexo/public</code>目录下。为了部署网站，我们需要将<code>hexo/public</code>目录的内容拷贝到 Nginx 的<code>html</code>目录下。ECS 上 Nginx 的<code>html</code>目录是<code>/usr/share/nginx/html</code>。</p>
 <p>接下来修改 Nginx 的配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">log_format logstash &apos;$http_host $server_addr $remote_addr [$time_local] &quot;$request&quot; $request_body $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; $request_time $upstream_response_time&apos;;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 8080;</div><div class="line">    return 301 https://leehao.me$request_uri;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    charset utf-8;</div><div class="line">    client_max_body_size 2M;</div><div class="line"></div><div class="line">    error_log /home/logs/nginx_hexo_error.log;</div><div class="line">    access_log /home/logs/nginx_hexo_access.log logstash;</div><div class="line"></div><div class="line">    location / &#123;</div><div class="line">        root   html/public;</div><div class="line">        index  index.html;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    error_page 403 404 = @not_exist;</div><div class="line">    location @not_exist &#123;</div><div class="line">        return 301 /;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>我们将网站的根目录设置为对于的<code>html</code>目录。</p>
 <p>为了处理用户使用 <a href="http://leehao.me">http://leehao.me</a> 访问网站的情况，需要在 Nginx 配置正确的跳转。用户 <a href="http://leehao.me">http://leehao.me</a> 的请求会先到达 SLB 的 80 端口处理，然后到达后端 ECS 的 8080 端口，在上面的 Nginx 配置中，我们已将 8080 端口配置为一个 301 跳转，即跳转为使用 https 访问网站。通过这个跳转，可以正常处理用户的 http 的访问请求。<br>最后，SLB 与 ECS 的端口的对应关系如下图所示：</p>
-<p><img src="http://ww2.sinaimg.cn/large/006tKfTcgy1fensr8slpgj30dr0e50sx.jpg" alt=""></p>
-<p>另外，在上面的配置中，我们还为 Nginx 配置用户404请求时返回301跳转，即默认跳转到网站首页。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152509.jpg" alt=""><br>另外，在上面的配置中，我们还为 Nginx 配置用户404请求时返回301跳转，即默认跳转到网站首页。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a href="http://stackoverflow.com/questions/9147862/nginx-return-301-redirect-when-404-error" target="_blank" rel="external">http://stackoverflow.com/questions/9147862/nginx-return-301-redirect-when-404-error</a></li>
 <li><a href="http://www.jianshu.com/p/31eb5c754c01" target="_blank" rel="external">http://www.jianshu.com/p/31eb5c754c01</a></li>
