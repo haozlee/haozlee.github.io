@@ -95,13 +95,13 @@
 <meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。
 以功能为中心的服务以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单">
-<meta property="og:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg">
-<meta property="og:updated_time" content="2017-04-16T15:32:28.000Z">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-151241.jpg">
+<meta property="og:updated_time" content="2017-04-21T15:14:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Web 服务架构类型">
 <meta name="twitter:description" content="根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。
 以功能为中心的服务以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单">
-<meta name="twitter:image" content="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-151241.jpg">
 
 
 
@@ -397,7 +397,7 @@
 <h2 id="以功能为中心的服务"><a href="#以功能为中心的服务" class="headerlink" title="以功能为中心的服务"></a>以功能为中心的服务</h2><p>以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。<br>我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单对象访问协议）等技术都是关注于如何让客户端代码调用一个在远程机器上实现的功能。这么多年过去了，由于良好的扩展性以及得到大公司的支持，在以功能为中心的服务中SOAP 可以说是一枝独秀。 </p>
 <h3 id="SOAP"><a href="#SOAP" class="headerlink" title="SOAP"></a>SOAP</h3><p>SOAP 基于 XML 和 HTTP，使用 XML 来实现消息描述，使用 HTTP 实现消息传输。SOAP 最重要的一个特性是允许 Web 服务基于自身的约定描述完成服务发现并生成集成代码。</p>
 <p>图1所示为 SOAP 的工作原理。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006tKfTcgy1feoak5tmlpj30z20eedhu.jpg" alt=""><br>图1：SOAP 的工作原理</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-151241.jpg" alt=""><br>图1：SOAP 的工作原理</p>
 <p>Web 服务提供者暴露一组 XML 资源，诸如 Web 服务定义语言（WSDL）文件，XML 模式定义（XSD）文件。WSDL 描述方法与可用的终端信息，XSD 描述请求与响应中用到的数据结构。这些资源文件就是 Web 服务的约定，客户端代码如何生成，Web 服务如何调用，这些必要的信息全部都在这些资源文件中。</p>
 <p>举个例子，如果我们使用 Java 开发客户端，那么我们可以使用专门的工具和库，下载这些 Web 服务定义资源文件，然后生成 Java 本地客户端代码。这些代码就是一些 Java 类，可以被编译并用在应用程序中。在这些代码的背后，会依赖到 SOAP 相关的一些库，这些库封装了数据序列化，身份认证，路由，错误处理等各种实现细节。客户端无须知道自己调用的是远程 Web 服务，只需要简单地依赖基于 Web 服务约定（WSDL 和 XSD文件）生成的 Java 代码就可以使用这些远程服务器提供的功能了。</p>
 <a id="more"></a>
