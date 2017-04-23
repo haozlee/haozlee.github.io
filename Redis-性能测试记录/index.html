@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Nginx,WSGI,uWSGI,Flask," />
+  <meta name="keywords" content="Redis,RDB," />
 
 
 
@@ -87,24 +87,19 @@
 
 
 
-<meta name="description" content="概览之前对 Nginx，WSGI（或者 uWSGI，uwsgi），Flask(或者 Django），这几者的关系一存存在疑惑。通过查阅了些资料，总算把它们的关系理清了。总括来说，客户端从发送一个 HTTP 请求到 Flask 处理请求，分别经过了 web服务器层，WSGI层，web框架层，这三个层次。不同的层次其作用也不同，下面简要介绍各层的作用。
-
-图1：web服务器，web框架与 WSGI 的">
+<meta name="description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
+Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何理解Nginx, WSGI, Flask之间的关系">
-<meta property="og:url" content="https://leehao.me/如何理解Nginx-WSGI-Flask之间的关系/index.html">
+<meta property="og:title" content="Redis 性能测试记录">
+<meta property="og:url" content="https://leehao.me/Redis-性能测试记录/index.html">
 <meta property="og:site_name" content="Leo的博客">
-<meta property="og:description" content="概览之前对 Nginx，WSGI（或者 uWSGI，uwsgi），Flask(或者 Django），这几者的关系一存存在疑惑。通过查阅了些资料，总算把它们的关系理清了。总括来说，客户端从发送一个 HTTP 请求到 Flask 处理请求，分别经过了 web服务器层，WSGI层，web框架层，这三个层次。不同的层次其作用也不同，下面简要介绍各层的作用。
-
-图1：web服务器，web框架与 WSGI 的">
-<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg">
-<meta property="og:updated_time" content="2017-02-22T12:01:00.000Z">
+<meta property="og:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
+Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
+<meta property="og:updated_time" content="2017-04-23T05:06:48.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何理解Nginx, WSGI, Flask之间的关系">
-<meta name="twitter:description" content="概览之前对 Nginx，WSGI（或者 uWSGI，uwsgi），Flask(或者 Django），这几者的关系一存存在疑惑。通过查阅了些资料，总算把它们的关系理清了。总括来说，客户端从发送一个 HTTP 请求到 Flask 处理请求，分别经过了 web服务器层，WSGI层，web框架层，这三个层次。不同的层次其作用也不同，下面简要介绍各层的作用。
-
-图1：web服务器，web框架与 WSGI 的">
-<meta name="twitter:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg">
+<meta name="twitter:title" content="Redis 性能测试记录">
+<meta name="twitter:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
+Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
 
 
 
@@ -132,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://leehao.me/如何理解Nginx-WSGI-Flask之间的关系/"/>
+  <link rel="canonical" href="https://leehao.me/Redis-性能测试记录/"/>
 
 
 
 
 
-  <title> 如何理解Nginx, WSGI, Flask之间的关系 | Leo的博客 </title>
+  <title> Redis 性能测试记录 | Leo的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -287,7 +282,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/如何理解Nginx-WSGI-Flask之间的关系/">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-性能测试记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leo">
@@ -308,7 +303,7 @@
             
             
               
-                如何理解Nginx, WSGI, Flask之间的关系
+                Redis 性能测试记录
               
             
           </h1>
@@ -323,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T07:16:14+08:00">
-                2017-02-22
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-23T13:01:44+08:00">
+                2017-04-23
               </time>
             
 
@@ -346,8 +341,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Nginx/" itemprop="url" rel="index">
-                    <span itemprop="name">Nginx</span>
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
                   </a>
                 </span>
 
@@ -364,7 +359,7 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/如何理解Nginx-WSGI-Flask之间的关系/#comments" itemprop="discussionUrl">
+                <a class="cloud-tie-join-count" href="/Redis-性能测试记录/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count join-count" itemprop="commentCount"></span>
                 </a>
               </span>
@@ -396,40 +391,36 @@
       
 
       
-        <h1 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h1><p>之前对 Nginx，WSGI（或者 uWSGI，uwsgi），Flask(或者 Django），这几者的关系一存存在疑惑。通过查阅了些资料，总算把它们的关系理清了。<br>总括来说，客户端从发送一个 HTTP 请求到 Flask 处理请求，分别经过了 web服务器层，WSGI层，web框架层，这三个层次。不同的层次其作用也不同，下面简要介绍各层的作用。</p>
-<p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fcyw0ay5l0j306c0fs74k.jpg" alt="web服务器，web框架与WSGI的三层关系"></p>
-<p>图1：web服务器，web框架与 WSGI 的三层关系</p>
+        <p>虽然 Redis 本身也提供<code>redis-benchmark</code>工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。</p>
+<p>Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pipelining 来聚合多个命令。当然也可以使用多线程或者多进程。<br>我们使用 Python 脚本来作为 Redis 的测试工具，并采用每个进程一个 Redis 连接的方案。</p>
+<p>测试脚本如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> time</div><div class="line"><span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</div><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in write worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    s = <span class="string">'a'</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">10</span></div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % (n + <span class="number">100</span>)</div><div class="line">    r.set(bigkey, s)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'write time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in read worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % n</div><div class="line">    r.get(bigkey)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'read time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">()</span>:</span></div><div class="line">    read_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        read = Process(target=read_worker, args=(i,))</div><div class="line">        read.start()</div><div class="line">        read_processes.append(read)</div><div class="line"></div><div class="line">    write_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        write = Process(target=write_worker, args=(i,))</div><div class="line">        write.start()</div><div class="line">        write_processes.append(write)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> write <span class="keyword">in</span> write_processes:</div><div class="line">        write.join()</div><div class="line">    <span class="keyword">for</span> read <span class="keyword">in</span> read_processes:</div><div class="line">        read.join()</div><div class="line">    <span class="keyword">print</span> <span class="string">'end press test'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    test()</div></pre></td></tr></table></figure>
 <a id="more"></a>
-<h1 id="Web服务器层"><a href="#Web服务器层" class="headerlink" title="Web服务器层"></a>Web服务器层</h1><p>对于传统的客户端 - 服务器架构，其请求的处理过程是，客户端向服务器发送请求，服务器接收请求并处理请求，然后给客户端返回响应。在这个过程中，服务器的作用是：</p>
-<ol>
-<li>接收请求</li>
-<li>处理请求</li>
-<li>返回响应</li>
-</ol>
-<p>Web服务器是一类特殊的服务器，其作用是主要是接收 HTTP 请求并返回响应。提起 web服务器大家都不会陌生，常见的 web服务器有 Nginx，Apache，IIS等。在上图1的三层结构中，web服务器是最先接收用户请求的，并将响应结果返回给用户。</p>
-<h1 id="Web框架层"><a href="#Web框架层" class="headerlink" title="Web框架层"></a>Web框架层</h1><p>Web框架的作用主要是方便我们开发 web应用程序，HTTP请求的动态数据就是由 web框架层来提供的。常见的 web框架有Flask，Django等，我们以 Flask 框架为例子，展示 web框架的作用：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line"><span class="meta">@app.route('/hello')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">'Hello World!'</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">8080</span>)</div></pre></td></tr></table></figure>
-<p>以上简单的几行代码，就创建了一个 web应用程序对象 <code>app</code>。<code>app</code> 监听机器所有 ip 的 8080 端口，接受用户的请求连接。我们知道，HTTP 协议使用 URL 来定位资源，上面的程序会将路径 <code>/hello</code> 的请求交由 <code>hello_world</code> 方法处理，<code>hello_world</code> 返回 ‘Hello World!’ 字符串。对于 web框架的使用者来说，他们并不关心如何接收 HTTP 请求，也不关心如何将请求路由到具体方法处理并将响应结果返回给用户。Web框架的使用者在大部分情况下，只需要关心如何实现业务的逻辑即可。</p>
-<h1 id="WSGI层"><a href="#WSGI层" class="headerlink" title="WSGI层"></a>WSGI层</h1><p>WSGI 不是服务器，也不是用于与程序交互的API，更不是真实的代码，WSGI 只是一种接口,它只适用于 Python 语言，其全称为 Web Server Gateway Interface，定义了 web服务器和 web应用之间的接口规范。也就是说，只要 web服务器和 web应用都遵守WSGI协议，那么 web服务器和 web应用就可以随意的组合。<br>下面的代码展示了 web服务器是如何与 web应用组合在一起的。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">application</span><span class="params">(env, start_response)</span>:</span></div><div class="line">    start_response(<span class="string">'200 OK'</span>, [(<span class="string">'Content-Type'</span>, <span class="string">'text/html'</span>)])</div><div class="line">    <span class="keyword">return</span> [<span class="string">b"Hello World"</span>]</div></pre></td></tr></table></figure>
-<p>方法 <code>application</code>由 web服务器调用，参数<code>env</code>，<code>start_response</code> 由 web服务器实现并传入。其中，<code>env</code>是一个字典，包含了类似 HTTP_HOST，HOST_USER_AGENT，SERVER_PROTOCO 等环境变量。<code>start_response</code>则是一个方法，该方法接受两个参数，分别是<code>status</code>，<code>response_headers</code>。<code>application</code>方法的主要作用是，设置 http 响应的状态码和 Content-Type 等头部信息，并返回响应的具体结果。</p>
-<p>上述代码就是一个完整的 WSGI 应用，当一个支持 WSGI 的 web服务器接收到客户端的请求后，便会调用这个 <code>application</code> 方法。WSGI 层并不需要关心<code>env</code>，<code>start_response</code> 这两个变量是如何实现的，就像在 <code>application</code> 里面所做的，直接使用这两个变量即可。</p>
-<p>值得指出的是，WSGI 是一种协议，需要区分几个相近的名词：</p>
-<ul>
-<li>uwsgi<br>同 wsgi 一样也是一种协议，uWSGI服务器正是使用了 uwsgi 协议</li>
-<li>uWSGI<br>实现了 uwsgi 和 WSGI 两种协议的web服务器。注意 uWSGI 本质上也是一种 web服务器，处于上面描述的三层结构中的 web服务器层。</li>
-<li>CGI<br>通用网关接口，并不限于 Python 语言，定义了 web服务器是如何向客户端提供动态的内容。例如，规定了客户端如何将参数传递给 web服务器，web服务器如何将参数传递给 web应用，web应用如何将它的输出如何发送给客户端，等等。<br>生产环境下的 web应用都不使用 CGI 了，CGI进程（类似 Python 解释器）针对每个请求创建，用完就抛弃，效率低下。WSGI 正是为了替代 CGI 而出现的。</li>
-</ul>
-<p>说到这，我们基本理清了 WSGI 在 web服务器与 web框架之间作用：WSGI 就像一条纽带，将 web服务器与 web框架连接起来。回到本文的题目，Nginx 属于一种 web服务器，Flask属于一种 web框架，因此，WSGI 与 Nginx、Flask 的作用就不明而喻了。</p>
-<p>最后以 Nginx，WSGI，Flask 之间的对话结束本文。<br><strong>Nginx</strong>：Hey，WSGI，我刚收到了一个请求，我需要你作些准备，然后由Flask来处理这个请求。<br><strong>WSGI</strong>：OK，Nginx。我会设置好环境变量，然后将这个请求传递给Flask处理。<br><strong>Flask</strong>：Thanks WSGI！给我一些时间，我将会把请求的响应返回给你。<br><strong>WSGI</strong>：Alright，那我等你。<br><strong>Flask</strong>：Okay，我完成了，这里是请求的响应结果，请求把结果传递给Nginx。<br><strong>WSGI</strong>：Good job！Nginx，这里是响应结果，已经按照要求给你传递回来了。<br><strong>Nginx</strong>：Cool，我收到了，我把响应结果返回给客户端。大家合作愉快~</p>
-<h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><ol>
-<li><a href="http://hackerxu.com/2015/05/10/flask011.html" target="_blank" rel="external">http://hackerxu.com/2015/05/10/flask011.html</a></li>
-<li><a href="https://www.quora.com/What-are-good-ways-to-understand-WSGI-flup-fastcgi-CGI-and-Django" target="_blank" rel="external">https://www.quora.com/What-are-good-ways-to-understand-WSGI-flup-fastcgi-CGI-and-Django</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface" target="_blank" rel="external">https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface</a></li>
-<li><a href="http://flask.pocoo.org/docs/0.10/quickstart/" target="_blank" rel="external">http://flask.pocoo.org/docs/0.10/quickstart/</a></li>
-<li><a href="http://stackoverflow.com/questions/219110/how-python-web-frameworks-wsgi-and-cgi-fit-together" target="_blank" rel="external">http://stackoverflow.com/questions/219110/how-python-web-frameworks-wsgi-and-cgi-fit-together</a></li>
-<li><a href="https://www.python.org/dev/peps/pep-0333/" target="_blank" rel="external">https://www.python.org/dev/peps/pep-0333/</a></li>
-<li>《Python核心编程（第3版）》Wesley Chun著</li>
+<p>redis-py 的<code>StrictRedis</code>已提供了连接池的功能的，可以在多线程中直接使用，这里我们使用了多进程的方式，并采用每个进程都使用独立的一个<code>StrictRedis</code>实例。<br>在上面的代码中，我们起了大量的读写进程。对 Redis 的写入操作中每次发送一个<code>SET</code>的请求，写入的数据大小为 100 MB，读操作则每次读取<code>GET</code> 100 MB的数据（需要提前准备<code>GET</code>请求的 key 的数据）。测试程序的目的是为了测试 Redis 在处理较高并发时，大数据读写的性能。</p>
+<p>测试结果在这里就不贴不出来，有兴趣的读者也可以运行一下这个 Python 脚本，就可以得到测试结果了。从测试结果来看，Redis 的性能还是很优秀的。</p>
+<p>这里重点提一下测试过程中 Redis 服务会报错的问题。<br>在写入大量的数据（100个10MB，即1GB）后，Redis 进程开始出现以下日志：</p>
+<blockquote>
+<p>[2418] 21 Apr 09:38:24.041 * 10 changes in 300 seconds. Saving…<br>[2418] 21 Apr 09:38:24.042 # Can’t save in background: fork: Cannot allocate memory</p>
+</blockquote>
+<p>客户端执行写入命令会报错：</p>
+<blockquote>
+<p>127.0.0.1:6380&gt; set key value<br>(error) MISCONF Redis is configured to save RDB snapshots, but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check Redis logs for details about the error.</p>
+</blockquote>
+<p>从网上查找 Redis 的资料可以知道，这是由于 Redis 开启了 RDB 功能所致。RDB 用于保存 Redis 的数据快照，将数据快照数据持久化到硬盘中。以下是 Redis 的 RDB 默认配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">save 900 1    </div><div class="line">save 300 10    </div><div class="line">save 60 10000</div></pre></td></tr></table></figure>
+<p>其含义是900秒内有1次修改，300秒内有10次修改，60秒内有10000秒修改，都会将照数据持久化到磁盘中。</p>
+<p>要解决 Redis 报错的问题，可以把 RDB 功能关闭，或者通过优化 Linux 内存配置优化解决。具体可以参考<a href="http://blog.chedushi.com/archives/7719" target="_blank" rel="external">《LINUX下REDIS内存优化》</a>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl vm.overcommit_memory=1</div></pre></td></tr></table></figure>
+<p>以 root 权限执行此命令后，再对 Redis 服务进行重启，然后执行测试程序，不再出现 Redis 报错的问题。</p>
+<p>需要指出的是，按照网上很多文章说的，可以通过修改 redis.conf 配置中的<code>stop-writes-on-bgsave-error</code>选项的方式来解决报错的问题，实际上只是把问题掩盖起来而。因为采用下面的配置：</p>
+<blockquote>
+<p>stop-writes-on-bgsave-error no</p>
+</blockquote>
+<p>RDB 功能虽然不能保存 Redis 数据快照了，但仍接受新的 Redis 请求。<br>为了从根本解决 RDB 报错的问题，还是应该通过修改<code>vm.overcommit_memory</code>Linux 内核参数的方式来解决。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://redis.io/topics/benchmarks" target="_blank" rel="external">https://redis.io/topics/benchmarks</a></li>
+<li><a href="http://www.redis.cn/topics/benchmarks.html" target="_blank" rel="external">http://www.redis.cn/topics/benchmarks.html</a></li>
+<li><a href="http://blog.chedushi.com/archives/7719" target="_blank" rel="external">http://blog.chedushi.com/archives/7719</a></li>
 </ol>
 
       
@@ -481,13 +472,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Nginx/" rel="tag"># Nginx</a>
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
           
-            <a href="/tags/WSGI/" rel="tag"># WSGI</a>
-          
-            <a href="/tags/uWSGI/" rel="tag"># uWSGI</a>
-          
-            <a href="/tags/Flask/" rel="tag"># Flask</a>
+            <a href="/tags/RDB/" rel="tag"># RDB</a>
           
         </div>
       
@@ -500,8 +487,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/RPC-基本原理与-Apach-Thrift-初体验/" rel="next" title="RPC 基本原理与 Apach Thrift 初体验">
-                <i class="fa fa-chevron-left"></i> RPC 基本原理与 Apach Thrift 初体验
+              <a href="/Redis-C-语言客户端-hiredis-的使用/" rel="next" title="Redis C 语言客户端 hiredis 的使用">
+                <i class="fa fa-chevron-left"></i> Redis C 语言客户端 hiredis 的使用
               </a>
             
           </div>
@@ -509,10 +496,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/ZooKeeper概览/" rel="prev" title="ZooKeeper概览">
-                ZooKeeper概览 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -643,7 +626,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web服务器层"><span class="nav-number">2.</span> <span class="nav-text">Web服务器层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Web框架层"><span class="nav-number">3.</span> <span class="nav-text">Web框架层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WSGI层"><span class="nav-number">4.</span> <span class="nav-text">WSGI层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料："><span class="nav-number">5.</span> <span class="nav-text">参考资料：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
