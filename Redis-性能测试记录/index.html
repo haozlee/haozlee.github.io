@@ -95,7 +95,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
 <meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
 Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
-<meta property="og:updated_time" content="2017-04-23T05:06:48.000Z">
+<meta property="og:updated_time" content="2017-04-23T05:24:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis 性能测试记录">
 <meta name="twitter:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
@@ -416,7 +416,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
 <blockquote>
 <p>stop-writes-on-bgsave-error no</p>
 </blockquote>
-<p>RDB 功能虽然不能保存 Redis 数据快照了，但仍接受新的 Redis 请求。<br>为了从根本解决 RDB 报错的问题，还是应该通过修改<code>vm.overcommit_memory</code>Linux 内核参数的方式来解决。</p>
+<p>RDB 功能虽然不能保存 Redis 数据快照了，但 Redis 仍可继续接受新的 Redis 请求。<br>为了从根本解决 RDB 报错的问题，还是应该通过修改<code>vm.overcommit_memory</code>Linux 内核参数的方式来解决。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
 <li><a href="https://redis.io/topics/benchmarks" target="_blank" rel="external">https://redis.io/topics/benchmarks</a></li>
 <li><a href="http://www.redis.cn/topics/benchmarks.html" target="_blank" rel="external">http://www.redis.cn/topics/benchmarks.html</a></li>
