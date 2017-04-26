@@ -4,6 +4,36 @@
 
     
   <url>
+    <loc>https://leehao.me/Web-%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%B1%BB%E5%9E%8B/</loc>
+    <lastmod>2017-04-26T15:09:37.000Z</lastmod>
+    <data>
+        <display>
+        <title>Web 服务架构类型</title>
+        <pubTime>2017-04-16T15:30:49.000Z</pubTime>
+        
+        <tag>RPC</tag>
+         
+        <tag>Web服务</tag>
+         
+        <tag>Webservice</tag>
+         
+        <tag>SOAP</tag>
+         
+        <tag>REST</tag>
+         
+        <tag>RESTful</tag>
+         
+         
+           
+             
+              <breadCrumb title="后台" url="https://leehao.me/categories/%E5%90%8E%E5%8F%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://leehao.me/Redis-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/</loc>
     <lastmod>2017-04-23T05:24:59.000Z</lastmod>
     <data>
@@ -51,36 +81,6 @@
            
              
               <breadCrumb title="建站" url="https://leehao.me/categories/%E5%BB%BA%E7%AB%99/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://leehao.me/Web-%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%B1%BB%E5%9E%8B/</loc>
-    <lastmod>2017-04-21T15:14:13.000Z</lastmod>
-    <data>
-        <display>
-        <title>Web 服务架构类型</title>
-        <pubTime>2017-04-16T15:30:49.000Z</pubTime>
-        
-        <tag>RPC</tag>
-         
-        <tag>Web服务</tag>
-         
-        <tag>Webservice</tag>
-         
-        <tag>SOAP</tag>
-         
-        <tag>REST</tag>
-         
-        <tag>RESTful</tag>
-         
-         
-           
-             
-              <breadCrumb title="后台" url="https://leehao.me/categories/%E5%90%8E%E5%8F%B0/"/>
           
         </display>
     </data>

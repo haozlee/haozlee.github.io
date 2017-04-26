@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leehao.me/Web-%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%B1%BB%E5%9E%8B/</loc>
+    
+    <lastmod>2017-04-26T15:09:37.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://leehao.me/Redis-%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/</loc>
     
     <lastmod>2017-04-23T05:24:59.000Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>https://leehao.me/%E5%9C%A8%E9%98%BF%E9%87%8C%E4%BA%91%E9%83%A8%E7%BD%B2-Hexo-%E7%BD%91%E7%AB%99/</loc>
     
     <lastmod>2017-04-21T15:27:54.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/Web-%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%B1%BB%E5%9E%8B/</loc>
-    
-    <lastmod>2017-04-21T15:14:13.000Z</lastmod>
     
   </url>
   
