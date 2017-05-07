@@ -63,10 +63,10 @@
         <category>建站</category>
       </categories>
       <tags>
-        <tag>Nginx</tag>
         <tag>阿里云</tag>
         <tag>Hexo</tag>
         <tag>建站</tag>
+        <tag>Nginx</tag>
         <tag>SLB</tag>
         <tag>ECS</tag>
         <tag>负载均衡</tag>
@@ -187,10 +187,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -204,8 +204,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -230,8 +230,8 @@
       </categories>
       <tags>
         <tag>TCP</tag>
-        <tag>套接字</tag>
         <tag>socket</tag>
+        <tag>套接字</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -247,9 +247,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
-        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>
@@ -277,9 +277,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
         <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
