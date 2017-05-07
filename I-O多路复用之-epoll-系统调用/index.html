@@ -1,0 +1,897 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="epoll,IO多种复用,epoll_create,epoll_ctl,epoll_wait," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="I/O多路复用除了之前我们提到的select和poll外，epoll 也可以检查多个文件描述符的就绪状态，以达到I/O多路复用的目的。epoll 系统调用是 Linux 系统专有的，在 Linux 内核 2.6 版本新增，epoll 的主要优点有：
+
+当检查大量的文件描述符时，epoll 的性能比select和poll高很多
+epoll 既支持水平触发也支持边缘触发，select和poll只支持水">
+<meta property="og:type" content="article">
+<meta property="og:title" content="I/O多路复用之 epoll 系统调用">
+<meta property="og:url" content="https://leehao.me/I-O多路复用之-epoll-系统调用/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="I/O多路复用除了之前我们提到的select和poll外，epoll 也可以检查多个文件描述符的就绪状态，以达到I/O多路复用的目的。epoll 系统调用是 Linux 系统专有的，在 Linux 内核 2.6 版本新增，epoll 的主要优点有：
+
+当检查大量的文件描述符时，epoll 的性能比select和poll高很多
+epoll 既支持水平触发也支持边缘触发，select和poll只支持水">
+<meta property="og:updated_time" content="2017-05-07T01:41:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="I/O多路复用之 epoll 系统调用">
+<meta name="twitter:description" content="I/O多路复用除了之前我们提到的select和poll外，epoll 也可以检查多个文件描述符的就绪状态，以达到I/O多路复用的目的。epoll 系统调用是 Linux 系统专有的，在 Linux 内核 2.6 版本新增，epoll 的主要优点有：
+
+当检查大量的文件描述符时，epoll 的性能比select和poll高很多
+epoll 既支持水平触发也支持边缘触发，select和poll只支持水">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/I-O多路复用之-epoll-系统调用/"/>
+
+
+
+
+
+  <title> I/O多路复用之 epoll 系统调用 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/I-O多路复用之-epoll-系统调用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                I/O多路复用之 epoll 系统调用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T09:39:49+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/I-O多路复用之-epoll-系统调用/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>I/O多路复用除了之前我们提到的<code>select</code>和<code>poll</code>外，epoll 也可以检查多个文件描述符的就绪状态，以达到I/O多路复用的目的。<br>epoll 系统调用是 Linux 系统专有的，在 Linux 内核 2.6 版本新增，epoll 的主要优点有：</p>
+<ul>
+<li>当检查大量的文件描述符时，epoll 的性能比<code>select</code>和<code>poll</code>高很多</li>
+<li>epoll 既支持水平触发也支持边缘触发，<code>select</code>和<code>poll</code>只支持水平触发</li>
+</ul>
+<p>epoll 编程接口的核心数据结构为 epoll 实例，它和一个打开的文件描述符相关联。这个文件描述符是内核数据结构的句柄，该内核数据结构的作用主要有两个：</p>
+<ul>
+<li>记录在进程中声明过的感兴趣的文件描述符列表，即 interest list</li>
+<li>维护处于I/O就绪状态中文件描述符列表，即 ready list </li>
+</ul>
+<p>其中，ready list 是 interest list 的子集。</p>
+<p>epoll 编程接口由以下3个系统调用组成：</p>
+<ul>
+<li><code>epoll_create</code>创建一个 epoll 实例，返回代码该实例的文件描述符</li>
+<li><code>epoll_ctl</code>增删改 epoll 实例的 interest list</li>
+<li><code>epoll_wait</code>返回与 epoll 实例相关联的就绪列表中的成员</li>
+</ul>
+<h2 id="创建-epoll-实例-epoll-create"><a href="#创建-epoll-实例-epoll-create" class="headerlink" title="创建 epoll 实例: epoll_create"></a>创建 epoll 实例: epoll_create</h2><p>系统调用<code>epoll_create</code>创建一个新的 epoll 实例，其对应的 interest list 初始化为空。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</div></pre></td></tr></table></figure>
+<p>参数<code>size</code>指定了我们想要通过 epoll 实例来检查的文件描述符个数，该参数并不是一个上限，而是告诉内核应该如何为内部数据结构划分初始大小。<code>epoll_create</code>返回新创建 epoll 实例的文件描述符，这个文件描述符在其他几个 epoll 系统调用中会被用来表示 epoll 实例。当这个文件描述符不再使用时，应该通过<code>close</code>来关闭。</p>
+<blockquote>
+<p>从 Linux 2.6.27 版内核以来，Linux 支持了一个新的系统调用 <code>epoll_create1</code>。该系统调用执行的任务同<code>epoll_create</code>，但是去掉了无用的参数<code>size</code>，并增加了一个可用来修改系统调用行为的<code>flag</code>标志。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="修改-epoll-实例-epoll-ctl"><a href="#修改-epoll-实例-epoll-ctl" class="headerlink" title="修改 epoll 实例: epoll_ctl"></a>修改 epoll 实例: epoll_ctl</h2><p>系统调用<code>epoll_ctl</code>能够修改由文件描述符<code>epfd</code>所代表的 epoll 实例中的 interest list。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, <span class="keyword">struct</span> epoll_event *ev)</span></span>;</div></pre></td></tr></table></figure>
+<ul>
+<li>参数<code>epfd</code>指定 epoll 实例的文件描述符，即对哪个 epoll 实例进行操作</li>
+<li>参数<code>fd</code>指明要修改 interest list 中的哪一个文件描述符。</li>
+<li>参数<code>op</code>用来指定需要执行的操作，下文我们还会对<code>op</code>操作类型进行进一步描述</li>
+<li>参数<code>ev</code>是指向结构体<code>epoll_event</code>的指针，关于结构体<code>epoll_event</code>的定义，我们也在下文描述</li>
+</ul>
+<p><code>epoll_ctl</code>中<code>op</code>支持的操作包括以下以种：</p>
+<ul>
+<li><p>EPOLL_CTL_ADD<br>将描述符<code>fd</code>添加到 epoll 实例的 interest list 中去。对于<code>fd</code>上我们感兴趣的事件，在<code>ev</code>所指向的结构体中指定。</p>
+</li>
+<li><p>EPOLL_CTL_MOD<br>修改描述符<code>fd</code>上设定的事件，需用到由<code>ev</code>所指向的结构体中的信息。</p>
+</li>
+<li><p>EPOLL_CTL_DEL<br>将描述符<code>fd</code>从 epoll 实例的 interest list 中移除，该操作忽略<code>ev</code>参数。</p>
+</li>
+</ul>
+<p>上面我们多处提到了<code>ev</code>，<code>ev</code>是指向结构体<code>epoll_event</code>的指针，该结构体的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> epoll_event &#123;</div><div class="line">	<span class="keyword">uint32_t</span> events;  <span class="comment">// epoll 事件</span></div><div class="line">	epoll_data data;  <span class="comment">// 用户数据</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>结构体<code>epoll_event</code>中的<code>data</code>字段的类型为<code>epoll_data</code>，其定义以下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> epoll_data &#123;</div><div class="line">	<span class="keyword">void</span> *ptr;    <span class="comment">// 用户自定义数据的指针</span></div><div class="line">	<span class="keyword">int</span> fd;       <span class="comment">// 文件描述符</span></div><div class="line">	<span class="keyword">uint32_t</span> u32; <span class="comment">// 32位整型</span></div><div class="line">	<span class="keyword">uint64_t</span> u64; <span class="comment">// 64位整型</span></div><div class="line">&#125; <span class="keyword">epoll_data_t</span>;</div></pre></td></tr></table></figure>
+<p>参数<code>ev</code>为文件描述符<code>fd</code>所做的设置如下：</p>
+<ul>
+<li>结构体<code>epoll_event</code>中的<code>events</code>字段是一个位掩码，它指定了 epoll 实例监控的事件集合</li>
+<li><code>data</code>字段是一个联合体，当<code>fd</code>就绪时，联合体的成员可用来指定传回给调用进程的信息</li>
+</ul>
+<h2 id="就绪等待-epoll-wait"><a href="#就绪等待-epoll-wait" class="headerlink" title="就绪等待: epoll_wait"></a>就绪等待: epoll_wait</h2><p>系统调用<code>epoll_wait</code>返回 epoll 实例中处于就绪状态的文件描述符的信息。单个<code>epoll_wait</code>调用能返回多个就绪态文件描述符的信息，这也正是I/O多路复用的体现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">struct</span> epoll_event *evlist, <span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</div></pre></td></tr></table></figure>
+<ul>
+<li>参数<code>evlist</code>所指向的结构体数组中返回就绪状态文件描述符的信息。数据<code>evlist</code>的空间由调用者负责申请，所包含的元素个数在参数<code>maxevents</code>中指定。</li>
+<li>参数<code>timeout</code>指定<code>epoll_wait</code>的阻塞行为，例如<code>timeout</code>等于-1，调用将一直阻塞，走到 interest list 中的文件描述符上有事件产生。</li>
+</ul>
+<p><code>epoll_wait</code> 调用成功后，返回数据<code>evlist</code>中的元素个数，即就绪的描述符个数。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>我们以编写一个 TCP 服务器为例子，说明 epoll 的用法，该 TCP 服务器打印出所有接收到的消息。<br>我们先来看创建和绑定 TCP 监听套接字的函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span></span></div><div class="line"><span class="title">create_and_bind</span> <span class="params">(<span class="keyword">char</span> *port)</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">struct</span> addrinfo hints;</div><div class="line">    <span class="keyword">struct</span> addrinfo *result, *rp;</div><div class="line">    <span class="keyword">int</span> s, sfd;</div><div class="line"></div><div class="line">    <span class="built_in">memset</span> (&amp;hints, <span class="number">0</span>, <span class="keyword">sizeof</span> (<span class="keyword">struct</span> addrinfo));</div><div class="line">    hints.ai_family = AF_UNSPEC;     <span class="comment">// 支持 IPv4 和 IPv6</span></div><div class="line">    hints.ai_socktype = SOCK_STREAM; <span class="comment">// TCP socket</span></div><div class="line">    hints.ai_flags = AI_PASSIVE;     <span class="comment">// 监听套接字</span></div><div class="line"></div><div class="line">    s = getaddrinfo (<span class="literal">NULL</span>, port, &amp;hints, &amp;result);</div><div class="line">    <span class="keyword">if</span> (s != <span class="number">0</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"getaddrinfo: %s\n"</span>, gai_strerror (s));</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (rp = result; rp != <span class="literal">NULL</span>; rp = rp-&gt;ai_next)</div><div class="line">    &#123;</div><div class="line">        sfd = socket (rp-&gt;ai_family, rp-&gt;ai_socktype, rp-&gt;ai_protocol);</div><div class="line">        <span class="keyword">if</span> (sfd == <span class="number">-1</span>)</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line"></div><div class="line">        s = bind (sfd, rp-&gt;ai_addr, rp-&gt;ai_addrlen);</div><div class="line">        <span class="keyword">if</span> (s == <span class="number">0</span>)</div><div class="line">        &#123;</div><div class="line">            <span class="comment">// 已成功绑定套接字</span></div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        close (sfd);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (rp == <span class="literal">NULL</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"Could not bind\n"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    freeaddrinfo (result);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> sfd;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>create_and_bind</code>接受<code>port</code>参数（表示监听的端口），其作用是创建并绑定监听套接字。<br><code>getaddrinfo</code>函数既可以用于IPv4，也可以用于IPv6，能够处理名字到地址以及服务到端口这两种转换，它返回<code>addrinfo</code>结构体数组的指针。关于<code>getaddrinfo</code>详细介绍，可以参考《UNIX网络编程》的有关描述。<br><code>create_and_bind</code>返回结构体<code>addrinfo</code>数组的指针（保存在<code>reslut</code>指针中）接下来，我们对<code>result</code>进行遍历，直到将监听套接字成功绑定为止。</p>
+<p>接下来，我们再来看将一个套接字设置为非阻塞套接字的函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span></span></div><div class="line"><span class="title">make_socket_non_blocking</span> <span class="params">(<span class="keyword">int</span> sfd)</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> flags, s;</div><div class="line"></div><div class="line">    flags = fcntl (sfd, F_GETFL, <span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (flags == <span class="number">-1</span>)</div><div class="line">    &#123;</div><div class="line">        perror (<span class="string">"fcntl"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    flags |= O_NONBLOCK;</div><div class="line">    s = fcntl (sfd, F_SETFL, flags);</div><div class="line">    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">    &#123;</div><div class="line">        perror (<span class="string">"fcntl"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后我们来看下<code>main</code>函数的实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span></span></div><div class="line"><span class="title">main</span> <span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> sfd, s;</div><div class="line">    <span class="keyword">int</span> efd;</div><div class="line">    <span class="keyword">struct</span> epoll_event event;</div><div class="line">    <span class="keyword">struct</span> epoll_event *events;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (argc != <span class="number">2</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"Usage: %s [port]\n"</span>, argv[<span class="number">0</span>]);</div><div class="line">        <span class="built_in">exit</span> (EXIT_FAILURE);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    sfd = create_and_bind (argv[<span class="number">1</span>]);</div><div class="line">    <span class="keyword">if</span> (sfd == <span class="number">-1</span>)</div><div class="line">        <span class="built_in">abort</span> ();</div><div class="line"></div><div class="line">    s = make_socket_non_blocking (sfd);</div><div class="line">    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">        <span class="built_in">abort</span> ();</div><div class="line"></div><div class="line">    s = listen (sfd, SOMAXCONN);</div><div class="line">    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">    &#123;</div><div class="line">        perror (<span class="string">"listen"</span>);</div><div class="line">        <span class="built_in">abort</span> ();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    efd = epoll_create1 (<span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (efd == <span class="number">-1</span>)</div><div class="line">    &#123;</div><div class="line">        perror (<span class="string">"epoll_create"</span>);</div><div class="line">        <span class="built_in">abort</span> ();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    event.data.fd = sfd;</div><div class="line">    <span class="comment">// ET 模式</span></div><div class="line">    event.events = EPOLLIN | EPOLLET;</div><div class="line">    s = epoll_ctl (efd, EPOLL_CTL_ADD, sfd, &amp;event);</div><div class="line">    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">    &#123;</div><div class="line">        perror (<span class="string">"epoll_ctl"</span>);</div><div class="line">        <span class="built_in">abort</span> ();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// 用来存储epoll_wait返回的就绪文件描述符列表</span></div><div class="line">    events = <span class="built_in">calloc</span> (MAXEVENTS, <span class="keyword">sizeof</span> event);</div><div class="line"></div><div class="line">    <span class="comment">// 主循环</span></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">int</span> n, i;</div><div class="line"></div><div class="line">        n = epoll_wait (efd, events, MAXEVENTS, <span class="number">-1</span>);</div><div class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">if</span> ((events[i].events &amp; EPOLLERR) ||</div><div class="line">                (events[i].events &amp; EPOLLHUP) ||</div><div class="line">                (!(events[i].events &amp; EPOLLIN)))</div><div class="line">            &#123;</div><div class="line">                <span class="comment">// 监测的文件描述符出错了</span></div><div class="line">                <span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"epoll error\n"</span>);</div><div class="line">                close (events[i].data.fd);</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (sfd == events[i].data.fd)</div><div class="line">            &#123;</div><div class="line">                <span class="comment">// 监听套接字就绪，表明有一个或者多个连接进来</span></div><div class="line">                <span class="keyword">while</span> (<span class="number">1</span>)</div><div class="line">                &#123;</div><div class="line">                    <span class="keyword">struct</span> sockaddr in_addr;</div><div class="line">                    <span class="keyword">socklen_t</span> in_len;</div><div class="line">                    <span class="keyword">int</span> infd;</div><div class="line">                    <span class="keyword">char</span> hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];</div><div class="line"></div><div class="line">                    in_len = <span class="keyword">sizeof</span> in_addr;</div><div class="line">                    infd = accept (sfd, &amp;in_addr, &amp;in_len);</div><div class="line">                    <span class="keyword">if</span> (infd == <span class="number">-1</span>)</div><div class="line">                    &#123;</div><div class="line">                        <span class="keyword">if</span> ((errno == EAGAIN) ||</div><div class="line">                            (errno == EWOULDBLOCK))</div><div class="line">                        &#123;</div><div class="line">                            <span class="comment">// 处理完所有的连接</span></div><div class="line">                            <span class="keyword">break</span>;</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">else</span></div><div class="line">                        &#123;</div><div class="line">                            perror (<span class="string">"accept"</span>);</div><div class="line">                            <span class="keyword">break</span>;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    s = getnameinfo (&amp;in_addr, in_len,</div><div class="line">                                     hbuf, <span class="keyword">sizeof</span> hbuf,</div><div class="line">                                     sbuf, <span class="keyword">sizeof</span> sbuf,</div><div class="line">                                     NI_NUMERICHOST | NI_NUMERICSERV);</div><div class="line">                    <span class="keyword">if</span> (s == <span class="number">0</span>)</div><div class="line">                    &#123;</div><div class="line">                        <span class="built_in">printf</span>(<span class="string">"Accepted connection on descriptor %d "</span></div><div class="line">                                       <span class="string">"(host=%s, port=%s)\n"</span>, infd, hbuf, sbuf);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">// 设置已连接套接字为非阻塞，并且加入到 epoll 实例监测中</span></div><div class="line">                    s = make_socket_non_blocking (infd);</div><div class="line">                    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">                        <span class="built_in">abort</span> ();</div><div class="line"></div><div class="line">                    event.data.fd = infd;</div><div class="line">                    <span class="comment">// ET 模式</span></div><div class="line">                    event.events = EPOLLIN | EPOLLET;</div><div class="line">                    s = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &amp;event);</div><div class="line">                    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">                    &#123;</div><div class="line">                        perror (<span class="string">"epoll_ctl"</span>);</div><div class="line">                        <span class="built_in">abort</span> ();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">else</span></div><div class="line">            &#123;</div><div class="line">                <span class="comment">// 已连接套接字可读，我们读取该套接字所有的数据并打印出来</span></div><div class="line">                <span class="comment">// 由于使用了 ET 模式，我们必须将所有可读数据读取完毕</span></div><div class="line">                <span class="keyword">int</span> done = <span class="number">0</span>;</div><div class="line"></div><div class="line">                <span class="keyword">while</span> (<span class="number">1</span>)</div><div class="line">                &#123;</div><div class="line">                    <span class="keyword">ssize_t</span> count;</div><div class="line">                    <span class="keyword">char</span> buf[<span class="number">512</span>];</div><div class="line"></div><div class="line">                    count = read (events[i].data.fd, buf, <span class="keyword">sizeof</span> buf);</div><div class="line">                    <span class="keyword">if</span> (count == <span class="number">-1</span>)</div><div class="line">                    &#123;</div><div class="line">                        <span class="comment">// 如果 errno == EAGAIN，说明所有数据已读取完毕</span></div><div class="line">                        <span class="comment">// 如果 errno != EAGAIN，说明读取出错</span></div><div class="line">                        <span class="keyword">if</span> (errno != EAGAIN)</div><div class="line">                        &#123;</div><div class="line">                            <span class="comment">// 读取出错</span></div><div class="line">                            perror (<span class="string">"read"</span>);</div><div class="line">                            done = <span class="number">1</span>;</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    &#125;</div><div class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (count == <span class="number">0</span>)</div><div class="line">                    &#123;</div><div class="line">                        <span class="comment">// 客户端断开了连接</span></div><div class="line">                        done = <span class="number">1</span>;</div><div class="line">                        <span class="keyword">break</span>;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="comment">// 打印到标准输出</span></div><div class="line">                    s = write (<span class="number">1</span>, buf, count);</div><div class="line">                    <span class="keyword">if</span> (s == <span class="number">-1</span>)</div><div class="line">                    &#123;</div><div class="line">                        perror (<span class="string">"write"</span>);</div><div class="line">                        <span class="built_in">abort</span> ();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (done)</div><div class="line">                &#123;</div><div class="line">                    <span class="built_in">printf</span> (<span class="string">"Closed connection on descriptor %d\n"</span>,</div><div class="line">                            events[i].data.fd);</div><div class="line"></div><div class="line">                    <span class="comment">// 关闭连接</span></div><div class="line">                    close (events[i].data.fd);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">free</span> (events);</div><div class="line"></div><div class="line">    close (sfd);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> EXIT_SUCCESS;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>main</code>函数首先调用<code>create_and_bind</code>创建并绑定监听套接字，接下来调用<code>make_socket_non_blocking</code>设置监听套接字为非阻塞模式，并调用<code>listen</code>系统调用监听客户端的连接请求。<br>接下来，我们创建了一个 epoll 实例，并将监听套接字加入到该 epoll 实例的 interest list，当监听套接字可读时，说明有新的客户端请求连接。<br>在主循环中，我们调用<code>epoll_wait</code>等待就绪事件的发生。<code>timeout</code>参数设置为-1说明主线程会一直阻塞到事件就绪。这些就绪事件包括以下类型：</p>
+<ul>
+<li>客户端请求到达：当监听套接字可读时，说明一个或者多个客户端连接请求到达，我们设置新的已连接套接字为非阻塞模式并添加到 epoll 实例的 interest list 中。</li>
+<li>客户端数据可读：已连接套接字就绪时，说明客户端数据可读。我们使用<code>read</code>每次读出512字节的数据，直接所有的数据读取完毕。这是由于我们使用了 ET 模式，ET 模式对于数据可读只会通知一次。读出的数据通过<code>write</code>系统调用打印到标准输出。</li>
+</ul>
+<p>完整的程序可以在这里下载：<a href="http://leehao.oss-cn-shenzhen.aliyuncs.com/epoll_example.c" target="_blank" rel="external">epoll_example.c</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://banu.com/blog/2/how-to-use-epoll-a-complete-example-in-c/" target="_blank" rel="external">https://banu.com/blog/2/how-to-use-epoll-a-complete-example-in-c/</a></li>
+<li>Linux/UNIX 系统编程手册，Michael Kerrisk 著，郭光伟译，人民邮电出版社</li>
+<li>UNIX网络编程，卷1：套接字联网API，第3版，人民邮电出版社</li>
+<li><a href="http://blog.lucode.net/linux/epoll-tutorial.html" target="_blank" rel="external">http://blog.lucode.net/linux/epoll-tutorial.html</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/epoll/" rel="tag"># epoll</a>
+          
+            <a href="/tags/IO多种复用/" rel="tag"># IO多种复用</a>
+          
+            <a href="/tags/epoll-create/" rel="tag"># epoll_create</a>
+          
+            <a href="/tags/epoll-ctl/" rel="tag"># epoll_ctl</a>
+          
+            <a href="/tags/epoll-wait/" rel="tag"># epoll_wait</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Redis-性能测试记录/" rel="next" title="Redis 性能测试记录">
+                <i class="fa fa-chevron-left"></i> Redis 性能测试记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">102</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-epoll-实例-epoll-create"><span class="nav-number">1.</span> <span class="nav-text">创建 epoll 实例: epoll_create</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改-epoll-实例-epoll-ctl"><span class="nav-number">2.</span> <span class="nav-text">修改 epoll 实例: epoll_ctl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#就绪等待-epoll-wait"><span class="nav-number">3.</span> <span class="nav-text">就绪等待: epoll_wait</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">4.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
