@@ -63,10 +63,10 @@
         <category>建站</category>
       </categories>
       <tags>
+        <tag>Nginx</tag>
         <tag>阿里云</tag>
         <tag>Hexo</tag>
         <tag>建站</tag>
-        <tag>Nginx</tag>
         <tag>SLB</tag>
         <tag>ECS</tag>
         <tag>负载均衡</tag>
