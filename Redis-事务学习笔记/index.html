@@ -1,0 +1,913 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Redis,事务,WATCH,MULTI,pipeline," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。
+事务允许一次执行多个命令，并且带有以下两个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 事务学习笔记">
+<meta property="og:url" content="https://leehao.me/Redis-事务学习笔记/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。
+事务允许一次执行多个命令，并且带有以下两个">
+<meta property="og:updated_time" content="2017-05-17T14:08:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 事务学习笔记">
+<meta name="twitter:description" content="Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。
+事务允许一次执行多个命令，并且带有以下两个">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Redis-事务学习笔记/"/>
+
+
+
+
+
+  <title> Redis 事务学习笔记 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-事务学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Redis 事务学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-17T22:06:20+08:00">
+                2017-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/Redis-事务学习笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。</p>
+<p>事务允许一次执行多个命令，并且带有以下两个重要的保证：</p>
+<ul>
+<li>事务是一个单独的隔离的操作：事务中的所有命令会按顺序执行，事务在执行过程中，不会被其他客户端发来的命令请求所打断</li>
+<li>事务是一个原子的操作：事务中的命令要么全部被执行，要么全部都不执行</li>
+</ul>
+<h2 id="Redis-的基本事务"><a href="#Redis-的基本事务" class="headerlink" title="Redis 的基本事务"></a>Redis 的基本事务</h2><p>Redis 的基本事务需要用到 MULTI 和 EXEC 命令，这种事务可以让一个客户端在不被其他客户端打断的情况下执行多个命令。被 MULTI 和 EXEC 命令包裹的所有命令会一个接一个执行，直到所有命令都执行完毕，当一个事务执行完毕之后，Redis 才会处理其他客户端的命令。</p>
+<p>MULTI 命令用于开启一个事务，它总是返回 OK。<br>MULTI 执行之后，客户端可以继续向服务器发送任意多条命令，这些命令不会立即被执行，而是被放到一个队列中，当 EXEC 命令被调用时，队列中的所有命令才会被执行。<br>以下是一个基本事务的例子，它原子地增加了 foo 和 bar 两个健的值：</p>
+<blockquote>
+<p>redis 127.0.0.1:6379&gt; MULTI<br>OK<br>redis 127.0.0.1:6379&gt; INCR foo<br>QUEUED<br>redis 127.0.0.1:6379&gt; INCR bar<br>QUEUED<br>redis 127.0.0.1:6379&gt; EXEC<br>1) (integer) 1<br>2) (integer) 1</p>
+</blockquote>
+<a id="more"></a>
+<p>EXEC 命令的返回是一个数组，数组中的每个元素都是执行事务中命令所产生的回复，且返回回复的先后顺序与命令发送的先后顺序一致。<br>当客户端处于事务状态时，所有传入的命令都会返回一个内容为 QUEUED 的状态回复（status reply），这些被入队的命令将在 EXEC 命令被调用时执行。</p>
+<p>上面的情况是，客户端的每个命令都会发送到 Redis，Redis 对于每个命令都返回结果给客户端。为了减少 Redis 与客户端之间的通信往返次数，提升执行多个命令时的性能，也可以在客户端先存储起事务包含的多个命令，然后在事务执行时一次性地将所有命令都发送给 Redis。Redis 的 Python 客户端 redis-py 正是这样实现的。</p>
+<h3 id="Redis-py-实现事务"><a href="#Redis-py-实现事务" class="headerlink" title="Redis-py 实现事务"></a>Redis-py 实现事务</h3><p>我们以 redis-py 为例，说明如何实现 Redis 事务。<br>Redis-py 提供了<code>Pipeline</code>对象来实现事务，对 Redis 客户端对象（<code>StrictRedis</code>或者<code>Redis</code>对象）调用<code>pipeline()</code>方法将返回事务型流水线对象<code>Pipeline</code>。<code>Pipeline</code>对象会自动地使用 MULTI 和 EXEC 包裹起用户输入的多个命令，在事务执行时一次性将所有命令发送给 Redis 服务端执行。<br><code>Pipeline</code>对象还提供非事务型流水线的功能，只需要<code>transaction</code>参数设置为<code>False</code>即可。<br>根据 redis-py <a href="https://github.com/andymccurdy/redis-py" target="_blank" rel="external">官方文档</a>的说明，<code>Pipeline</code>对象不是线程安全的，不应该在多线程环境中使用同一个<code>Pipeline</code>对象。<br><code>Pipeline</code>的使用比较简单，以下是一个简单的例子，更详细的说明可以参考 redis-py 的官方文档。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line">r = redis.Redis(host=<span class="string">'127.0.0.1'</span>, port=<span class="number">6379</span>)</div><div class="line">r.set(<span class="string">'lee'</span>, <span class="string">'leo'</span>)</div><div class="line"><span class="comment"># 使用 pipeline() 方法创建一个事务型流水线对象 Pipeline</span></div><div class="line">pipe = r.pipeline()</div><div class="line"><span class="comment"># 以下的 SET 和 GET 命令会被在客户端缓存起来</span></div><div class="line">pipe.set(<span class="string">'foo'</span>, <span class="string">'bar'</span>)</div><div class="line">pipe.get(<span class="string">'lee'</span>)</div><div class="line"><span class="comment"># execute() 会将上面缓存起来的所有命令被发送到服务端，</span></div><div class="line"><span class="comment"># 并返回所有命令回复的列表</span></div><div class="line">res = pipe.execute()</div><div class="line">print(res)</div></pre></td></tr></table></figure>
+<p>输出为上述两个命令回复的列表：</p>
+<blockquote>
+<p>[True, ‘leo’]</p>
+</blockquote>
+<h2 id="更高级的-Redis-事务操作"><a href="#更高级的-Redis-事务操作" class="headerlink" title="更高级的 Redis 事务操作"></a>更高级的 Redis 事务操作</h2><p>在执行 EXEC 命令之前，Redis 不会执行任何实际的操作，所以用户没办法根据读取到的数据来做决定。Redis 提供了 WATCH 和 UNWATCH 命令来实现更高级的 Redis 事务操作。</p>
+<h3 id="使用-WATCH-实现乐观锁"><a href="#使用-WATCH-实现乐观锁" class="headerlink" title="使用 WATCH 实现乐观锁"></a>使用 WATCH 实现乐观锁</h3><p>WATCH 命令可以为 Redis 事务提供 check-and-set （CAS）行为。被 WATCH 的键会被监视，并且 Redis 会发觉这些键是否被改动过。在用户使用 WATCH 命令对键进行监视之后，直到用户执行 EXEC 命令的这段时间里面，如果有其他客户端抢先对任何被监视的键进行了替换，更新或者删除操作，那么当用户尝试执行 EXEC 命令的时候，事务将失败并返回一个错误（之后用户可以选择重试事务或者放弃事务）。<br>通过使用 WATCH、MULTI/EXEC、UNWATCH/DISCARD 等命令，程序可以在执行某些重要操作的时候，通过确保自己正在使用的数据没有发生变化来避免数据出错。<br>为了说明 WATCH 的作用，假设我们不使用 Redis 的 INCR 命令而去实现原子性地为某个键的值增加 1 的操作。我们最先想到的方案可能如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line">r = redis.Redis(host=<span class="string">'127.0.0.1'</span>, port=<span class="number">6379</span>)</div><div class="line">val = r.get(<span class="string">'mykey'</span>)</div><div class="line"><span class="keyword">if</span> val:</div><div class="line">    val = int(val) + <span class="number">1</span></div><div class="line"><span class="keyword">else</span>:</div><div class="line">    val = <span class="number">1</span></div><div class="line">r.set(<span class="string">'mykey'</span>, val)</div></pre></td></tr></table></figure>
+<p>首先读出一个键的值，然后对这个值加 1，如果键不存在，则使用默认值 1。上面的实现在只有一个客户端的情况下可以执行得很好，但是，当多个客户端同时对同一个键进行这样的操作时，就会产生竞争条件。例如，如果客户端 A 和 B 都读取了键原来的值，比如 1，那个两个客户端都会将键设置为 2，但正确的结果应该是 3 才对。</p>
+<p>接下来我们想到的方案是使用 MULTI 和 EXEC 封装 Redis 来实现对键增加 1 的原子性操作。但是由于增加 1 的操作依赖于前面读取键值命令的结果，所以单纯使用 MULTI 和 EXEC 也没法实现我们想要的结果。</p>
+<p>有了 WATCH，我们就可以轻松地解决这类问题了，我们编写的 Python 的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line">r = redis.Redis(host=<span class="string">'127.0.0.1'</span>, port=<span class="number">6379</span>)</div><div class="line"><span class="keyword">with</span> r.pipeline() <span class="keyword">as</span> pipe:</div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            <span class="comment"># 监视我们需要修改的键</span></div><div class="line">            res = pipe.watch(<span class="string">'mykey'</span>)</div><div class="line">            <span class="comment"># 由于调用了 WATCH 命令，接下来的 pipe 对象的命令都会立马</span></div><div class="line">            <span class="comment"># 发送到 Redis 服务端执行，故我们可以正常拿到执行的结果</span></div><div class="line">            val = pipe.get(<span class="string">'mykey'</span>)</div><div class="line">            print(<span class="string">'val: %s'</span> % val)</div><div class="line">            <span class="keyword">if</span> val:</div><div class="line">                val = int(val) + <span class="number">1</span></div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                val = <span class="number">1</span></div><div class="line">            <span class="comment"># 现在，我们重新将 pipe 对象设置为将命令包裹起来执行的形式</span></div><div class="line">            pipe.multi()</div><div class="line">            pipe.set(<span class="string">'mykey'</span>, val)</div><div class="line">            <span class="comment"># 最后，将包裹起来的命令一起发送到 Redis 服务端以事务形式执行</span></div><div class="line">            pipe.execute()</div><div class="line">            <span class="comment"># 如果没抛 WatchError 异常，说明事务被成功执行</span></div><div class="line">            <span class="keyword">break</span></div><div class="line">        <span class="keyword">except</span> redis.WatchError:</div><div class="line">            <span class="comment"># 如果其他客户端在我们 WATCH 和 事务执行期间，则重试</span></div><div class="line">            <span class="keyword">continue</span></div></pre></td></tr></table></figure>
+<p>我们继续使用 redis-py 中的<code>Pipeline</code>对象来向 Redis 服务端发送命令。<br>读上面的代码大家可能有个疑问：<code>Pipeline</code>对象不是执行<code>execute()</code>时才一次性将所有命令发送到 Redis 服务端执行么，怎么在代码的中间就可以拿到命令执行的结果了？<br>说实话，一开始我也对上面的代码不理解。为了弄清楚个究竟，我们将上面的代码在 PyCharm 执行，利用 PyCharm 的断点功能，可以看到代码的详细执行流程。</p>
+<p>我们来分析 redis-py 内部的实现代码。<br><code>pipe.watch(&#39;mykey&#39;)</code>代码如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">watch</span><span class="params">(self, *names)</span>:</span></div><div class="line">    <span class="string">"Watches the values at keys ``names``"</span></div><div class="line">    ...</div><div class="line">    <span class="keyword">return</span> self.execute_command(<span class="string">'WATCH'</span>, *names)</div></pre></td></tr></table></figure>
+<p>由于执行的是 WATCH 命令，接下来的<code>execute_command()</code>方法会调用<code>immediate_execute_command()</code>方法。进入<code>immediate_execute_command()</code>方法查看其代码，可以看到其对于每次调用的命令都会立马发送给 Redis 服务端执行，其获取返回结果。也就是说，通过<code>pipe.watch()</code>的调用，程序可以顺利拿到执行 Redis 命令中间结果的值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute_command</span><span class="params">(self, *args, **kwargs)</span>:</span></div><div class="line">    <span class="keyword">if</span> (self.watching <span class="keyword">or</span> args[<span class="number">0</span>] == <span class="string">'WATCH'</span>) <span class="keyword">and</span> \</div><div class="line">            <span class="keyword">not</span> self.explicit_transaction:</div><div class="line">        <span class="keyword">return</span> self.immediate_execute_command(*args, **kwargs)</div><div class="line">    <span class="keyword">return</span> self.pipeline_execute_command(*args, **kwargs)</div></pre></td></tr></table></figure>
+<p>接下来调用<code>pipe.multi()</code>设置<code>self.explicit_transaction</code>为真：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multi</span><span class="params">(self)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    Start a transactional block of the pipeline after WATCH commands</div><div class="line">    are issued. End the transactional block with `execute`.</div><div class="line">    """</div><div class="line">    ...</div><div class="line">    self.explicit_transaction = <span class="keyword">True</span></div></pre></td></tr></table></figure>
+<p>这样 redis-py 会重新使用 MULTI 和 EXEC 来包裹起接下来需要执行的命令，以达到命令以事务形式执行的目的。有兴趣的同学可以通过断点运行的方式来查看程序的接下来的执行过程，也可以结合 redis-py 对于事务型流水线对象<code>Pipeline</code>的介绍来理解，链接：<a href="https://github.com/andymccurdy/redis-py" target="_blank" rel="external">官方文档</a>:)<br>再回到原来前面我们所说的，如果键<code>mykey</code>在 EXEC 执行之前被修改了，那么整个事务就会被取消。如果事务被取消了，接着继续重试的过程，直到事务被正常执行。</p>
+<h3 id="取消监视-UNWATCH"><a href="#取消监视-UNWATCH" class="headerlink" title="取消监视 UNWATCH"></a>取消监视 UNWATCH</h3><p>UNWATCH 命令用来取消对所有键的监视。如果在执行 WATCH 命令之后，EXEC 命令已经执行了的话（无论事务是否成功执行），那么就不需要再执行 UNWATCH 了。这是因为当 EXEC 被调用时，Redis 对所有键的监视都会被取消。另外，由于 DISCARD 命令在取消事务的同时也会取消对所有对键的监视，所以 DISCARD 命令执行以后，也没必要执行 UNWATCH 了。</p>
+<h3 id="放弃事务-DISCARD"><a href="#放弃事务-DISCARD" class="headerlink" title="放弃事务 DISCARD"></a>放弃事务 DISCARD</h3><p>当执行 DISCARD 命令时，事务会被放弃，事务队列会被清空。例如：</p>
+<blockquote>
+<p>redis 127.0.0.1:6379&gt; SET foo 1<br>OK<br>redis 127.0.0.1:6379&gt; MULTI<br>OK<br>redis 127.0.0.1:6379&gt; INCR foo<br>QUEUED<br>redis 127.0.0.1:6379&gt; DISCARD<br>OK<br>redis 127.0.0.1:6379&gt; get foo<br>“1”</p>
+</blockquote>
+<p>上面的例子中，DISCARD 命令执行后，事务被取消，前面的 INCR 并没有生效，’foo’键的值仍然为1。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://redisdoc.com/topic/transaction.html" target="_blank" rel="external">http://redisdoc.com/topic/transaction.html</a></li>
+<li><a href="https://www.tutorialspoint.com/redis/redis_transactions.htm" target="_blank" rel="external">https://www.tutorialspoint.com/redis/redis_transactions.htm</a></li>
+<li>Redis 实战，Josiah L. Carlson 著，黄健宏译，人民邮电出版社，2015年</li>
+<li>Redis-py的源码，<a href="https://github.com/andymccurdy/redis-py" target="_blank" rel="external">https://github.com/andymccurdy/redis-py</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/事务/" rel="tag"># 事务</a>
+          
+            <a href="/tags/WATCH/" rel="tag"># WATCH</a>
+          
+            <a href="/tags/MULTI/" rel="tag"># MULTI</a>
+          
+            <a href="/tags/pipeline/" rel="tag"># pipeline</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/I-O多路复用之-epoll-系统调用/" rel="next" title="I/O多路复用之 epoll 系统调用">
+                <i class="fa fa-chevron-left"></i> I/O多路复用之 epoll 系统调用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">106</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-的基本事务"><span class="nav-number">1.</span> <span class="nav-text">Redis 的基本事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-py-实现事务"><span class="nav-number">1.1.</span> <span class="nav-text">Redis-py 实现事务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更高级的-Redis-事务操作"><span class="nav-number">2.</span> <span class="nav-text">更高级的 Redis 事务操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-WATCH-实现乐观锁"><span class="nav-number">2.1.</span> <span class="nav-text">使用 WATCH 实现乐观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消监视-UNWATCH"><span class="nav-number">2.2.</span> <span class="nav-text">取消监视 UNWATCH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#放弃事务-DISCARD"><span class="nav-number">2.3.</span> <span class="nav-text">放弃事务 DISCARD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
