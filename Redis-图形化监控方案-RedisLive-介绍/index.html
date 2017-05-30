@@ -1,0 +1,900 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Redis,RedisLive,Redis监控," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。
+RedisLive 提供的图形化展示界面如下图所示：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 图形化监控方案 RedisLive 介绍">
+<meta property="og:url" content="https://leehao.me/Redis-图形化监控方案-RedisLive-介绍/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。
+RedisLive 提供的图形化展示界面如下图所示：">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-redis-live.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-100712.jpg">
+<meta property="og:updated_time" content="2017-05-30T14:37:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 图形化监控方案 RedisLive 介绍">
+<meta name="twitter:description" content="作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。
+RedisLive 提供的图形化展示界面如下图所示：">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-redis-live.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Redis-图形化监控方案-RedisLive-介绍/"/>
+
+
+
+
+
+  <title> Redis 图形化监控方案 RedisLive 介绍 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-图形化监控方案-RedisLive-介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Redis 图形化监控方案 RedisLive 介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-30T22:36:09+08:00">
+                2017-05-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/Redis-图形化监控方案-RedisLive-介绍/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。</p>
+<p>RedisLive 提供的图形化展示界面如下图所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-redis-live.png" alt=""></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>RedisLive 使用 Python 实现，使用 Tornado 作为自己的 Web 服务器。运行 RedisLive 并不需要额外的编译过程。下载 RedisLive 的代码后，只须安装好依赖的相关 Python 扩展包就可以直接运行。<br>可以通过 Git 下载最新的 RedisLive 源代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/kumarnitin/RedisLive.git</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>进下下载后的 RedisLive 目录，可以看下 RedisLive 依赖的 Python 扩展包都已经写在 requirements.txt 文件中了。requirements.txt 的内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">argparse==1.2.1</div><div class="line">python-dateutil==1.5</div><div class="line">redis</div><div class="line">tornado==2.1.1</div></pre></td></tr></table></figure>
+<p>熟悉 Python 的朋友对于 requirements.txt 文件也一定感觉很亲切了，使用下面的命令可以安装里面的扩展包（指定豆瓣源来安装速度更快）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install -r requirements.txt -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com</div></pre></td></tr></table></figure>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><p>安装好依赖后，接下来就可以运行 RedisLive 了。进入 RedisLive/src 目录，可以看到 <code>redis-live.conf.example</code>文件，这个文件是 RedisLive 的示例配置文件，内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">"RedisServers"</span>:</div><div class="line">	[ </div><div class="line">		&#123;</div><div class="line">  			<span class="attr">"server"</span>: <span class="string">"154.17.59.99"</span>,</div><div class="line">  			<span class="attr">"port"</span> : <span class="number">6379</span></div><div class="line">		&#125;,</div><div class="line">		</div><div class="line">		&#123;</div><div class="line">  			<span class="attr">"server"</span>: <span class="string">"localhost"</span>,</div><div class="line">  			<span class="attr">"port"</span> : <span class="number">6380</span>,</div><div class="line">  			<span class="attr">"password"</span> : <span class="string">"some-password"</span></div><div class="line">		&#125;		</div><div class="line">	],</div><div class="line"></div><div class="line">	<span class="attr">"DataStoreType"</span> : <span class="string">"redis"</span>,</div><div class="line"></div><div class="line">	<span class="attr">"RedisStatsServer"</span>:</div><div class="line">	&#123;</div><div class="line">		<span class="attr">"server"</span> : <span class="string">"ec2-184-72-166-144.compute-1.amazonaws.com"</span>,</div><div class="line">		<span class="attr">"port"</span> : <span class="number">6385</span></div><div class="line">	&#125;,</div><div class="line">	</div><div class="line">	<span class="attr">"SqliteStatsStore"</span> :</div><div class="line">	&#123;</div><div class="line">		<span class="attr">"path"</span>:  <span class="string">"to your sql lite file"</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>RedisServers：监控的 Redis 实例列表，RedisLive 支持同时监控多个 Redis 实例</li>
+<li>RedisStatsServer：用来存储监控数据的 Redis 实例，此配置不同于 RedisServers，RedisLive 并不监控 RedisStatsServer，RedisStatsServer 只是用作存储监控数据使用</li>
+<li>DataStoreType：监控数据的存储方案，可以配置为<code>redis</code>或者<code>sqlite</code></li>
+<li>SqliteStatsStore：存储监控数据的 sqlite 配置</li>
+</ul>
+<p>我们实例使用的<code>redis-live.conf</code>（需要去除.example后缀）置如下所示：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">"RedisServers"</span>:</div><div class="line">	[ </div><div class="line">		&#123;</div><div class="line">  			<span class="attr">"server"</span>: <span class="string">"127.0.0.1"</span>,</div><div class="line">  			<span class="attr">"port"</span> : <span class="number">6379</span></div><div class="line">		&#125;</div><div class="line">	],</div><div class="line"></div><div class="line">	<span class="attr">"DataStoreType"</span> : <span class="string">"sqlite"</span>,</div><div class="line">	</div><div class="line">	<span class="attr">"SqliteStatsStore"</span> :</div><div class="line">	&#123;</div><div class="line">		<span class="attr">"path"</span>:  <span class="string">"db/redislive.sqlite"</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>即监控的 Redis 实例为 127.0.0.1:6379 ，使用 sqlite 作用存储监控数据方案，sqlite 数据库路径为<code>db/redislive.sqlite</code>。</p>
+<p>配置完成后，便可以将 RedisLive 运行起来。RedisLive 的运行包括两个部分（在 RedisLive/src 目录），<code>redis-monitor.py</code>用于向 Redis 实例发送 INFO 和 MONITOR 命令并获取其返回，<code>redis-live.py</code> 用于运行 Web 服务器。</p>
+<p>我们首先启动<code>redis-monitor.py</code>脚本，并将<code>duration</code>参数设置为 120 秒。<code>duration</code>参数指定了监控脚本的运行持续时间，例如设置为 120 秒，即经过 120 秒后，监控脚本会自动退出，并在终端打印 shutting down… 的提示。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-monitor.py --duration=120</div></pre></td></tr></table></figure>
+<p>接下来启动 Web 服务器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./redis-live.py</div></pre></td></tr></table></figure></p>
+<p>打开浏览器，在地址栏输入 <a href="http://localhost:8888/index.html，按下回车后，便可以看到" target="_blank" rel="external">http://localhost:8888/index.html，按下回车后，便可以看到</a> Redis 实例的监控数据。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-100712.jpg" alt=""></p>
+<p>需要指出的是，由于<code>redis-monitor.py</code>脚本采用向 Redis 实例发送 MONITOR 命令和 INFO 命令的方式来取得监控数据，而 MONITOR 命令对于 Redis 实例的性能有较大影响，因此，对于生产环境下的<code>redis-monitor.py</code>的部署，需要设置一个较适宜的<code>duration</code>参数，并使用 crontab 来定时执行该脚本。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://github.com/nkrode/RedisLive" target="_blank" rel="external">https://github.com/nkrode/RedisLive</a></li>
+<li><a href="http://www.nkrode.com/article/real-time-dashboard-for-redis" target="_blank" rel="external">http://www.nkrode.com/article/real-time-dashboard-for-redis</a></li>
+<li><a href="http://wxmimperio.tk/2016/02/25/Redis-Monitor-Tools/" target="_blank" rel="external">http://wxmimperio.tk/2016/02/25/Redis-Monitor-Tools/</a></li>
+<li>深入理解Redis，Jeremy Nelson 著，汪佳南译，电子工业出版社，2017年4月</li>
+<li><a href="http://redis.io/commands/monitor" target="_blank" rel="external">http://redis.io/commands/monitor</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/RedisLive/" rel="tag"># RedisLive</a>
+          
+            <a href="/tags/Redis监控/" rel="tag"># Redis监控</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Redis-事务学习笔记/" rel="next" title="Redis 事务学习笔记">
+                <i class="fa fa-chevron-left"></i> Redis 事务学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">108</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行"><span class="nav-number">2.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

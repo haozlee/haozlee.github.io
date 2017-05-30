@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Redis 图形化监控方案 RedisLive 介绍]]></title>
+    <url>%2FRedis-%E5%9B%BE%E5%BD%A2%E5%8C%96%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88-RedisLive-%E4%BB%8B%E7%BB%8D%2F</url>
+    <content type="text"><![CDATA[作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。 RedisLive 提供的图形化展示界面如下图所示： 安装RedisLive 使用 Python 实现，使用 Tornado 作为自己的 Web 服务器。运行 RedisLive 并不需要额外的编译过程。下载 RedisLive 的代码后，只须安装好依赖的相关 Python 扩展包就可以直接运行。可以通过 Git 下载最新的 RedisLive 源代码： 1git clone https://github.com/kumarnitin/RedisLive.git 进下下载后的 RedisLive 目录，可以看下 RedisLive 依赖的 Python 扩展包都已经写在 requirements.txt 文件中了。requirements.txt 的内容如下： 1234argparse==1.2.1python-dateutil==1.5redistornado==2.1.1 熟悉 Python 的朋友对于 requirements.txt 文件也一定感觉很亲切了，使用下面的命令可以安装里面的扩展包（指定豆瓣源来安装速度更快）： 1pip install -r requirements.txt -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com 运行安装好依赖后，接下来就可以运行 RedisLive 了。进入 RedisLive/src 目录，可以看到 redis-live.conf.example文件，这个文件是 RedisLive 的示例配置文件，内容如下： 12345678910111213141516171819202122232425262728&#123; "RedisServers": [ &#123; "server": "154.17.59.99", "port" : 6379 &#125;, &#123; "server": "localhost", "port" : 6380, "password" : "some-password" &#125; ], "DataStoreType" : "redis", "RedisStatsServer": &#123; "server" : "ec2-184-72-166-144.compute-1.amazonaws.com", "port" : 6385 &#125;, "SqliteStatsStore" : &#123; "path": "to your sql lite file" &#125;&#125; RedisServers：监控的 Redis 实例列表，RedisLive 支持同时监控多个 Redis 实例 RedisStatsServer：用来存储监控数据的 Redis 实例，此配置不同于 RedisServers，RedisLive 并不监控 RedisStatsServer，RedisStatsServer 只是用作存储监控数据使用 DataStoreType：监控数据的存储方案，可以配置为redis或者sqlite SqliteStatsStore：存储监控数据的 sqlite 配置 我们实例使用的redis-live.conf（需要去除.example后缀）置如下所示： 12345678910111213141516&#123; "RedisServers": [ &#123; "server": "127.0.0.1", "port" : 6379 &#125; ], "DataStoreType" : "sqlite", "SqliteStatsStore" : &#123; "path": "db/redislive.sqlite" &#125;&#125; 即监控的 Redis 实例为 127.0.0.1:6379 ，使用 sqlite 作用存储监控数据方案，sqlite 数据库路径为db/redislive.sqlite。 配置完成后，便可以将 RedisLive 运行起来。RedisLive 的运行包括两个部分（在 RedisLive/src 目录），redis-monitor.py用于向 Redis 实例发送 INFO 和 MONITOR 命令并获取其返回，redis-live.py 用于运行 Web 服务器。 我们首先启动redis-monitor.py脚本，并将duration参数设置为 120 秒。duration参数指定了监控脚本的运行持续时间，例如设置为 120 秒，即经过 120 秒后，监控脚本会自动退出，并在终端打印 shutting down… 的提示。 1./redis-monitor.py --duration=120 接下来启动 Web 服务器：1./redis-live.py 打开浏览器，在地址栏输入 http://localhost:8888/index.html，按下回车后，便可以看到 Redis 实例的监控数据。 需要指出的是，由于redis-monitor.py脚本采用向 Redis 实例发送 MONITOR 命令和 INFO 命令的方式来取得监控数据，而 MONITOR 命令对于 Redis 实例的性能有较大影响，因此，对于生产环境下的redis-monitor.py的部署，需要设置一个较适宜的duration参数，并使用 crontab 来定时执行该脚本。 参考资料 https://github.com/nkrode/RedisLive http://www.nkrode.com/article/real-time-dashboard-for-redis http://wxmimperio.tk/2016/02/25/Redis-Monitor-Tools/ 深入理解Redis，Jeremy Nelson 著，汪佳南译，电子工业出版社，2017年4月 http://redis.io/commands/monitor]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>RedisLive</tag>
+        <tag>Redis监控</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Redis 事务学习笔记]]></title>
     <url>%2FRedis-%E4%BA%8B%E5%8A%A1%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%2F</url>
     <content type="text"><![CDATA[Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。 事务允许一次执行多个命令，并且带有以下两个重要的保证： 事务是一个单独的隔离的操作：事务中的所有命令会按顺序执行，事务在执行过程中，不会被其他客户端发来的命令请求所打断 事务是一个原子的操作：事务中的命令要么全部被执行，要么全部都不执行 Redis 的基本事务Redis 的基本事务需要用到 MULTI 和 EXEC 命令，这种事务可以让一个客户端在不被其他客户端打断的情况下执行多个命令。被 MULTI 和 EXEC 命令包裹的所有命令会一个接一个执行，直到所有命令都执行完毕，当一个事务执行完毕之后，Redis 才会处理其他客户端的命令。 MULTI 命令用于开启一个事务，它总是返回 OK。MULTI 执行之后，客户端可以继续向服务器发送任意多条命令，这些命令不会立即被执行，而是被放到一个队列中，当 EXEC 命令被调用时，队列中的所有命令才会被执行。以下是一个基本事务的例子，它原子地增加了 foo 和 bar 两个健的值： redis 127.0.0.1:6379&gt; MULTIOKredis 127.0.0.1:6379&gt; INCR fooQUEUEDredis 127.0.0.1:6379&gt; INCR barQUEUEDredis 127.0.0.1:6379&gt; EXEC1) (integer) 12) (integer) 1 EXEC 命令的返回是一个数组，数组中的每个元素都是执行事务中命令所产生的回复，且返回回复的先后顺序与命令发送的先后顺序一致。当客户端处于事务状态时，所有传入的命令都会返回一个内容为 QUEUED 的状态回复（status reply），这些被入队的命令将在 EXEC 命令被调用时执行。 上面的情况是，客户端的每个命令都会发送到 Redis，Redis 对于每个命令都返回结果给客户端。为了减少 Redis 与客户端之间的通信往返次数，提升执行多个命令时的性能，也可以在客户端先存储起事务包含的多个命令，然后在事务执行时一次性地将所有命令都发送给 Redis。Redis 的 Python 客户端 redis-py 正是这样实现的。 Redis-py 实现事务我们以 redis-py 为例，说明如何实现 Redis 事务。Redis-py 提供了Pipeline对象来实现事务，对 Redis 客户端对象（StrictRedis或者Redis对象）调用pipeline()方法将返回事务型流水线对象Pipeline。Pipeline对象会自动地使用 MULTI 和 EXEC 包裹起用户输入的多个命令，在事务执行时一次性将所有命令发送给 Redis 服务端执行。Pipeline对象还提供非事务型流水线的功能，只需要transaction参数设置为False即可。根据 redis-py 官方文档的说明，Pipeline对象不是线程安全的，不应该在多线程环境中使用同一个Pipeline对象。Pipeline的使用比较简单，以下是一个简单的例子，更详细的说明可以参考 redis-py 的官方文档。 12345678910111213import redisr = redis.Redis(host='127.0.0.1', port=6379)r.set('lee', 'leo')# 使用 pipeline() 方法创建一个事务型流水线对象 Pipelinepipe = r.pipeline()# 以下的 SET 和 GET 命令会被在客户端缓存起来pipe.set('foo', 'bar')pipe.get('lee')# execute() 会将上面缓存起来的所有命令被发送到服务端，# 并返回所有命令回复的列表res = pipe.execute()print(res) 输出为上述两个命令回复的列表： [True, ‘leo’] 更高级的 Redis 事务操作在执行 EXEC 命令之前，Redis 不会执行任何实际的操作，所以用户没办法根据读取到的数据来做决定。Redis 提供了 WATCH 和 UNWATCH 命令来实现更高级的 Redis 事务操作。 使用 WATCH 实现乐观锁WATCH 命令可以为 Redis 事务提供 check-and-set （CAS）行为。被 WATCH 的键会被监视，并且 Redis 会发觉这些键是否被改动过。在用户使用 WATCH 命令对键进行监视之后，直到用户执行 EXEC 命令的这段时间里面，如果有其他客户端抢先对任何被监视的键进行了替换，更新或者删除操作，那么当用户尝试执行 EXEC 命令的时候，事务将失败并返回一个错误（之后用户可以选择重试事务或者放弃事务）。通过使用 WATCH、MULTI/EXEC、UNWATCH/DISCARD 等命令，程序可以在执行某些重要操作的时候，通过确保自己正在使用的数据没有发生变化来避免数据出错。为了说明 WATCH 的作用，假设我们不使用 Redis 的 INCR 命令而去实现原子性地为某个键的值增加 1 的操作。我们最先想到的方案可能如下所示： 123456789import redisr = redis.Redis(host='127.0.0.1', port=6379)val = r.get('mykey')if val: val = int(val) + 1else: val = 1r.set('mykey', val) 首先读出一个键的值，然后对这个值加 1，如果键不存在，则使用默认值 1。上面的实现在只有一个客户端的情况下可以执行得很好，但是，当多个客户端同时对同一个键进行这样的操作时，就会产生竞争条件。例如，如果客户端 A 和 B 都读取了键原来的值，比如 1，那个两个客户端都会将键设置为 2，但正确的结果应该是 3 才对。 接下来我们想到的方案是使用 MULTI 和 EXEC 封装 Redis 来实现对键增加 1 的原子性操作。但是由于增加 1 的操作依赖于前面读取键值命令的结果，所以单纯使用 MULTI 和 EXEC 也没法实现我们想要的结果。 有了 WATCH，我们就可以轻松地解决这类问题了，我们编写的 Python 的代码如下： 1234567891011121314151617181920212223242526import redisr = redis.Redis(host='127.0.0.1', port=6379)with r.pipeline() as pipe: while True: try: # 监视我们需要修改的键 res = pipe.watch('mykey') # 由于调用了 WATCH 命令，接下来的 pipe 对象的命令都会立马 # 发送到 Redis 服务端执行，故我们可以正常拿到执行的结果 val = pipe.get('mykey') print('val: %s' % val) if val: val = int(val) + 1 else: val = 1 # 现在，我们重新将 pipe 对象设置为将命令包裹起来执行的形式 pipe.multi() pipe.set('mykey', val) # 最后，将包裹起来的命令一起发送到 Redis 服务端以事务形式执行 pipe.execute() # 如果没抛 WatchError 异常，说明事务被成功执行 break except redis.WatchError: # 如果其他客户端在我们 WATCH 和 事务执行期间，则重试 continue 我们继续使用 redis-py 中的Pipeline对象来向 Redis 服务端发送命令。读上面的代码大家可能有个疑问：Pipeline对象不是执行execute()时才一次性将所有命令发送到 Redis 服务端执行么，怎么在代码的中间就可以拿到命令执行的结果了？说实话，一开始我也对上面的代码不理解。为了弄清楚个究竟，我们将上面的代码在 PyCharm 执行，利用 PyCharm 的断点功能，可以看到代码的详细执行流程。 我们来分析 redis-py 内部的实现代码。pipe.watch(&#39;mykey&#39;)代码如下所示： 1234def watch(self, *names): "Watches the values at keys ``names``" ... return self.execute_command('WATCH', *names) 由于执行的是 WATCH 命令，接下来的execute_command()方法会调用immediate_execute_command()方法。进入immediate_execute_command()方法查看其代码，可以看到其对于每次调用的命令都会立马发送给 Redis 服务端执行，其获取返回结果。也就是说，通过pipe.watch()的调用，程序可以顺利拿到执行 Redis 命令中间结果的值。 12345def execute_command(self, *args, **kwargs): if (self.watching or args[0] == 'WATCH') and \ not self.explicit_transaction: return self.immediate_execute_command(*args, **kwargs) return self.pipeline_execute_command(*args, **kwargs) 接下来调用pipe.multi()设置self.explicit_transaction为真： 1234567def multi(self): """ Start a transactional block of the pipeline after WATCH commands are issued. End the transactional block with `execute`. """ ... self.explicit_transaction = True 这样 redis-py 会重新使用 MULTI 和 EXEC 来包裹起接下来需要执行的命令，以达到命令以事务形式执行的目的。有兴趣的同学可以通过断点运行的方式来查看程序的接下来的执行过程，也可以结合 redis-py 对于事务型流水线对象Pipeline的介绍来理解，链接：官方文档:)再回到原来前面我们所说的，如果键mykey在 EXEC 执行之前被修改了，那么整个事务就会被取消。如果事务被取消了，接着继续重试的过程，直到事务被正常执行。 取消监视 UNWATCHUNWATCH 命令用来取消对所有键的监视。如果在执行 WATCH 命令之后，EXEC 命令已经执行了的话（无论事务是否成功执行），那么就不需要再执行 UNWATCH 了。这是因为当 EXEC 被调用时，Redis 对所有键的监视都会被取消。另外，由于 DISCARD 命令在取消事务的同时也会取消对所有对键的监视，所以 DISCARD 命令执行以后，也没必要执行 UNWATCH 了。 放弃事务 DISCARD当执行 DISCARD 命令时，事务会被放弃，事务队列会被清空。例如： redis 127.0.0.1:6379&gt; SET foo 1OKredis 127.0.0.1:6379&gt; MULTIOKredis 127.0.0.1:6379&gt; INCR fooQUEUEDredis 127.0.0.1:6379&gt; DISCARDOKredis 127.0.0.1:6379&gt; get foo“1” 上面的例子中，DISCARD 命令执行后，事务被取消，前面的 INCR 并没有生效，’foo’键的值仍然为1。 参考资料 http://redisdoc.com/topic/transaction.html https://www.tutorialspoint.com/redis/redis_transactions.htm Redis 实战，Josiah L. Carlson 著，黄健宏译，人民邮电出版社，2015年 Redis-py的源码，https://github.com/andymccurdy/redis-py]]></content>
@@ -177,9 +190,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -190,8 +203,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -202,10 +215,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -219,8 +232,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -292,9 +305,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>epoll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
