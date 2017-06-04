@@ -97,7 +97,7 @@ RedisLive 提供的图形化展示界面如下图所示：">
 RedisLive 提供的图形化展示界面如下图所示：">
 <meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-redis-live.png">
 <meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-05-30-100712.jpg">
-<meta property="og:updated_time" content="2017-05-30T14:37:30.000Z">
+<meta property="og:updated_time" content="2017-06-04T10:58:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis 图形化监控方案 RedisLive 介绍">
 <meta name="twitter:description" content="作为一款开源的 Redis 图形化监控工具，RedisLive 提供对 Redis 实例的内存使用情况，接收的客户端命令，接收的请求数量以及键进行监控。RedisLive 的工作原理基于 Redis 的 INFO 和 MONITOR 命令，通过向 Redis 实例发送 INFO 和 MONITOR 命令来获取 Redis 实例当前的运行数据。
@@ -450,7 +450,7 @@ RedisLive 提供的图形化展示界面如下图所示：">
 <li>DataStoreType：监控数据的存储方案，可以配置为<code>redis</code>或者<code>sqlite</code></li>
 <li>SqliteStatsStore：存储监控数据的 sqlite 配置</li>
 </ul>
-<p>我们实例使用的<code>redis-live.conf</code>（需要去除.example后缀）置如下所示：</p>
+<p>我们实例使用的<code>redis-live.conf</code>（需要去除.example后缀）配置如下所示：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	<span class="attr">"RedisServers"</span>:</div><div class="line">	[ </div><div class="line">		&#123;</div><div class="line">  			<span class="attr">"server"</span>: <span class="string">"127.0.0.1"</span>,</div><div class="line">  			<span class="attr">"port"</span> : <span class="number">6379</span></div><div class="line">		&#125;</div><div class="line">	],</div><div class="line"></div><div class="line">	<span class="attr">"DataStoreType"</span> : <span class="string">"sqlite"</span>,</div><div class="line">	</div><div class="line">	<span class="attr">"SqliteStatsStore"</span> :</div><div class="line">	&#123;</div><div class="line">		<span class="attr">"path"</span>:  <span class="string">"db/redislive.sqlite"</span></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>即监控的 Redis 实例为 127.0.0.1:6379 ，使用 sqlite 作用存储监控数据方案，sqlite 数据库路径为<code>db/redislive.sqlite</code>。</p>
 <p>配置完成后，便可以将 RedisLive 运行起来。RedisLive 的运行包括两个部分（在 RedisLive/src 目录），<code>redis-monitor.py</code>用于向 Redis 实例发送 INFO 和 MONITOR 命令并获取其返回，<code>redis-live.py</code> 用于运行 Web 服务器。</p>
@@ -544,6 +544,10 @@ RedisLive 提供的图形化展示界面如下图所示：">
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/SOAP-Web-Services-简介/" rel="prev" title="SOAP Web Services 简介">
+                SOAP Web Services 简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -616,7 +620,7 @@ RedisLive 提供的图形化展示界面如下图所示：">
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-count">43</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -638,7 +642,7 @@ RedisLive 提供的图形化展示界面如下图所示：">
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">108</span>
+                <span class="site-state-item-count">109</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
