@@ -1,0 +1,898 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ELementTree,XML,Element," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近使用 Python 来发送 SOAP 请求以测试 Web Service 的性能，由于 SOAP 是基于 XML 的，故免不了需要使用 Python 来处理 XML 数据。在对比了几种方案后，最后选定使用 xml.etree.ElementTree 模块来实现。这篇文章记录了使用 xml.etree.ElementTree 模块常用的几个操作，也算是总结一下，免得以后忘记了。
+概述对比其他 P">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 使用 ElementTree 模块来处理 XML">
+<meta property="og:url" content="https://leehao.me/Python-使用-ElementTree-模块来处理-XML/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="最近使用 Python 来发送 SOAP 请求以测试 Web Service 的性能，由于 SOAP 是基于 XML 的，故免不了需要使用 Python 来处理 XML 数据。在对比了几种方案后，最后选定使用 xml.etree.ElementTree 模块来实现。这篇文章记录了使用 xml.etree.ElementTree 模块常用的几个操作，也算是总结一下，免得以后忘记了。
+概述对比其他 P">
+<meta property="og:updated_time" content="2017-06-06T15:41:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 使用 ElementTree 模块来处理 XML">
+<meta name="twitter:description" content="最近使用 Python 来发送 SOAP 请求以测试 Web Service 的性能，由于 SOAP 是基于 XML 的，故免不了需要使用 Python 来处理 XML 数据。在对比了几种方案后，最后选定使用 xml.etree.ElementTree 模块来实现。这篇文章记录了使用 xml.etree.ElementTree 模块常用的几个操作，也算是总结一下，免得以后忘记了。
+概述对比其他 P">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-使用-ElementTree-模块来处理-XML/"/>
+
+
+
+
+
+  <title> Python 使用 ElementTree 模块来处理 XML | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-使用-ElementTree-模块来处理-XML/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Python 使用 ElementTree 模块来处理 XML
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-06T23:40:01+08:00">
+                2017-06-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/Python-使用-ElementTree-模块来处理-XML/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近使用 Python 来发送 SOAP 请求以测试 Web Service 的性能，由于 SOAP 是基于 XML 的，故免不了需要使用 Python 来处理 XML 数据。在对比了几种方案后，最后选定使用 xml.etree.ElementTree 模块来实现。<br>这篇文章记录了使用 xml.etree.ElementTree 模块常用的几个操作，也算是总结一下，免得以后忘记了。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>对比其他 Python 处理 XML 的方案，xml.etree.ElementTree 模块（下文我们以 ET 来表示）相对来说比较简单，接口也较友好。<br><a href="https://docs.python.org/2/library/xml.etree.elementtree.html" target="_blank" rel="external">官方文档</a> 里面对 ET 模块进行了较为详细的描述，总的来说，ET 模块可以归纳为三个部分：<code>ElementTree</code>类，<code>Element</code>类以及一些操作 XML 的函数。<br>XML 可以看成是一种树状结构，ET 使用<code>ElementTree</code>类来表示整个 XML 文档，使用<code>Element</code>类来表示 XML 的一个结点。对整 XML 文档的操作一般是对<code>ElementTree</code>对象进行，而对 XML 结点的操作一般是对<code>Element</code>对象进行。</p>
+<h2 id="解析-XML-文件"><a href="#解析-XML-文件" class="headerlink" title="解析 XML 文件"></a>解析 XML 文件</h2><p>ET 模块支持从一个 XML 文件构造<code>ElementTree</code>对象，例如我们的 XML 文件<code>example.xml</code>内容如下（下文会继续使用这个 XML 文档）：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">data</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">country</span> <span class="attr">name</span>=<span class="string">"Liechtenstein"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">rank</span>&gt;</span>1<span class="tag">&lt;/<span class="name">rank</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">year</span>&gt;</span>2008<span class="tag">&lt;/<span class="name">year</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">gdppc</span>&gt;</span>141100<span class="tag">&lt;/<span class="name">gdppc</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">name</span>=<span class="string">"Austria"</span> <span class="attr">direction</span>=<span class="string">"E"</span>/&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">name</span>=<span class="string">"Switzerland"</span> <span class="attr">direction</span>=<span class="string">"W"</span>/&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">country</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">country</span> <span class="attr">name</span>=<span class="string">"Singapore"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">rank</span>&gt;</span>4<span class="tag">&lt;/<span class="name">rank</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">year</span>&gt;</span>2011<span class="tag">&lt;/<span class="name">year</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">gdppc</span>&gt;</span>59900<span class="tag">&lt;/<span class="name">gdppc</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">name</span>=<span class="string">"Malaysia"</span> <span class="attr">direction</span>=<span class="string">"N"</span>/&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">country</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">data</span>&gt;</span></div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>可以使用 ET 模块的<code>parse()</code>函数来从指定的 XML 文件构造一个<code>ElementTree</code>对象：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> xml.etree.ElementTree <span class="keyword">as</span> ET</div><div class="line"></div><div class="line"><span class="comment"># 获取 XML 文档对象 ElementTree</span></div><div class="line">tree = ET.parse(<span class="string">'example.xml'</span>)</div><div class="line"><span class="comment"># 获取 XML 文档对象的根结点 Element</span></div><div class="line">root = tree.getroot()</div><div class="line"><span class="comment"># 打印根结点的名称</span></div><div class="line"><span class="keyword">print</span> root.tag</div></pre></td></tr></table></figure>
+<p>从 XML 文件构造好<code>ElementTree</code>对象后，还可以获取其结点，或者再继续对结点进行进一步的操作。</p>
+<h2 id="解析-XML-字符串"><a href="#解析-XML-字符串" class="headerlink" title="解析 XML 字符串"></a>解析 XML 字符串</h2><p>ET 模块的<code>fromstring()</code>函数提供从 XML 字符串构造一个<code>Element</code>对象的功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">xml_str = ET.tostring(root)</div><div class="line"><span class="keyword">print</span> xml_str</div><div class="line">root = ET.fromstring(xml_str)</div><div class="line"><span class="keyword">print</span> root.tag</div></pre></td></tr></table></figure>
+<p>接着上面的代码，我们使用 ET 模块的<code>tostring()</code>函数来将上面我们构造的<code>root</code>对象转化为字符串，然后使用<code>fromstring()</code>函数重新构造一个<code>Element</code>对象，并赋值给<code>root</code>变量，这时<code>root</code>代表整个 XML 文档的根结点。</p>
+<h2 id="构造-XML"><a href="#构造-XML" class="headerlink" title="构造  XML"></a>构造  XML</h2><p>如果我们需要构造 XML 文档，可以使用 ET 模块的 <code>Element</code>类以及<code>SubElement()</code>函数。<br>可以使用<code>Element</code>类来生成一个<code>Element</code>对象作为根结点，然后使用<code>ET.SubElement()</code>函数生成子结点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">a = ET.Element(<span class="string">'a'</span>)</div><div class="line">b = ET.SubElement(a, <span class="string">'b'</span>)</div><div class="line">b.text = <span class="string">'leehao.me'</span></div><div class="line">c = ET.SubElement(a, <span class="string">'c'</span>)</div><div class="line">c.attrib[<span class="string">'greeting'</span>] = <span class="string">'hello'</span></div><div class="line">d = ET.SubElement(a, <span class="string">'d'</span>)</div><div class="line">d.text = <span class="string">'www.leehao.me'</span></div><div class="line">xml_str = ET.tostring(a, encoding=<span class="string">'UTF-8'</span>)</div><div class="line"><span class="keyword">print</span> xml_str</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version='1.0' encoding='UTF-8'?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span><span class="tag">&lt;<span class="name">b</span>&gt;</span>leehao.me<span class="tag">&lt;/<span class="name">b</span>&gt;</span><span class="tag">&lt;<span class="name">c</span> <span class="attr">greeting</span>=<span class="string">"hello"</span> /&gt;</span><span class="tag">&lt;<span class="name">d</span>&gt;</span>www.leehao.me<span class="tag">&lt;/<span class="name">d</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>如果需要输出到文件中，可以继续使用<code>ElementTree.write()</code>方法来处理：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 先构造一个 ElementTree 以便使用其 write 方法</span></div><div class="line">tree = ET.ElementTree(a)</div><div class="line">tree.write(<span class="string">'a.xml'</span>, encoding=<span class="string">'UTF-8'</span>)</div></pre></td></tr></table></figure>
+<p>执行后，便会生成一个 XML 文件<code>a.xml</code>:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version='1.0' encoding='UTF-8'?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">a</span>&gt;</span><span class="tag">&lt;<span class="name">b</span>&gt;</span>leehao.me<span class="tag">&lt;/<span class="name">b</span>&gt;</span><span class="tag">&lt;<span class="name">c</span> <span class="attr">greeting</span>=<span class="string">"hello"</span> /&gt;</span><span class="tag">&lt;<span class="name">d</span>&gt;</span>www.leehao.me<span class="tag">&lt;/<span class="name">d</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="XML-结点的查找与更新"><a href="#XML-结点的查找与更新" class="headerlink" title="XML 结点的查找与更新"></a>XML 结点的查找与更新</h2><h3 id="1-查找-XML-结点"><a href="#1-查找-XML-结点" class="headerlink" title="1. 查找 XML 结点"></a>1. 查找 XML 结点</h3><p><code>Element</code>类提供了<code>Element.iter()</code>方法来查找指定的结点。<code>Element.iter()</code>会递归查找所有的子结点，以便查找到所有符合条件的结点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 获取 XML 文档对象 ElementTree</span></div><div class="line">tree = ET.parse(<span class="string">'example.xml'</span>)</div><div class="line"><span class="comment"># 获取 XML 文档对象的根结点 Element</span></div><div class="line">root = tree.getroot()</div><div class="line"><span class="comment"># 递归查找所有的 neighbor 子结点</span></div><div class="line"><span class="keyword">for</span> neighbor <span class="keyword">in</span> root.iter(<span class="string">'neighbor'</span>):</div><div class="line">    <span class="keyword">print</span> neighbor.attrib</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;&apos;direction&apos;: &apos;E&apos;, &apos;name&apos;: &apos;Austria&apos;&#125;</div><div class="line">&#123;&apos;direction&apos;: &apos;W&apos;, &apos;name&apos;: &apos;Switzerland&apos;&#125;</div><div class="line">&#123;&apos;direction&apos;: &apos;N&apos;, &apos;name&apos;: &apos;Malaysia&apos;&#125;</div></pre></td></tr></table></figure>
+<p>如果使用<code>Element.findall()</code>或者<code>Element.find()</code>方法，则只会从结点的直接子结点中查找，并不会递归查找。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> country <span class="keyword">in</span> root.findall(<span class="string">'country'</span>):</div><div class="line">    rank = country.find(<span class="string">'rank'</span>).text</div><div class="line">    name = country.get(<span class="string">'name'</span>)</div><div class="line">    <span class="keyword">print</span> name, rank</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Liechtenstein 1</div><div class="line">Singapore 4</div></pre></td></tr></table></figure>
+<h3 id="2-更新结点"><a href="#2-更新结点" class="headerlink" title="2. 更新结点"></a>2. 更新结点</h3><p>如果需要更新结点的文本，可以通过直接修改<code>Element.text</code>来实现。如果需要更新结点的属性，可以通过直接修改<code>Element.attrib</code>来实现。<br>对结点进行更新后，可以使用<code>ElementTree.write()</code>方法将更新后的 XML 文档写入文件中。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 获取 XML 文档对象 ElementTree</span></div><div class="line">tree = ET.parse(<span class="string">'example.xml'</span>)</div><div class="line"><span class="comment"># 获取 XML 文档对象的根结点 Element</span></div><div class="line">root = tree.getroot()</div><div class="line"><span class="keyword">for</span> rank <span class="keyword">in</span> root.iter(<span class="string">'rank'</span>):</div><div class="line">    new_rank = int(rank.text) + <span class="number">1</span></div><div class="line">    rank.text = str(new_rank)</div><div class="line">    rank.attrib[<span class="string">'updated'</span>] = <span class="string">'yes'</span></div><div class="line">tree.write(<span class="string">'output.xml'</span>, encoding=<span class="string">'UTF-8'</span>)</div></pre></td></tr></table></figure>
+<p>新生成的<code>output.xml</code>文件以下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version='1.0' encoding='UTF-8'?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">data</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">country</span> <span class="attr">name</span>=<span class="string">"Liechtenstein"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">rank</span> <span class="attr">updated</span>=<span class="string">"yes"</span>&gt;</span>2<span class="tag">&lt;/<span class="name">rank</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">year</span>&gt;</span>2008<span class="tag">&lt;/<span class="name">year</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">gdppc</span>&gt;</span>141100<span class="tag">&lt;/<span class="name">gdppc</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">direction</span>=<span class="string">"E"</span> <span class="attr">name</span>=<span class="string">"Austria"</span> /&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">direction</span>=<span class="string">"W"</span> <span class="attr">name</span>=<span class="string">"Switzerland"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">country</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">country</span> <span class="attr">name</span>=<span class="string">"Singapore"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">rank</span> <span class="attr">updated</span>=<span class="string">"yes"</span>&gt;</span>5<span class="tag">&lt;/<span class="name">rank</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">year</span>&gt;</span>2011<span class="tag">&lt;/<span class="name">year</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">gdppc</span>&gt;</span>59900<span class="tag">&lt;/<span class="name">gdppc</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">neighbor</span> <span class="attr">direction</span>=<span class="string">"N"</span> <span class="attr">name</span>=<span class="string">"Malaysia"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">country</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">data</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>对比<code>example.xml</code>文件，可以看到<code>output.xml</code>文件已更新。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://docs.python.org/2/library/xml.html#xml-vulnerabilities" target="_blank" rel="external">https://docs.python.org/2/library/xml.html#xml-vulnerabilities</a></li>
+<li><a href="https://stackoverflow.com/questions/1912434/how-do-i-parse-xml-in-python" target="_blank" rel="external">https://stackoverflow.com/questions/1912434/how-do-i-parse-xml-in-python</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ELementTree/" rel="tag"># ELementTree</a>
+          
+            <a href="/tags/XML/" rel="tag"># XML</a>
+          
+            <a href="/tags/Element/" rel="tag"># Element</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/SOAP-Web-Services-简介/" rel="next" title="SOAP Web Services 简介">
+                <i class="fa fa-chevron-left"></i> SOAP Web Services 简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">112</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析-XML-文件"><span class="nav-number">2.</span> <span class="nav-text">解析 XML 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析-XML-字符串"><span class="nav-number">3.</span> <span class="nav-text">解析 XML 字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造-XML"><span class="nav-number">4.</span> <span class="nav-text">构造  XML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XML-结点的查找与更新"><span class="nav-number">5.</span> <span class="nav-text">XML 结点的查找与更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-查找-XML-结点"><span class="nav-number">5.1.</span> <span class="nav-text">1. 查找 XML 结点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-更新结点"><span class="nav-number">5.2.</span> <span class="nav-text">2. 更新结点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
