@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Hiredis 实现 Redis 流水线]]></title>
+    <url>%2FHiredis-%E5%AE%9E%E7%8E%B0-Redis-%E6%B5%81%E6%B0%B4%E7%BA%BF%2F</url>
+    <content type="text"><![CDATA[Pipelining（流水线）允许 Redis 客户端一次向 Redis 发送多个命令，Redis 在接收到这些命令后，按顺序进行处理，然后将请求的处理结果一次性返回给客户端。流水线可以减少客户端与 Redis 之间的网络通信次数来提升 Redis 客户端在发送多个命令时的性能，可谓提升客户端性能的一个利器。我们熟悉的 Python 版本的 Redis 客户端 redis-py 提供了 StrictPipeline 对象来实现流水线，使用起来很是方便，具体用法可以参考文章《Redis 事务学习笔记》。作为 C/C++ 版本的 Redis 客户端，hiredis 实现流水线稍显有点复杂，不过通过使用 hiredis 来实现流水线却可以更深刻了解流水线的内部实现原理。 Hiredis 提供redisCommand()函数来向 Redis 服务端发送命令，redisCommand()函数的原型如下： 1void *redisCommand(redisContext *c, const char *format, ...); redisCommand()执行后，返回一个redisReply *指针，指向redisReply结构体，该结构体包含了返回的结果信息。redisCommand()函数是阻塞的（是指使用阻塞版的redisContext对象，下文我们同样有这个假定），每调用一次，都会等待 Redis 服务端的返回，然后再继续执行程序下面的逻辑。redisCommand()函数的使用示例如下所示，完整的代码和编译可以参考文章《Redis C 语言客户端 hiredis 的使用》。 1234567redisReply *reply;reply = redisCommand(conn, "SET %s %s", "foo", "bar");freeReplyObject(reply);reply = redisCommand(conn, "GET %s", "foo");printf("%s\n", reply-&gt;str);freeReplyObject(reply); 如果我们需要向 Redis 服务端发送多次命令，如果都是使用redisCommand()函数来发送，那么每次发送后都得等待返回结果后才能继续下一次发送，这性能显然不是我们能接受的。Hiredis 提供了redisAppendCommand()函数来实现流水线的命令发送方案。 1int redisAppendCommand(redisContext *c, const char *format, ...); redisAppendCommand()函数执行成功时返回REDIS_OK，失败时返回REDIS_ERR。12#define REDIS_ERR -1#define REDIS_OK 0 跟redisCommand()函数一样，redisAppendCommand()函数在 hiredis 中也有其他变体，这里为了描述的简便，仅以redisCommand()函数为例说明。redisAppendCommand()函数执行后，并没有立刻将命令发送到 Redis 执行，而是先将命令缓存到redisContext对象中。那么，redisContext对象中被缓存起来的命令什么时候会被发送出去呢？Hiredis 提供了redisGetReply()函数来将缓存的命令发送出去的功能。redisGetReply()函数的处理过程如下： 查看结果缓冲区是否还有结果没被取出，如果有，则取出结果后直接返回；如果没有，则执行步骤2 将命令缓冲区的所有命令发送到 Redis 处理，然后一直等待，直到有一个 Redis 的处理结果返回 上面我们提到的redisCommand()函数执行后可以直接获取 Redis 的返回结果，这是由于其内部先调用redisAppendCommand()函数，然后再调用redisGetReply()函数实现的。 说到这里，hiredis 实现流水线的过程就很清晰了。无论redisCommand()函数还是redisAppendCommand()函数，都会先将命令缓存起来，然后再发送到 Redis 执行。不同的是 redisCommand()函数会马上发送命令然后取得返回结果，而redisAppendCommand()函数则在调用redisGetReply()函数才将所有命令一次性发送，并取得第一个命令的返回结果。 下面是使用redisAppendCommand()函数实现流水线方案的示例。 1234567redisReply *reply;redisAppendCommand(context,"SET foo bar");redisAppendCommand(context,"GET foo");redisGetReply(context,&amp;reply); // SET命令的返回freeReplyObject(reply);redisGetReply(context,&amp;reply); // GET命令的返回freeReplyObject(reply); 值得注意的是，调用redisAppendCommand()函数的次数需要与调用redisGetReply()的次数要一致，否则会出现获取的 Redis 处理结果跟预期不一致的情况。 12345// 测试 redisGetReply 与 redisAppendCommand 调用次数不一致的情况redisAppendCommand(conn, "get t");// 本来想取得 set a ddd 的返回，却获取了 get t 的返回reply = redisCommand(conn, "set a ddd");printf("set a res: %s\n", reply-&gt;str); 输出的结果将会是get t命令的返回，而不是set a ddd命令的返回。 参考资料 https://github.com/redis/hiredis https://gist.github.com/dspezia/1893378 http://www.leoox.com/?p=316 http://www.redis.cn/topics/pipelining.html 附：示例程序 testhiredis.c编译： gcc -o testhiredis testhiredis.c -L/usr/local/lib -lhiredis 执行： ./testhiredis 输出： barres: OKres: bwatch res: OKres: OK, num: 0, type: 5res: QUEUED, num: 0, type: 5res: QUEUED, num: 0, type: 5res: QUEUED, num: 0, type: 5res: (null), num: 3, type: 2set a res: tt 源程序：1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768#include &lt;stdio.h&gt;#include &lt;hiredis/hiredis.h&gt;int main() &#123; // 阻塞 redisContext redisContext *conn = redisConnect("127.0.0.1", 6379); if (conn != NULL &amp;&amp; conn-&gt;err) &#123; printf("connection error: %s\n", conn-&gt;errstr); return 0; &#125; // 使用 redisCommand 发送命令并获取返回 redisReply *reply; reply = redisCommand(conn, "SET %s %s", "foo", "bar"); freeReplyObject(reply); reply = redisCommand(conn, "GET %s", "foo"); printf("%s\n", reply-&gt;str); freeReplyObject(reply); // 使用 redisAppendCommand 实现流水线 redisAppendCommand(conn, "set a b"); redisAppendCommand(conn,"get a"); int r = redisGetReply(conn, (void **)&amp;reply); if (r == REDIS_ERR) &#123; printf("ERROR\n"); &#125; printf("res: %s\n", reply-&gt;str); freeReplyObject(reply); r = redisGetReply(conn, (void **)&amp;reply); if (r == REDIS_ERR) &#123; printf("ERROR\n"); &#125; printf("res: %s\n", reply-&gt;str); freeReplyObject(reply); // 使用 watch 命令监控键 a reply = redisCommand(conn, "watch a"); printf("watch res: %s\n", reply-&gt;str); freeReplyObject(reply); // 事务流水线，总共5个命令 redisAppendCommand(conn, "multi"); redisAppendCommand(conn, "get foo"); redisAppendCommand(conn, "set t tt"); redisAppendCommand(conn, "set a aa"); redisAppendCommand(conn, "exec"); for (int i = 0; i &lt; 5; ++i) &#123; r = redisGetReply(conn, (void **)&amp;reply); if (r == REDIS_ERR) &#123; printf("ERROR\n"); &#125; printf("res: %s, num: %zu, type: %d\n", reply-&gt;str, reply-&gt;elements, reply-&gt;type); freeReplyObject(reply); &#125; // 测试 redisGetReply 与 redisAppendCommand 调用次数不一致的情况 redisAppendCommand(conn, "get t"); // 本来想取得 set a ddd 的返回，却获取了 get t 的返回 reply = redisCommand(conn, "set a ddd"); printf("set a res: %s\n", reply-&gt;str); redisFree(conn); return 0;&#125;]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>hiredis</tag>
+        <tag>pipeline</tag>
+        <tag>流水线</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python 使用 ElementTree 模块来处理 XML]]></title>
     <url>%2FPython-%E4%BD%BF%E7%94%A8-ElementTree-%E6%A8%A1%E5%9D%97%E6%9D%A5%E5%A4%84%E7%90%86-XML%2F</url>
     <content type="text"><![CDATA[最近使用 Python 来发送 SOAP 请求以测试 Web Service 的性能，由于 SOAP 是基于 XML 的，故免不了需要使用 Python 来处理 XML 数据。在对比了几种方案后，最后选定使用 xml.etree.ElementTree 模块来实现。这篇文章记录了使用 xml.etree.ElementTree 模块常用的几个操作，也算是总结一下，免得以后忘记了。 概述对比其他 Python 处理 XML 的方案，xml.etree.ElementTree 模块（下文我们以 ET 来表示）相对来说比较简单，接口也较友好。官方文档 里面对 ET 模块进行了较为详细的描述，总的来说，ET 模块可以归纳为三个部分：ElementTree类，Element类以及一些操作 XML 的函数。XML 可以看成是一种树状结构，ET 使用ElementTree类来表示整个 XML 文档，使用Element类来表示 XML 的一个结点。对整 XML 文档的操作一般是对ElementTree对象进行，而对 XML 结点的操作一般是对Element对象进行。 解析 XML 文件ET 模块支持从一个 XML 文件构造ElementTree对象，例如我们的 XML 文件example.xml内容如下（下文会继续使用这个 XML 文档）： 12345678910111213141516&lt;?xml version="1.0" encoding="utf-8"?&gt;&lt;data&gt; &lt;country name="Liechtenstein"&gt; &lt;rank&gt;1&lt;/rank&gt; &lt;year&gt;2008&lt;/year&gt; &lt;gdppc&gt;141100&lt;/gdppc&gt; &lt;neighbor name="Austria" direction="E"/&gt; &lt;neighbor name="Switzerland" direction="W"/&gt; &lt;/country&gt; &lt;country name="Singapore"&gt; &lt;rank&gt;4&lt;/rank&gt; &lt;year&gt;2011&lt;/year&gt; &lt;gdppc&gt;59900&lt;/gdppc&gt; &lt;neighbor name="Malaysia" direction="N"/&gt; &lt;/country&gt;&lt;/data&gt; 可以使用 ET 模块的parse()函数来从指定的 XML 文件构造一个ElementTree对象： 12345678import xml.etree.ElementTree as ET# 获取 XML 文档对象 ElementTreetree = ET.parse('example.xml')# 获取 XML 文档对象的根结点 Elementroot = tree.getroot()# 打印根结点的名称print root.tag 从 XML 文件构造好ElementTree对象后，还可以获取其结点，或者再继续对结点进行进一步的操作。 解析 XML 字符串ET 模块的fromstring()函数提供从 XML 字符串构造一个Element对象的功能。 1234xml_str = ET.tostring(root)print xml_strroot = ET.fromstring(xml_str)print root.tag 接着上面的代码，我们使用 ET 模块的tostring()函数来将上面我们构造的root对象转化为字符串，然后使用fromstring()函数重新构造一个Element对象，并赋值给root变量，这时root代表整个 XML 文档的根结点。 构造 XML如果我们需要构造 XML 文档，可以使用 ET 模块的 Element类以及SubElement()函数。可以使用Element类来生成一个Element对象作为根结点，然后使用ET.SubElement()函数生成子结点。 123456789a = ET.Element('a')b = ET.SubElement(a, 'b')b.text = 'leehao.me'c = ET.SubElement(a, 'c')c.attrib['greeting'] = 'hello'd = ET.SubElement(a, 'd')d.text = 'www.leehao.me'xml_str = ET.tostring(a, encoding='UTF-8')print xml_str 输出： 12&lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;a&gt;&lt;b&gt;leehao.me&lt;/b&gt;&lt;c greeting="hello" /&gt;&lt;d&gt;www.leehao.me&lt;/d&gt;&lt;/a&gt; 如果需要输出到文件中，可以继续使用ElementTree.write()方法来处理： 123# 先构造一个 ElementTree 以便使用其 write 方法tree = ET.ElementTree(a)tree.write('a.xml', encoding='UTF-8') 执行后，便会生成一个 XML 文件a.xml: 12&lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;a&gt;&lt;b&gt;leehao.me&lt;/b&gt;&lt;c greeting="hello" /&gt;&lt;d&gt;www.leehao.me&lt;/d&gt;&lt;/a&gt; XML 结点的查找与更新1. 查找 XML 结点Element类提供了Element.iter()方法来查找指定的结点。Element.iter()会递归查找所有的子结点，以便查找到所有符合条件的结点。 1234567# 获取 XML 文档对象 ElementTreetree = ET.parse('example.xml')# 获取 XML 文档对象的根结点 Elementroot = tree.getroot()# 递归查找所有的 neighbor 子结点for neighbor in root.iter('neighbor'): print neighbor.attrib 输出： 123&#123;&apos;direction&apos;: &apos;E&apos;, &apos;name&apos;: &apos;Austria&apos;&#125;&#123;&apos;direction&apos;: &apos;W&apos;, &apos;name&apos;: &apos;Switzerland&apos;&#125;&#123;&apos;direction&apos;: &apos;N&apos;, &apos;name&apos;: &apos;Malaysia&apos;&#125; 如果使用Element.findall()或者Element.find()方法，则只会从结点的直接子结点中查找，并不会递归查找。 1234for country in root.findall('country'): rank = country.find('rank').text name = country.get('name') print name, rank 输出： 12Liechtenstein 1Singapore 4 2. 更新结点如果需要更新结点的文本，可以通过直接修改Element.text来实现。如果需要更新结点的属性，可以通过直接修改Element.attrib来实现。对结点进行更新后，可以使用ElementTree.write()方法将更新后的 XML 文档写入文件中。 123456789# 获取 XML 文档对象 ElementTreetree = ET.parse('example.xml')# 获取 XML 文档对象的根结点 Elementroot = tree.getroot()for rank in root.iter('rank'): new_rank = int(rank.text) + 1 rank.text = str(new_rank) rank.attrib['updated'] = 'yes'tree.write('output.xml', encoding='UTF-8') 新生成的output.xml文件以下： 12345678910111213141516&lt;?xml version='1.0' encoding='UTF-8'?&gt;&lt;data&gt; &lt;country name="Liechtenstein"&gt; &lt;rank updated="yes"&gt;2&lt;/rank&gt; &lt;year&gt;2008&lt;/year&gt; &lt;gdppc&gt;141100&lt;/gdppc&gt; &lt;neighbor direction="E" name="Austria" /&gt; &lt;neighbor direction="W" name="Switzerland" /&gt; &lt;/country&gt; &lt;country name="Singapore"&gt; &lt;rank updated="yes"&gt;5&lt;/rank&gt; &lt;year&gt;2011&lt;/year&gt; &lt;gdppc&gt;59900&lt;/gdppc&gt; &lt;neighbor direction="N" name="Malaysia" /&gt; &lt;/country&gt;&lt;/data&gt; 对比example.xml文件，可以看到output.xml文件已更新。 参考资料 https://docs.python.org/2/library/xml.html#xml-vulnerabilities https://stackoverflow.com/questions/1912434/how-do-i-parse-xml-in-python]]></content>
@@ -47,10 +61,10 @@
       </categories>
       <tags>
         <tag>Redis</tag>
+        <tag>pipeline</tag>
         <tag>事务</tag>
         <tag>WATCH</tag>
         <tag>MULTI</tag>
-        <tag>pipeline</tag>
       </tags>
   </entry>
   <entry>
@@ -283,8 +297,8 @@
       </categories>
       <tags>
         <tag>TCP</tag>
-        <tag>套接字</tag>
         <tag>socket</tag>
+        <tag>套接字</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -300,9 +314,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
-        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>
