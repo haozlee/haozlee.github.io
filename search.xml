@@ -229,9 +229,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -242,8 +242,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -254,10 +254,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -271,8 +271,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -344,9 +344,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>epoll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -357,7 +357,7 @@
   <entry>
     <title><![CDATA[Google Protocol Buffers 体验日志]]></title>
     <url>%2FGoogle-Protocol-Buffers-%E4%BD%93%E9%AA%8C%E6%97%A5%E5%BF%97%2F</url>
-    <content type="text"><![CDATA[最近在看RPC的相关的实现，其中google的 gRPC 默认使用 Protocol Buffers 来作为其接口描述语言（IDL，Interface Definition Language）以及使用 Protocol Buffers 实现消息的序列化与反序列化。因此，很有必要对 protocol buffers 作个初步的了解。下文以 protobuf 来简称 protocol buffer。 安装由于自己使用的是 Mac OS，因此，这里讲述 Mac OS 下如何安装 protobuf。可以在以下链接下载最新版本的 protobuf ，下载链接。可以直接下载其源代码，然后进行编译安装。 源代码下载后，进入其目录，然后执行：1234$ ./configure$ make$ make check$ sudo make install 编译好后，使用以下命令来测试是否已成功安装：12$ protoc --versionlibprotoc 3.2.0 说明已成功安装。 编写 .proto 文件.proto 文件定义了消息的格式，一个常见的.proto 文件如下所示： 12345message Person &#123;required int32 id = 1;required string name = 2;optional string email = 3;&#125; 其中，关键字 required 表示这个字段是必须的，optional 表示这个字段是可选的。int32 表示这个字段是 32 位整型类型，string 表示这个字段是字符串类型。 编写完 .proto 文件后，使用 protoc 来编译。例如，将上面的消息格式保存为 person.proto，进入这个文件所在的目录，执行以下命令： protoc -I=. –python_out=. person.proto 这样，便在目录下生成 person_pb2.py 文件。 person_pb2.py 文件对 Person 类进行了定义。接下来，可以使用 Person 类提供的方法对来 Person 对象进行序列化和反序列化的操作。 序列化与反序列化我们编写 test.py 来测试 protobuf 的使用。将上面生成的 person_pb2.py 文件拷贝到 test.py 文件所在的目录。 1234567891011121314151617181920#!/usr/bin/env python# -*- coding:utf-8 -*-import person_pb2if __name__ == '__main__':# 构造对象person = person_pb2.Person()person.id = 12345person.name = 'leo'person.email = 'haolee@live.com'print personprint '********************'# 序列化serial_str = person.SerializeToString()print serial_strprint '********************'# 反序列化person2 = person_pb2.Person().FromString(serial_str)print person2.id, person2.name, person2.emailprint '********************' 输出：12345678id: 12345name: &quot;leo&quot;email: &quot;haolee@live.com&quot;********************�`leohaolee@live.com********************12345 leo haolee@live.com******************** 参考资料 https://github.com/google/protobuf/wiki https://github.com/google/protobuf https://github.com/google/protobuf/releases]]></content>
+    <content type="text"><![CDATA[最近在看RPC的相关的实现，其中google的 gRPC 默认使用 Protocol Buffers 来作为其接口描述语言（IDL，Interface Definition Language）以及使用 Protocol Buffers 实现消息的序列化与反序列化。因此，很有必要对 protocol buffers 作个初步的了解。下文以 protobuf 来简称 protocol buffer。 安装由于自己使用的是 Mac OS，因此，这里讲述 Mac OS 下如何安装 protobuf。可以在以下链接下载最新版本的 protobuf ，下载链接。可以直接下载其源代码，然后进行编译安装。 源代码下载后，进入其目录，然后执行：1234$ ./configure$ make$ make check$ sudo make install 编译好后，使用以下命令来测试是否已成功安装：12$ protoc --versionlibprotoc 3.2.0 说明已成功安装。 编写 .proto 文件.proto 文件定义了消息的格式，一个常见的.proto 文件如下所示： 12345message Person &#123; required int32 id = 1; required string name = 2; optional string email = 3;&#125; 其中，关键字 required 表示这个字段是必须的，optional 表示这个字段是可选的。int32 表示这个字段是 32 位整型类型，string 表示这个字段是字符串类型。 编写完 .proto 文件后，使用 protoc 来编译。例如，将上面的消息格式保存为 person.proto，进入这个文件所在的目录，执行以下命令： protoc -I=. –python_out=. person.proto (上面的 python_out 前面有两个 - ，该参数的意义是指定生写的 Python 版本的输出目录，具体参数的含义可以使用 protoc –help 来查看)这样，便在目录下生成 person_pb2.py 文件。 person_pb2.py 文件对 Person 类进行了定义。接下来，可以使用 Person 类提供的方法对来 Person 对象进行序列化和反序列化的操作。 序列化与反序列化我们编写 test.py 来测试 protobuf 的使用。将上面生成的 person_pb2.py 文件拷贝到 test.py 文件所在的目录。 123456789101112131415161718192021#!/usr/bin/env python# -*- coding:utf-8 -*-import person_pb2if __name__ == '__main__': # 构造对象 person = person_pb2.Person() person.id = 12345 person.name = 'leo' person.email = 'haolee@live.com' print person print '********************' # 序列化 serial_str = person.SerializeToString() print serial_str print '********************' # 反序列化 person2 = person_pb2.Person().FromString(serial_str) print person2.id, person2.name, person2.email print '********************' 输出：12345678id: 12345name: &quot;leo&quot;email: &quot;haolee@live.com&quot;********************�`leohaolee@live.com********************12345 leo haolee@live.com******************** 参考资料 https://github.com/google/protobuf/wiki https://github.com/google/protobuf https://github.com/google/protobuf/releases]]></content>
       <categories>
         <category>分布式架构</category>
       </categories>
