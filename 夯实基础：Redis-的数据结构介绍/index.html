@@ -1,0 +1,996 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Redis,数据结构,集合,列表,有序集合,哈希表,字符串," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括：
+
+字符串 
+列表
+集合
+有序集合
+哈希表
+
+需要指出的是，这些数据结构不是指 Redis 内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="夯实基础：Redis 的数据结构介绍">
+<meta property="og:url" content="https://leehao.me/夯实基础：Redis-的数据结构介绍/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括：
+
+字符串 
+列表
+集合
+有序集合
+哈希表
+
+需要指出的是，这些数据结构不是指 Redis 内">
+<meta property="og:updated_time" content="2017-06-13T23:26:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="夯实基础：Redis 的数据结构介绍">
+<meta name="twitter:description" content="使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括：
+
+字符串 
+列表
+集合
+有序集合
+哈希表
+
+需要指出的是，这些数据结构不是指 Redis 内">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/夯实基础：Redis-的数据结构介绍/"/>
+
+
+
+
+
+  <title> 夯实基础：Redis 的数据结构介绍 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/夯实基础：Redis-的数据结构介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                夯实基础：Redis 的数据结构介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-14T07:24:21+08:00">
+                2017-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a class="cloud-tie-join-count" href="/夯实基础：Redis-的数据结构介绍/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。<br>Redis 支持的数据结构包括：</p>
+<ul>
+<li>字符串 </li>
+<li>列表</li>
+<li>集合</li>
+<li>有序集合</li>
+<li>哈希表</li>
+</ul>
+<p>需要指出的是，这些数据结构不是指 Redis 内部实现所采用的数据结构，而是指 Redis 提供给用户使用的数据结构。例如，对于集合这种数据结构，其内部可以使用整数集合（intset）来实现，也可以使用哈希表（hashtable）来实现。一般情况下，对于用户来说，我们并不需要关心集合内部的实现，只需要知道集合这种数据结构的应用场景以及集合为我们提供的操作命令就可以了。<br>接下来，本文依次对 Redis 这些数据结构进行介绍。</p>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>字符串是 Redis 最简单的数据结构。熟悉 Memcached 的朋友对于字符串这种数据结构一定感到很亲切，因为 Memcached 也提供了这种数据结构。跟 Memcached 不同的是，Redis 除了提供字符串这种数据结构外，还提供了其他的数据结构，而 Memcached 则只提供字符串数据结构而已。<br>Redis 字符串使用 <a href="https://redis.io/topics/internals-sds" target="_blank" rel="external">SDS</a> 来实现。SDS 是 Redis 内部使用的一种数据结构，用作 Redis 字符串的表示。由于 Redis 的键都是字符串，这里我们说字符串是指 Redis 值的数据结构类型，例如客户端执行下面命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET website leehao.me</div></pre></td></tr></table></figure>
+<p>那么，Redis 将创建一个新的键值对，其中，</p>
+<ul>
+<li>键是一个字符串，字符串内部使用 SDS 来实现，用来保存“website”</li>
+<li>值也是一个字符串，字符串内部也是使用 SDS 来实现，用来保存“leehao.me”</li>
+</ul>
+<p>下文我们所说的数据结构也是针对键值对的值的数据结构类型来说的，且值的数据结构是什么，我们就称之什么类型的键，例如字符串键，即键值对的值的数据结构为字符串。<br>使用命令 SET 可以设置字符串的值，如果需要取出字符串，可以使用命令 GET。</p>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">GET website</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>leehao.me</p>
+</blockquote>
+<p>正常情况，客户端发送一个命令，Redis 执行这个命令并将处理结果返回给客户端。如果客户端需要同时设置多个键的值，采用每次只设置一个键值对的方法显然会导致较大的往返时延。Redis 为了解决这个问题引入了 MSET 和 MGET 命令，用来支持一次同时设置或者获取多个键的值。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MSET website leehao.me name leo sex male</div></pre></td></tr></table></figure>
+<p>上面的命令同时设置键 website，name，sex 的值分别为 leehao.me，leo 以及 male。<br>MGET 则可以同时获取多个键的值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">MGET website name sex</div></pre></td></tr></table></figure>
+<p>MGET 的输出为一个列表，其元素为每个键的值：</p>
+<blockquote>
+<p>1) “leehao.me”<br>2) “leo”<br>3) “male”</p>
+</blockquote>
+<p>如果我们需要删除某个键，可以使用命令 DEL：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">DEL name</div></pre></td></tr></table></figure>
+<p>这样，键 name 以及对应的值 leo 都会从 Redis 中删除。DEL 命令不单可以用在字符串键上，也可以用在其他类型的键上面。</p>
+<h2 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h2><p>Redis 的列表在内部使用链表来实现，这意味着在列表的头部或尾部添加一个元素的时间复杂度都为O(1)。由于列表使用链表来实现，故列表并不支持随机存取元素，如果需要访问列表中指定位置的元素，其时间复杂度为O(n)。</p>
+<p>可以使用 LPUSH 或者 RPUSH 命令创建一个列表，LPUSH是指在列表的头部添加一个元素，RPUSH 是指在列表的尾部添加一个元素。例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">RPUSH mylist leo</div><div class="line">RPUSH mylist lee</div><div class="line">LPUSH mylist first</div></pre></td></tr></table></figure>
+<p>在列表还没存在时，LPUSH 或者 RPUSH 命令都会创建一个新的列表，并将第一个元素添加进去。可以使用 LRANGE 来查看列表中的元素：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LRANGE mylist 0 -1</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>1) “first”<br>2) “leo”<br>3) “lee”</p>
+</blockquote>
+<p>LRANGE 命令的第一个参数为键，第二个参数指定列表的开始位置，第三个参数则指定列表的结束位置。上面的 LRANGE 命令的第三个参数为 -1，表明最后一个元素，故整个命令的含义是指取出列表的所有元素。<br>如果需要删除列表的元素，可以使用 LPOP 或者 RPOP 命令，也可以使用阻塞版本的 BLPOP 或者 BRPOP 命令。</p>
+<h2 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h2><p>Redis 提供集合这种数据结构类型。对于集合来说，它里面的元素都是唯一的，并不存在相同的元素。使用 SADD 可以创建一个 Redis 集合：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SADD myset leehao leo me 1</div></pre></td></tr></table></figure>
+<p>这样就创建了一个包含4个元素的集合 myset。可以使用 SMEMBERS 来获取集合中所有的元素：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SMEMBERS myset</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>1) “1”<br>2) “leo”<br>3) “me”<br>4) “leehao”</p>
+</blockquote>
+<p>如果往集合里面添加相同的元素，则这个元素并不会被添加到集合里面：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">SADD myset 1 3</div><div class="line">SMEMBERS myset</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>1) “me”<br>2) “leehao”<br>3) “1”<br>4) “3”<br>5) “leo”</p>
+</blockquote>
+<p>可见，“1” 并不会再次被添加到 myset 集合当中。</p>
+<p>使用 SPOP 可以从集合中删除一个或多个元素：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SPOP myset 2</div></pre></td></tr></table></figure>
+<p>上面的命令从集合中移除两个元素，且被移除的元素是随机的。</p>
+<p>可以使用 SINTER 来获取几个集合的交集，使用 SUNIONSTORE 来获取几个集合的并集。</p>
+<h2 id="有序集合"><a href="#有序集合" class="headerlink" title="有序集合"></a>有序集合</h2><p>有序集合可以看作集合与哈希表的混合体。有序集合里面的元素都是唯一的，这点跟上面我们提到的集合的特点很相似，但跟集合不同的是，有序集合的元素都有一个关联的浮点数值（称为元素的分数），这一点则跟哈希表相似。<br>有序集合之所以称为“有序”是由于集合里面的任意两个元素都可以比较大小，且不存在两个元素的大小相等。<br>Redis 使用以下规则来决定两个有序集合元素的大小：</p>
+<ul>
+<li>如果有序集合元素 A 和 B 拥有不同的分数，那么，如果 A.score &gt; B.score，则 A &gt; B</li>
+<li>如果有序集合元素 A 和 B 拥有相同的分数，那么，如果 A 键字符串 &gt; B 键字符串，则 A &gt; B</li>
+</ul>
+<p>由于有序集合中不存在两个相同的元素，故有序集合中的任意两个元素都不会出现相等的情况。</p>
+<p>使用 ZADD 来创建一个有序集合：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">del leehao</div><div class="line">ZADD leehao 1 C++</div><div class="line">ZADD leehao 2 Python</div><div class="line">ZADD leehao 0 C</div></pre></td></tr></table></figure>
+<p>我们先把原有的 leehao 键删除，然后构造了一个有序集合 leehao，其中，1，2，0分别为元素 C++，Python，C 的分数。<br>使用命令 ZRANG 可以查看有序集合的元素：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RANGE leehao 0 -1</div></pre></td></tr></table></figure>
+<p>上面的输出有序集合内所有元素，可以看到，输出的元素已经按元素的分数从小到大进行了排列：</p>
+<blockquote>
+<p>1) “C”<br>2) “C++”<br>3) “Python”</p>
+</blockquote>
+<p>如果需要逆序输出元素，则可以使用命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">REVRANGE leehao 0 -1</div></pre></td></tr></table></figure>
+<p>则元素会按元素的分数逆序输出：</p>
+<blockquote>
+<p>1) “Python”<br>2) “C++”<br>3) “C”</p>
+</blockquote>
+<p>如果需要输出元素的分数，则可以在 ZRANGE 命令最后添加上 WITHSCORES：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ZRANGE leehao 0 -1 WITHSCORES</div></pre></td></tr></table></figure>
+<h2 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h2><p>如果我们对 Python 的字典或者 C++ 的 std::map 这些数据结构熟悉的话，那么也一定会很快掌握 Redis 的哈希表数据结构，Redis 的哈希表同样是一种映射关系的数据结构。可以使用 HSET 或者 HMSET 来创建或者设置一个哈希表：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hmset leehao name leo sex male location gz</div></pre></td></tr></table></figure>
+<p>上面的命令创建了一个哈希表，它的键为 leehao，该哈希表包含3个 域 - 值 对，分别为 name -&gt; leo，sex -&gt; male 以及 location -&gt; gz。</p>
+<p>可以使用 HGET 命令获取哈希表某个 域 的值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hget leehao name</div></pre></td></tr></table></figure>
+<p>输出域 name 的值：</p>
+<blockquote>
+<p>“leo”</p>
+</blockquote>
+<p>或者使用 HGETALL 命令获取哈希表所有 域 的值：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hgetall leehao</div></pre></td></tr></table></figure>
+<p>输出为每个域 - 值对的列表：</p>
+<blockquote>
+<p>1) “name”<br>2) “leo”<br>3) “sex”<br>4) “male”<br>5) “location”<br>6) “gz”</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://redis.io/topics/data-types-intro" target="_blank" rel="external">https://redis.io/topics/data-types-intro</a></li>
+<li><a href="https://redis.io/topics/internals-sds" target="_blank" rel="external">https://redis.io/topics/internals-sds</a></li>
+<li>Redis 设计与实现，黄健宏著，机械工业出版社，2015年1月</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+            <a href="/tags/集合/" rel="tag"># 集合</a>
+          
+            <a href="/tags/列表/" rel="tag"># 列表</a>
+          
+            <a href="/tags/有序集合/" rel="tag"># 有序集合</a>
+          
+            <a href="/tags/哈希表/" rel="tag"># 哈希表</a>
+          
+            <a href="/tags/字符串/" rel="tag"># 字符串</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Hiredis-实现-Redis-流水线/" rel="next" title="Hiredis 实现 Redis 流水线">
+                <i class="fa fa-chevron-left"></i> Hiredis 实现 Redis 流水线
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串"><span class="nav-number">1.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表"><span class="nav-number">2.</span> <span class="nav-text">列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合"><span class="nav-number">3.</span> <span class="nav-text">集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#有序集合"><span class="nav-number">4.</span> <span class="nav-text">有序集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希表"><span class="nav-number">5.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+    
+    <script>
+      var cloudTieConfig = {
+        url: document.location.href, 
+        sourceId: "",
+        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
+        target: "cloud-tie-wrapper"
+      };
+    </script>
+    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
