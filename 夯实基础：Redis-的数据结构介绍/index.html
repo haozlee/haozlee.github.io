@@ -109,7 +109,7 @@
 哈希表
 
 需要指出的是，这些数据结构不是指 Redis 内">
-<meta property="og:updated_time" content="2017-06-13T23:26:11.000Z">
+<meta property="og:updated_time" content="2017-06-18T04:09:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="夯实基础：Redis 的数据结构介绍">
 <meta name="twitter:description" content="使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括：
@@ -522,13 +522,13 @@
 <p>使用 ZADD 来创建一个有序集合：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">del leehao</div><div class="line">ZADD leehao 1 C++</div><div class="line">ZADD leehao 2 Python</div><div class="line">ZADD leehao 0 C</div></pre></td></tr></table></figure>
 <p>我们先把原有的 leehao 键删除，然后构造了一个有序集合 leehao，其中，1，2，0分别为元素 C++，Python，C 的分数。<br>使用命令 ZRANG 可以查看有序集合的元素：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RANGE leehao 0 -1</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ZRANGE leehao 0 -1</div></pre></td></tr></table></figure>
 <p>上面的输出有序集合内所有元素，可以看到，输出的元素已经按元素的分数从小到大进行了排列：</p>
 <blockquote>
 <p>1) “C”<br>2) “C++”<br>3) “Python”</p>
 </blockquote>
 <p>如果需要逆序输出元素，则可以使用命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">REVRANGE leehao 0 -1</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ZREVRANGE leehao 0 -1</div></pre></td></tr></table></figure>
 <p>则元素会按元素的分数逆序输出：</p>
 <blockquote>
 <p>1) “Python”<br>2) “C++”<br>3) “C”</p>
@@ -640,6 +640,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/Redis-快照持久化学习笔记/" rel="prev" title="Redis 快照持久化学习笔记">
+                Redis 快照持久化学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -712,7 +716,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">47</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -734,7 +738,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">119</span>
+                <span class="site-state-item-count">121</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Redis 快照持久化学习笔记]]></title>
+    <url>%2FRedis-%E5%BF%AB%E7%85%A7%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%2F</url>
+    <content type="text"><![CDATA[Redis 是一种内存数据库，它将数据存储在内存中，所以如果不将数据保存到硬盘中，那么一旦 Redis 进程退出，保存在内存中的数据将会丢失。为此，Redis 提供了两种不同的持久化方法来将数据存储到硬盘里面。一种方法叫做快照（snapshotting），它可以将存在于某一时刻的所有数据写入硬盘里面。另一种方法叫 AOF（append-only file），它会在执行写命令时，将被执行的写命令复制到硬盘里面。这种两持久化方法既可以同时使用，也可以单独使用，当然如果 Redis 单纯只作为缓存系统使用的话，也可以两种持久化方法都不使用。具体选择哪种持久化方法取决于用户的应用场景。快照持久化方法是 Redis 默认开启的持久化方法，本文介绍快照持久化方法，AOF 方法将在另一篇文章中介绍。 RDB 文件Redis 将某一时刻的快照保存成一种称为 RDB 格式的文件中。RDB 文件是一个经过压缩的二进制文件，通过该文件，Redis 可以将内存中的数据恢复成某一时刻的状态。Redis 与 RDB 文件的关系可以通过下图 1 和图 2 来表示。 图 1：Redis 将内存的数据保存为 RDB 文件 图2：Redis 用 RDB 文件还原内存数据 SAVE 命令Redis 提供了两个命令用来生成 RDB 文件，一个是 SAVE，一个是 BGSAVE。SAVE 命令会阻塞 Redis 服务器进程，走到 RDB 文件创建完毕为止，在 Redis 服务器进程阻塞期间，Redis 不能处理任何命令请求。 12redis 127.0.0.1:6379&gt; saveOK 在生产环境，我们一般不会直接使用 SAVE 命令，原因是由于它会阻塞 Redis 进程。但是，如果机器已没有足够的内存去执行 BGSAVE 命令，或者即使等待持久化操作完毕也无所谓，我们也可以使用 SAVE 命令来生成 RDB 文件。 BGSAVE 命令BGSAVE 命令会派生出一个子进程，然后由子进程创建 RDB 文件，因此，BGSAVE 命令不会阻塞 Redis 服务器进程。 12redis 127.0.0.1:6379&gt; bgsaveBackground saving started 可以使用 LASTSAVE 命令来检查保存 RDB 文件的操作是否执行成功。 自动保存 RDB 文件除了手动执行 SAVE 和 BGSAVE 命令来生成 RDB 文件外，Redis 还提供了自动保存 RDB 文件的功能。由于 BGSAVE 命令可以在不阻塞服务器进程的情况下执行，所以 Redis 允许用户通过设置配置来让 Redis 服务器每隔一段时间自动执行一次 BGSAVE 命令。下面是 Redis 配置文件 redis.conf 中有关自动保存 RDB 文件的有关配置内容： 123save 900 1save 300 10save 60 10000 上面配置的含义是，Redis 服务器只要满足以下三个条件中的任意一个， BGSAVE 命令就会被执行： Redis 服务器在 900 秒之内，对数据库进行了至少一次修改 Redis 服务器在 300 秒之内，对数据库进行了至少 10 次修改 Redis 服务器在 60 秒之内，对数据库进行了至少 10000 次修改 涉及 RDB 文件的配置选项还包括： 12345dbfilename dump.rdbdir ./stop-writes-on-bgsave-error yesrdbcompression yesrdbchecksum yes dbfilename：配置 RDB 文件名称 dir：配置 RDB 文件存放的路径 stop-writes-on-bgsave-error：当生成 RDB 文件出错时是否继续处理 Redis 写命令，默认为不处理 rdbcompression：是否对 RDB 文件进行压缩 rdbchecksum：是否对 RDB 文件进行校验和校验 快照持久化的优点快照持久化的方法采用创建一个子进程的方法来将 Redis 的内存数据保存到硬盘中，因此，它并不会对 Redis 服务器性能造成多大的影响，这可以说是快照持久化方法最大的一个优点。快照持久化使用的 RDB 文件是一种经过压缩的二进制文件，可以方便地在网络中传输与保存。通过恰当的配置，可以让我们方便快捷地将 Redis 内存数据恢复到某一历史状态。这对于提高数据的安全性，应对服务器宕机等意外的发生很有帮助。 快照持久化的缺点尽管快照持久化允许 Redis 恢复到快照文件的状态，但如果 RDB 文件生成后，Redis 服务器继续处理了写命令导致 Redis 内存数据有更新，这时恰好 Redis 崩溃了而来不及保存新的 RDB 文件，那么 Redis 将会丢失这部分新的数据。也就是说，如果系统真的发生崩溃，那么我们将会丢失最近一次生成 RDB 文件之后更改的所有数据。因此，快照持久化方法只适用于那些即使丢失一部分数据也不会造成问题的应用场景。另外，快照持久化方法需要调用fork()方法创建子进程。当 Redis 内存的数据量较大时，创建子进程和生成 RDB 文件得占用较多的系统资源和处理时间，这会对 Redis 正常处理客户端命令的性能造成较大的影响。当然，如果我们可以妥善处理快照持久化方法可能带来的数据丢失，那么快照持久化仍然是一个不错的选择。 参考资料 Redis 实战，Josiah L. Carlson 著，黄健宏译，人民邮电出版社，2015年 Redis 设计与实现，黄健宏著，机械工业出版社，2015年 https://redis.io/topics/persistence https://redis.io/commands/save https://redis.io/commands/bgsave Redis RDB 文件格式介绍，https://github.com/sripathikrishnan/redis-rdb-tools/wiki/Redis-RDB-Dump-File-Format Redis RDB 版本的历史，https://github.com/sripathikrishnan/redis-rdb-tools/blob/master/docs/RDB_Version_History.textile]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>RDB</tag>
+        <tag>AOF</tag>
+        <tag>持久化</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[夯实基础：Redis 的数据结构介绍]]></title>
     <url>%2F%E5%A4%AF%E5%AE%9E%E5%9F%BA%E7%A1%80%EF%BC%9ARedis-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D%2F</url>
-    <content type="text"><![CDATA[使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括： 字符串 列表 集合 有序集合 哈希表 需要指出的是，这些数据结构不是指 Redis 内部实现所采用的数据结构，而是指 Redis 提供给用户使用的数据结构。例如，对于集合这种数据结构，其内部可以使用整数集合（intset）来实现，也可以使用哈希表（hashtable）来实现。一般情况下，对于用户来说，我们并不需要关心集合内部的实现，只需要知道集合这种数据结构的应用场景以及集合为我们提供的操作命令就可以了。接下来，本文依次对 Redis 这些数据结构进行介绍。 字符串字符串是 Redis 最简单的数据结构。熟悉 Memcached 的朋友对于字符串这种数据结构一定感到很亲切，因为 Memcached 也提供了这种数据结构。跟 Memcached 不同的是，Redis 除了提供字符串这种数据结构外，还提供了其他的数据结构，而 Memcached 则只提供字符串数据结构而已。Redis 字符串使用 SDS 来实现。SDS 是 Redis 内部使用的一种数据结构，用作 Redis 字符串的表示。由于 Redis 的键都是字符串，这里我们说字符串是指 Redis 值的数据结构类型，例如客户端执行下面命令： 1SET website leehao.me 那么，Redis 将创建一个新的键值对，其中， 键是一个字符串，字符串内部使用 SDS 来实现，用来保存“website” 值也是一个字符串，字符串内部也是使用 SDS 来实现，用来保存“leehao.me” 下文我们所说的数据结构也是针对键值对的值的数据结构类型来说的，且值的数据结构是什么，我们就称之什么类型的键，例如字符串键，即键值对的值的数据结构为字符串。使用命令 SET 可以设置字符串的值，如果需要取出字符串，可以使用命令 GET。 1GET website 输出： leehao.me 正常情况，客户端发送一个命令，Redis 执行这个命令并将处理结果返回给客户端。如果客户端需要同时设置多个键的值，采用每次只设置一个键值对的方法显然会导致较大的往返时延。Redis 为了解决这个问题引入了 MSET 和 MGET 命令，用来支持一次同时设置或者获取多个键的值。 1MSET website leehao.me name leo sex male 上面的命令同时设置键 website，name，sex 的值分别为 leehao.me，leo 以及 male。MGET 则可以同时获取多个键的值： 1MGET website name sex MGET 的输出为一个列表，其元素为每个键的值： 1) “leehao.me”2) “leo”3) “male” 如果我们需要删除某个键，可以使用命令 DEL： 1DEL name 这样，键 name 以及对应的值 leo 都会从 Redis 中删除。DEL 命令不单可以用在字符串键上，也可以用在其他类型的键上面。 列表Redis 的列表在内部使用链表来实现，这意味着在列表的头部或尾部添加一个元素的时间复杂度都为O(1)。由于列表使用链表来实现，故列表并不支持随机存取元素，如果需要访问列表中指定位置的元素，其时间复杂度为O(n)。 可以使用 LPUSH 或者 RPUSH 命令创建一个列表，LPUSH是指在列表的头部添加一个元素，RPUSH 是指在列表的尾部添加一个元素。例如： 123RPUSH mylist leoRPUSH mylist leeLPUSH mylist first 在列表还没存在时，LPUSH 或者 RPUSH 命令都会创建一个新的列表，并将第一个元素添加进去。可以使用 LRANGE 来查看列表中的元素： 1LRANGE mylist 0 -1 输出： 1) “first”2) “leo”3) “lee” LRANGE 命令的第一个参数为键，第二个参数指定列表的开始位置，第三个参数则指定列表的结束位置。上面的 LRANGE 命令的第三个参数为 -1，表明最后一个元素，故整个命令的含义是指取出列表的所有元素。如果需要删除列表的元素，可以使用 LPOP 或者 RPOP 命令，也可以使用阻塞版本的 BLPOP 或者 BRPOP 命令。 集合Redis 提供集合这种数据结构类型。对于集合来说，它里面的元素都是唯一的，并不存在相同的元素。使用 SADD 可以创建一个 Redis 集合： 1SADD myset leehao leo me 1 这样就创建了一个包含4个元素的集合 myset。可以使用 SMEMBERS 来获取集合中所有的元素： 1SMEMBERS myset 输出： 1) “1”2) “leo”3) “me”4) “leehao” 如果往集合里面添加相同的元素，则这个元素并不会被添加到集合里面： 12SADD myset 1 3SMEMBERS myset 输出： 1) “me”2) “leehao”3) “1”4) “3”5) “leo” 可见，“1” 并不会再次被添加到 myset 集合当中。 使用 SPOP 可以从集合中删除一个或多个元素： 1SPOP myset 2 上面的命令从集合中移除两个元素，且被移除的元素是随机的。 可以使用 SINTER 来获取几个集合的交集，使用 SUNIONSTORE 来获取几个集合的并集。 有序集合有序集合可以看作集合与哈希表的混合体。有序集合里面的元素都是唯一的，这点跟上面我们提到的集合的特点很相似，但跟集合不同的是，有序集合的元素都有一个关联的浮点数值（称为元素的分数），这一点则跟哈希表相似。有序集合之所以称为“有序”是由于集合里面的任意两个元素都可以比较大小，且不存在两个元素的大小相等。Redis 使用以下规则来决定两个有序集合元素的大小： 如果有序集合元素 A 和 B 拥有不同的分数，那么，如果 A.score &gt; B.score，则 A &gt; B 如果有序集合元素 A 和 B 拥有相同的分数，那么，如果 A 键字符串 &gt; B 键字符串，则 A &gt; B 由于有序集合中不存在两个相同的元素，故有序集合中的任意两个元素都不会出现相等的情况。 使用 ZADD 来创建一个有序集合： 1234del leehaoZADD leehao 1 C++ZADD leehao 2 PythonZADD leehao 0 C 我们先把原有的 leehao 键删除，然后构造了一个有序集合 leehao，其中，1，2，0分别为元素 C++，Python，C 的分数。使用命令 ZRANG 可以查看有序集合的元素： 1RANGE leehao 0 -1 上面的输出有序集合内所有元素，可以看到，输出的元素已经按元素的分数从小到大进行了排列： 1) “C”2) “C++”3) “Python” 如果需要逆序输出元素，则可以使用命令： 1REVRANGE leehao 0 -1 则元素会按元素的分数逆序输出： 1) “Python”2) “C++”3) “C” 如果需要输出元素的分数，则可以在 ZRANGE 命令最后添加上 WITHSCORES： 1ZRANGE leehao 0 -1 WITHSCORES 哈希表如果我们对 Python 的字典或者 C++ 的 std::map 这些数据结构熟悉的话，那么也一定会很快掌握 Redis 的哈希表数据结构，Redis 的哈希表同样是一种映射关系的数据结构。可以使用 HSET 或者 HMSET 来创建或者设置一个哈希表： 1hmset leehao name leo sex male location gz 上面的命令创建了一个哈希表，它的键为 leehao，该哈希表包含3个 域 - 值 对，分别为 name -&gt; leo，sex -&gt; male 以及 location -&gt; gz。 可以使用 HGET 命令获取哈希表某个 域 的值： 1hget leehao name 输出域 name 的值： “leo” 或者使用 HGETALL 命令获取哈希表所有 域 的值： 1hgetall leehao 输出为每个域 - 值对的列表： 1) “name”2) “leo”3) “sex”4) “male”5) “location”6) “gz” 参考资料 https://redis.io/topics/data-types-intro https://redis.io/topics/internals-sds Redis 设计与实现，黄健宏著，机械工业出版社，2015年1月]]></content>
+    <content type="text"><![CDATA[使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。Redis 支持的数据结构包括： 字符串 列表 集合 有序集合 哈希表 需要指出的是，这些数据结构不是指 Redis 内部实现所采用的数据结构，而是指 Redis 提供给用户使用的数据结构。例如，对于集合这种数据结构，其内部可以使用整数集合（intset）来实现，也可以使用哈希表（hashtable）来实现。一般情况下，对于用户来说，我们并不需要关心集合内部的实现，只需要知道集合这种数据结构的应用场景以及集合为我们提供的操作命令就可以了。接下来，本文依次对 Redis 这些数据结构进行介绍。 字符串字符串是 Redis 最简单的数据结构。熟悉 Memcached 的朋友对于字符串这种数据结构一定感到很亲切，因为 Memcached 也提供了这种数据结构。跟 Memcached 不同的是，Redis 除了提供字符串这种数据结构外，还提供了其他的数据结构，而 Memcached 则只提供字符串数据结构而已。Redis 字符串使用 SDS 来实现。SDS 是 Redis 内部使用的一种数据结构，用作 Redis 字符串的表示。由于 Redis 的键都是字符串，这里我们说字符串是指 Redis 值的数据结构类型，例如客户端执行下面命令： 1SET website leehao.me 那么，Redis 将创建一个新的键值对，其中， 键是一个字符串，字符串内部使用 SDS 来实现，用来保存“website” 值也是一个字符串，字符串内部也是使用 SDS 来实现，用来保存“leehao.me” 下文我们所说的数据结构也是针对键值对的值的数据结构类型来说的，且值的数据结构是什么，我们就称之什么类型的键，例如字符串键，即键值对的值的数据结构为字符串。使用命令 SET 可以设置字符串的值，如果需要取出字符串，可以使用命令 GET。 1GET website 输出： leehao.me 正常情况，客户端发送一个命令，Redis 执行这个命令并将处理结果返回给客户端。如果客户端需要同时设置多个键的值，采用每次只设置一个键值对的方法显然会导致较大的往返时延。Redis 为了解决这个问题引入了 MSET 和 MGET 命令，用来支持一次同时设置或者获取多个键的值。 1MSET website leehao.me name leo sex male 上面的命令同时设置键 website，name，sex 的值分别为 leehao.me，leo 以及 male。MGET 则可以同时获取多个键的值： 1MGET website name sex MGET 的输出为一个列表，其元素为每个键的值： 1) “leehao.me”2) “leo”3) “male” 如果我们需要删除某个键，可以使用命令 DEL： 1DEL name 这样，键 name 以及对应的值 leo 都会从 Redis 中删除。DEL 命令不单可以用在字符串键上，也可以用在其他类型的键上面。 列表Redis 的列表在内部使用链表来实现，这意味着在列表的头部或尾部添加一个元素的时间复杂度都为O(1)。由于列表使用链表来实现，故列表并不支持随机存取元素，如果需要访问列表中指定位置的元素，其时间复杂度为O(n)。 可以使用 LPUSH 或者 RPUSH 命令创建一个列表，LPUSH是指在列表的头部添加一个元素，RPUSH 是指在列表的尾部添加一个元素。例如： 123RPUSH mylist leoRPUSH mylist leeLPUSH mylist first 在列表还没存在时，LPUSH 或者 RPUSH 命令都会创建一个新的列表，并将第一个元素添加进去。可以使用 LRANGE 来查看列表中的元素： 1LRANGE mylist 0 -1 输出： 1) “first”2) “leo”3) “lee” LRANGE 命令的第一个参数为键，第二个参数指定列表的开始位置，第三个参数则指定列表的结束位置。上面的 LRANGE 命令的第三个参数为 -1，表明最后一个元素，故整个命令的含义是指取出列表的所有元素。如果需要删除列表的元素，可以使用 LPOP 或者 RPOP 命令，也可以使用阻塞版本的 BLPOP 或者 BRPOP 命令。 集合Redis 提供集合这种数据结构类型。对于集合来说，它里面的元素都是唯一的，并不存在相同的元素。使用 SADD 可以创建一个 Redis 集合： 1SADD myset leehao leo me 1 这样就创建了一个包含4个元素的集合 myset。可以使用 SMEMBERS 来获取集合中所有的元素： 1SMEMBERS myset 输出： 1) “1”2) “leo”3) “me”4) “leehao” 如果往集合里面添加相同的元素，则这个元素并不会被添加到集合里面： 12SADD myset 1 3SMEMBERS myset 输出： 1) “me”2) “leehao”3) “1”4) “3”5) “leo” 可见，“1” 并不会再次被添加到 myset 集合当中。 使用 SPOP 可以从集合中删除一个或多个元素： 1SPOP myset 2 上面的命令从集合中移除两个元素，且被移除的元素是随机的。 可以使用 SINTER 来获取几个集合的交集，使用 SUNIONSTORE 来获取几个集合的并集。 有序集合有序集合可以看作集合与哈希表的混合体。有序集合里面的元素都是唯一的，这点跟上面我们提到的集合的特点很相似，但跟集合不同的是，有序集合的元素都有一个关联的浮点数值（称为元素的分数），这一点则跟哈希表相似。有序集合之所以称为“有序”是由于集合里面的任意两个元素都可以比较大小，且不存在两个元素的大小相等。Redis 使用以下规则来决定两个有序集合元素的大小： 如果有序集合元素 A 和 B 拥有不同的分数，那么，如果 A.score &gt; B.score，则 A &gt; B 如果有序集合元素 A 和 B 拥有相同的分数，那么，如果 A 键字符串 &gt; B 键字符串，则 A &gt; B 由于有序集合中不存在两个相同的元素，故有序集合中的任意两个元素都不会出现相等的情况。 使用 ZADD 来创建一个有序集合： 1234del leehaoZADD leehao 1 C++ZADD leehao 2 PythonZADD leehao 0 C 我们先把原有的 leehao 键删除，然后构造了一个有序集合 leehao，其中，1，2，0分别为元素 C++，Python，C 的分数。使用命令 ZRANG 可以查看有序集合的元素： 1ZRANGE leehao 0 -1 上面的输出有序集合内所有元素，可以看到，输出的元素已经按元素的分数从小到大进行了排列： 1) “C”2) “C++”3) “Python” 如果需要逆序输出元素，则可以使用命令： 1ZREVRANGE leehao 0 -1 则元素会按元素的分数逆序输出： 1) “Python”2) “C++”3) “C” 如果需要输出元素的分数，则可以在 ZRANGE 命令最后添加上 WITHSCORES： 1ZRANGE leehao 0 -1 WITHSCORES 哈希表如果我们对 Python 的字典或者 C++ 的 std::map 这些数据结构熟悉的话，那么也一定会很快掌握 Redis 的哈希表数据结构，Redis 的哈希表同样是一种映射关系的数据结构。可以使用 HSET 或者 HMSET 来创建或者设置一个哈希表： 1hmset leehao name leo sex male location gz 上面的命令创建了一个哈希表，它的键为 leehao，该哈希表包含3个 域 - 值 对，分别为 name -&gt; leo，sex -&gt; male 以及 location -&gt; gz。 可以使用 HGET 命令获取哈希表某个 域 的值： 1hget leehao name 输出域 name 的值： “leo” 或者使用 HGETALL 命令获取哈希表所有 域 的值： 1hgetall leehao 输出为每个域 - 值对的列表： 1) “name”2) “leo”3) “sex”4) “male”5) “location”6) “gz” 参考资料 https://redis.io/topics/data-types-intro https://redis.io/topics/internals-sds Redis 设计与实现，黄健宏著，机械工业出版社，2015年1月]]></content>
       <categories>
         <category>Redis</category>
       </categories>
@@ -147,10 +161,10 @@
         <category>建站</category>
       </categories>
       <tags>
-        <tag>Nginx</tag>
         <tag>阿里云</tag>
         <tag>Hexo</tag>
         <tag>建站</tag>
+        <tag>Nginx</tag>
         <tag>SLB</tag>
         <tag>ECS</tag>
         <tag>负载均衡</tag>
@@ -271,10 +285,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -288,8 +302,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -313,9 +327,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>套接字</tag>
         <tag>TCP</tag>
         <tag>socket</tag>
-        <tag>套接字</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -331,9 +345,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
+        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>
@@ -361,9 +375,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>epoll</tag>
         <tag>select</tag>
         <tag>IO多路复用</tag>
-        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
