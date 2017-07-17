@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Redis,RDB," />
+  <meta name="keywords" content="Redis - RDB - AOF - 持久化," />
 
 
 
@@ -87,19 +87,22 @@
 
 
 
-<meta name="description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
-Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
+<meta name="description" content="文章 Redis 快照持久化学习笔记 介绍 Redis 快照持久化的功能，除了快照持久化外，Redis 还提供了 AOF（Append Only File）持久化功能。与快照持久化通过直接保存 Redis 的键值对数据不同，AOF 持久化是通过保存 Redis 执行的写命令来记录 Redis 的内存数据。
+AOF 持久化的原理理论上说，只要我们保存了所有可能修改 Redis 内存数据的命令（也就是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis 性能测试记录">
-<meta property="og:url" content="https://leehao.me/Redis-性能测试记录/index.html">
+<meta property="og:title" content="Redis AOF 持久化学习笔记">
+<meta property="og:url" content="https://leehao.me/Redis-AOF-持久化学习笔记/index.html">
 <meta property="og:site_name" content="Leo的博客">
-<meta property="og:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
-Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
-<meta property="og:updated_time" content="2017-04-23T05:24:59.000Z">
+<meta property="og:description" content="文章 Redis 快照持久化学习笔记 介绍 Redis 快照持久化的功能，除了快照持久化外，Redis 还提供了 AOF（Append Only File）持久化功能。与快照持久化通过直接保存 Redis 的键值对数据不同，AOF 持久化是通过保存 Redis 执行的写命令来记录 Redis 的内存数据。
+AOF 持久化的原理理论上说，只要我们保存了所有可能修改 Redis 内存数据的命令（也就是">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-09-143828.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-09-144038.jpg">
+<meta property="og:updated_time" content="2017-07-17T16:09:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 性能测试记录">
-<meta name="twitter:description" content="虽然 Redis 本身也提供redis-benchmark工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。
-Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pi">
+<meta name="twitter:title" content="Redis AOF 持久化学习笔记">
+<meta name="twitter:description" content="文章 Redis 快照持久化学习笔记 介绍 Redis 快照持久化的功能，除了快照持久化外，Redis 还提供了 AOF（Append Only File）持久化功能。与快照持久化通过直接保存 Redis 的键值对数据不同，AOF 持久化是通过保存 Redis 执行的写命令来记录 Redis 的内存数据。
+AOF 持久化的原理理论上说，只要我们保存了所有可能修改 Redis 内存数据的命令（也就是">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-09-143828.jpg">
 
 
 
@@ -127,13 +130,13 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
 
 
 
-  <link rel="canonical" href="https://leehao.me/Redis-性能测试记录/"/>
+  <link rel="canonical" href="https://leehao.me/Redis-AOF-持久化学习笔记/"/>
 
 
 
 
 
-  <title> Redis 性能测试记录 | Leo的博客 </title>
+  <title> Redis AOF 持久化学习笔记 | Leo的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -320,7 +323,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-性能测试记录/">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-AOF-持久化学习笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leo">
@@ -341,7 +344,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
             
             
               
-                Redis 性能测试记录
+                Redis AOF 持久化学习笔记
               
             
           </h1>
@@ -356,8 +359,8 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-23T13:01:44+08:00">
-                2017-04-23
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-18T00:03:12+08:00">
+                2017-07-18
               </time>
             
 
@@ -397,7 +400,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/Redis-性能测试记录/#comments" itemprop="discussionUrl">
+                <a class="cloud-tie-join-count" href="/Redis-AOF-持久化学习笔记/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count join-count" itemprop="commentCount"></span>
                 </a>
               </span>
@@ -429,36 +432,65 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
       
 
       
-        <p>虽然 Redis 本身也提供<code>redis-benchmark</code>工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。</p>
-<p>Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pipelining 来聚合多个命令。当然也可以使用多线程或者多进程。<br>我们使用 Python 脚本来作为 Redis 的测试工具，并采用每个进程一个 Redis 连接的方案。</p>
-<p>测试脚本如下所示：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> time</div><div class="line"><span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</div><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in write worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    s = <span class="string">'a'</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">10</span></div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % (n + <span class="number">100</span>)</div><div class="line">    r.set(bigkey, s)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'write time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in read worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % n</div><div class="line">    r.get(bigkey)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'read time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">()</span>:</span></div><div class="line">    read_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        read = Process(target=read_worker, args=(i,))</div><div class="line">        read.start()</div><div class="line">        read_processes.append(read)</div><div class="line"></div><div class="line">    write_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        write = Process(target=write_worker, args=(i,))</div><div class="line">        write.start()</div><div class="line">        write_processes.append(write)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> write <span class="keyword">in</span> write_processes:</div><div class="line">        write.join()</div><div class="line">    <span class="keyword">for</span> read <span class="keyword">in</span> read_processes:</div><div class="line">        read.join()</div><div class="line">    <span class="keyword">print</span> <span class="string">'end press test'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    test()</div></pre></td></tr></table></figure>
+        <p>文章 <a href="https://leehao.me/Redis-%E5%BF%AB%E7%85%A7%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Redis 快照持久化学习笔记</a> 介绍 Redis 快照持久化的功能，除了快照持久化外，Redis 还提供了 AOF（Append Only File）持久化功能。与快照持久化通过直接保存 Redis 的键值对数据不同，AOF 持久化是通过保存 Redis 执行的写命令来记录 Redis 的内存数据。</p>
+<h2 id="AOF-持久化的原理"><a href="#AOF-持久化的原理" class="headerlink" title="AOF 持久化的原理"></a>AOF 持久化的原理</h2><p>理论上说，只要我们保存了所有可能修改 Redis 内存数据的命令（也就是写命令），那么根据这些保存的写命令，我们可以重新恢复 Redis 的内存状态。AOF 持久化正是利用这个原理来实现数据的持久化与数据的恢复的。<br>Redis AOF 持久化原理如图 1 与图 2 所示。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-09-143828.jpg" alt=""></p>
+<p>图1：Redis 将写命令保存到 AOF 文件中</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-09-144038.jpg" alt=""><br>图2：Redis 利用 AOF 文件还原内存数据</p>
 <a id="more"></a>
-<p>redis-py 的<code>StrictRedis</code>已提供了连接池的功能的，可以在多线程中直接使用，这里我们使用了多进程的方式，并采用每个进程都使用独立的一个<code>StrictRedis</code>实例。<br>在上面的代码中，我们起了大量的读写进程。对 Redis 的写入操作中每次发送一个<code>SET</code>的请求，写入的数据大小为 100 MB，读操作则每次读取<code>GET</code> 100 MB的数据（需要提前准备<code>GET</code>请求的 key 的数据）。测试程序的目的是为了测试 Redis 在处理较高并发时，大数据读写的性能。</p>
-<p>测试结果在这里就不贴不出来，有兴趣的读者也可以运行一下这个 Python 脚本，就可以得到测试结果了。从测试结果来看，Redis 的性能还是很优秀的。</p>
-<p>这里重点提一下测试过程中 Redis 服务会报错的问题。<br>在写入大量的数据（100个10MB，即1GB）后，Redis 进程开始出现以下日志：</p>
-<blockquote>
-<p>[2418] 21 Apr 09:38:24.041 * 10 changes in 300 seconds. Saving…<br>[2418] 21 Apr 09:38:24.042 # Can’t save in background: fork: Cannot allocate memory</p>
-</blockquote>
-<p>客户端执行写入命令会报错：</p>
-<blockquote>
-<p>127.0.0.1:6380&gt; set key value<br>(error) MISCONF Redis is configured to save RDB snapshots, but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check Redis logs for details about the error.</p>
-</blockquote>
-<p>从网上查找 Redis 的资料可以知道，这是由于 Redis 开启了 RDB 功能所致。RDB 用于保存 Redis 的数据快照，将数据快照数据持久化到硬盘中。以下是 Redis 的 RDB 默认配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">save 900 1    </div><div class="line">save 300 10    </div><div class="line">save 60 10000</div></pre></td></tr></table></figure>
-<p>其含义是900秒内有1次修改，300秒内有10次修改，60秒内有10000秒修改，都会将照数据持久化到磁盘中。</p>
-<p>要解决 Redis 报错的问题，可以把 RDB 功能关闭，或者通过优化 Linux 内存配置优化解决。具体可以参考<a href="http://blog.chedushi.com/archives/7719" target="_blank" rel="external">《LINUX下REDIS内存优化》</a>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl vm.overcommit_memory=1</div></pre></td></tr></table></figure>
-<p>以 root 权限执行此命令后，再对 Redis 服务进行重启，然后执行测试程序，不再出现 Redis 报错的问题。</p>
-<p>需要指出的是，按照网上很多文章说的，可以通过修改 redis.conf 配置中的<code>stop-writes-on-bgsave-error</code>选项的方式来解决报错的问题，实际上只是把问题掩盖起来而。因为采用下面的配置：</p>
-<blockquote>
-<p>stop-writes-on-bgsave-error no</p>
-</blockquote>
-<p>RDB 功能虽然不能保存 Redis 数据快照了，但 Redis 仍可继续接受新的 Redis 请求。<br>为了从根本解决 RDB 报错的问题，还是应该通过修改<code>vm.overcommit_memory</code>Linux 内核参数的方式来解决。</p>
+<h3 id="AOF-配置"><a href="#AOF-配置" class="headerlink" title="AOF 配置"></a>AOF 配置</h3><p>为了打开 AOF 持久化的功能，我们只需要将 redis.conf 配置文件中的<code>appendonly</code>配置选项设置为<code>yes</code>即可。涉及 AOF 持久化的几个常用配置如下所示： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">appendonly yes</div><div class="line">appendfilename &quot;appendonly.aof&quot;</div><div class="line">appendfsync everysec</div></pre></td></tr></table></figure>
+<ul>
+<li>appendonly：是否打开 AOF 持久化功能</li>
+<li>appendfilename：AOF 文件名称</li>
+<li>appendfsync：同步频率，可选配置如表1所示</li>
+</ul>
+<p>appendfsync 持久化选项的取值如表 1 所示。</p>
+<p>表 1：appendfsync 选项及同步频率</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">选项</th>
+<th style="text-align:left">同步频率 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">always</td>
+<td style="text-align:left">每个 Redis 命令都要同步写入硬盘。这样会严重降低 Redis 的性能 </td>
+</tr>
+<tr>
+<td style="text-align:left">everysec</td>
+<td style="text-align:left">每秒执行一次同步，显式地将多个写命令同步到硬盘 </td>
+</tr>
+<tr>
+<td style="text-align:left">no</td>
+<td style="text-align:left">让操作系统来决定应该何时进行同步 </td>
+</tr>
+</tbody>
+</table>
+<p>AOF 文件的生成过程具体包括命令追加，文件写入，文件同步三个步骤。<br>Redis 打开 AOF 持久化功能后，Redis 在执行完一个写命令后，都会将执行的写命令追回到 Redis 内部的缓冲区的末尾。这个过程是命令的追加过程。<br>接下来，缓冲区的写命令会被写入到 AOF 文件，这一过程是文件写入过程。对于操作系统来说，调用<code>write</code>函数并不会立刻将数据写入到硬盘，为了将数据真正写入硬盘，还需要调用<code>fsync</code>函数，调用<code>fsync</code>函数即是文件同步的过程。只有经过文件同步过程，AOF 文件才在硬盘中真正保存了 Redis 的写命令。appendfsync 配置选项正是用来配置将写命令同步到文件的频率的，各个选项的值的含义如表 1 所示。</p>
+<h3 id="AOF-文件"><a href="#AOF-文件" class="headerlink" title="AOF 文件"></a>AOF 文件</h3><p>前面我们提到，AOF 持久化是通过 AOF 文件来实现的，那么 AOF 里面是如何保存 Redis 的写命令的呢？<br>假设我们对一个空的 Redis 数据库执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">set msg hello</div><div class="line">set site leehao.me</div></pre></td></tr></table></figure>
+<p>执行后，Redis 数据库保存了键 msg 与 site 的数据。打开保存的 AOF 文件<code>appendonly.aof</code>（AOF 文件的路径和名称由  redis.conf 配置，具体可以参考上面 AOF 配置的描述），可以看到其内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">*2</div><div class="line">$6</div><div class="line">SELECT</div><div class="line">$1</div><div class="line">0</div><div class="line">*3</div><div class="line">$3</div><div class="line">set</div><div class="line">$3</div><div class="line">msg</div><div class="line">$5</div><div class="line">hello</div><div class="line">*3</div><div class="line">$3</div><div class="line">set</div><div class="line">$4</div><div class="line">site</div><div class="line">$9</div><div class="line">leehao.me</div></pre></td></tr></table></figure>
+<p><code>appendonly.aof</code>以 Redis 协议格式 <a href="https://redis.io/topics/protocol" target="_blank" rel="external">RESP</a> 来保存写命令。由于 RESP 协议中包含了换行符，所以上面展示的 AOF 文件时遇到换行符时进行了换行。在 AOF 文件里面，除了用于指定数据库的 SELECT 命令是自动添加的之外，其他都是我们通过客户端发送的命令。<br><code>appendonly.aof</code>保存的命令会在 Redis 下次重启时使用来还原 Redis 数据库。</p>
+<h2 id="重写-压缩-AOF-文件"><a href="#重写-压缩-AOF-文件" class="headerlink" title="重写 / 压缩 AOF 文件"></a>重写 / 压缩 AOF 文件</h2><p>由于 Redis 会不断地将被执行的命令记录到 AOF 文件里面，所以随着 Redis 不断运行，AOF 文件的体积会越来越大。另外，如果 AOF 文件的体积很大，那么还原操作所需要的时间也会非常地长。<br>为了解决 AOF 文件越来越大的问题，用户可以向 Redis 发送 BGREWRITEAOF 命令，这个命令会移除 AOF 文件中冗余的命令来重写 AOF 文件，使 AOF 文件的体积变得尽可能地小。<br>BGREWRITEAOF 的工作原理和快照持久化命令 BGSAVE 的工作原理类似，Redis 会创建一个子进程来负责对 AOF 文件进行重写。<br>值得注意的是，进行 AOF 文件重写时，如果原来的 AOF 文件体积已经非常大，那么重写 AOF 并删除旧 AOF 文件的过程将会对 Redis 的性能造成较大的影响。<br>为此，Redis 提供<code>auto-aof-rewrite-percentage</code>和<code>auto-aof-rewrite-min-size</code>两个配置选项来对 AOF 重写进行配置。<code>auto-aof-rewrite-percentage</code>和<code>auto-aof-rewrite-min-size</code>两个配置选项的含义可以参考 redis.conf 配置中的详细说明，具体来说，<code>auto-aof-rewrite-percentage</code>配置当 AOF 文件需要比旧 AOF 文件增大多少时才进行 AOF 重写，而<code>auto-aof-rewrite-min-size</code>则配置当 AOF 文件需要达到多大体积时才进行 AOF 重写。只有这两个配置的条件都达到时，才会进行 AOF 重写。</p>
+<h2 id="AOF-的优点"><a href="#AOF-的优点" class="headerlink" title="AOF 的优点"></a>AOF 的优点</h2><ul>
+<li>AOF 持久化的方法提供了多种的同步频率，即使使用默认的同步频率每秒同步一次，Redis 最多也就丢失 1 秒的数据而已。</li>
+<li>AOF 文件使用 Redis 命令追加的形式来构造，因此，即使 Redis 只能向 AOF 文件写入命令的片断，使用 redis-check-aof 工具也很容易修正 AOF 文件。</li>
+<li>AOF 文件的格式可读性较强，这也为使用者提供了更灵活的处理方式。例如，如果我们不小心错用了 FLUSHALL 命令，在重写还没进行时，我们可以手工将最后的 FLUSHALL 命令去掉，然后再使用 AOF 来恢复数据。</li>
+</ul>
+<h2 id="AOF-的缺点"><a href="#AOF-的缺点" class="headerlink" title="AOF 的缺点"></a>AOF 的缺点</h2><ul>
+<li>对于具有相同数据的的 Redis，AOF 文件通常会比 RDF 文件体积更大。</li>
+<li>虽然 AOF 提供了多种同步的频率，默认情况下，每秒同步一次的频率也具有较高的性能。但在 Redis 的负载较高时，RDB 比 AOF 具好更好的性能保证。</li>
+<li>RDB 使用快照的形式来持久化整个 Redis 数据，而 AOF 只是将每次执行的命令追加到 AOF 文件中，因此从理论上说，RDB 比 AOF 方式更健壮。官方文档也指出，AOF 的确也存在一些 BUG，这些 BUG 在 RDB 没有存在。</li>
+</ul>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li><a href="https://redis.io/topics/benchmarks" target="_blank" rel="external">https://redis.io/topics/benchmarks</a></li>
-<li><a href="http://www.redis.cn/topics/benchmarks.html" target="_blank" rel="external">http://www.redis.cn/topics/benchmarks.html</a></li>
-<li><a href="http://blog.chedushi.com/archives/7719" target="_blank" rel="external">http://blog.chedushi.com/archives/7719</a></li>
+<li>Redis 实战，Josiah L. Carlson 著，黄健宏译，人民邮电出版社，2015年</li>
+<li>Redis 设计与实现，黄健宏著，机械工业出版社，2015年</li>
+<li><a href="https://redis.io/topics/persistence" target="_blank" rel="external">https://redis.io/topics/persistence</a></li>
+<li><a href="https://redis.io/topics/protocol" target="_blank" rel="external">https://redis.io/topics/protocol</a></li>
 </ol>
 
       
@@ -510,9 +542,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
       
         <div class="post-tags">
           
-            <a href="/tags/Redis/" rel="tag"># Redis</a>
-          
-            <a href="/tags/RDB/" rel="tag"># RDB</a>
+            <a href="/tags/Redis-RDB-AOF-持久化/" rel="tag"># Redis - RDB - AOF - 持久化</a>
           
         </div>
       
@@ -525,8 +555,8 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Redis-C-语言客户端-hiredis-的使用/" rel="next" title="Redis C 语言客户端 hiredis 的使用">
-                <i class="fa fa-chevron-left"></i> Redis C 语言客户端 hiredis 的使用
+              <a href="/Redis-快照持久化学习笔记/" rel="next" title="Redis 快照持久化学习笔记">
+                <i class="fa fa-chevron-left"></i> Redis 快照持久化学习笔记
               </a>
             
           </div>
@@ -534,10 +564,6 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/I-O多路复用之-epoll-系统调用/" rel="prev" title="I/O多路复用之 epoll 系统调用">
-                I/O多路复用之 epoll 系统调用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -668,7 +694,7 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-持久化的原理"><span class="nav-number">1.</span> <span class="nav-text">AOF 持久化的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF-配置"><span class="nav-number">1.1.</span> <span class="nav-text">AOF 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AOF-文件"><span class="nav-number">1.2.</span> <span class="nav-text">AOF 文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写-压缩-AOF-文件"><span class="nav-number">2.</span> <span class="nav-text">重写 / 压缩 AOF 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-的优点"><span class="nav-number">3.</span> <span class="nav-text">AOF 的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-的缺点"><span class="nav-number">4.</span> <span class="nav-text">AOF 的缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
