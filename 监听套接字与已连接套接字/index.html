@@ -97,7 +97,7 @@
 为了说明监听套接字与已连接套接字的区别，我们先来看一下套接字在连接中的含义。从内核的角度来看，一个套接字就是通信的一个端点。一个连接由它两端的套接了地址唯一确定，这对套接字地址叫做套接字对（socket pair），由下列4元组来表示：">
 <meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNc79gy1fdvvggiwlej30n40akq48.jpg">
 <meta property="og:image" content="https://ww2.sinaimg.cn/large/006tKfTcgy1fdvxmypw2tj30xe0k6wgy.jpg">
-<meta property="og:updated_time" content="2017-03-22T13:44:26.000Z">
+<meta property="og:updated_time" content="2017-07-18T15:01:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="监听套接字与已连接套接字">
 <meta name="twitter:description" content="监听套接字（listening socket）和已连接套接字（connected socket）之间的区别常会使很多人感到迷惑。本文简要描述一下这两者的区别。
@@ -453,10 +453,10 @@
 <p>(128.2.194.242:51234, 114.113.200.133:80)</p>
 </blockquote>
 <p>在上面的例子中，客户端是发起连接请求的主动实体，服务器是等待来自客户端连接请求的被动实体。我们知道，<code>socket</code>函数可以创建一个套接字。默认情况，内核会认为<code>socket</code>函数创建的套接字是主动套接字（active socket），它存在于一个连接的客户端。而服务器调用<code>listen</code>函数告诉内核，该套接字是被服务器而不是客户端使用的，即<code>listen</code>函数将一个主动套接字转化为<strong>监听套接字</strong>（下文以 listenfd 表示）。监听套接字可以接受来自客户端的连接请求。<br>服务器通过<code>accept</code>函数等待来自客户端的连接请求到达监听套接字 listenfd，并返回一个<strong>已连接套接字</strong>（下文以 connfd 表示）。利用 I/O 函数，这个 connfd 可以被用来与客户端进行通信。</p>
-<p>上面就是监听套接字与已连接套接字的基本区别了。具体来说，监听套接字，是服务器作为客户端连接请求的一个端点，它被创建一次，并存在于服务器的整个生命周期。已连接套接字是客户端与服务器之间已经建立起来了的连接的一个端点，服务器每次接受连接请求时都会创建一次已连接套接字，它只存在于服务器为一个客户端服务的过程中。<br>值得指出的是，无论是监听套接字，还是已连接套接字，都是只存在于服务器端。</p>
+<p>上面就是监听套接字与已连接套接字的基本区别了。具体来说，监听套接字，是服务器作为客户端连接请求的一个端点，它被创建一次，并存在于服务器的整个生命周期。已连接套接字是客户端与服务器之间已经建立起来了的连接的一个端点，服务器每次接受连接请求时都会创建一次已连接套接字，它只存在于服务器为一个客户端服务的过程中。<br>值得指出的是，无论是监听套接字，还是已连接套接字，都是只存在于服务器端，且已连接套接字和监听套接字使用相同的端口。</p>
 <p><img src="https://ww2.sinaimg.cn/large/006tKfTcgy1fdvxmypw2tj30xe0k6wgy.jpg" alt=""><br>图2：监听套接字与已连接套接字的角色</p>
 <p>图2描绘了监听套接字和已连接套接字的角色。在第一步中，服务器调用<code>accept</code>，等待连接请求到达监听套接字 listenfd，假设该监听套接字的文字描述符为3（0，1，2已预留给标准文件使用）。在第二步中，客户端调用<code>connect</code>函数，发送一个连接请求到 listenfd。第三步，<code>accept</code>函数打开一个新的已连接套接字 connfd （假设套接字的文件描述符为4）,在 clientfd 和 connfd 之间建立连接，并且随后返回给服务器应用程序。客户端也从<code>connect</code>函数返回。此时，客户端和服务器就可以分别通过读写 clientfd 和 connfd 来回传送数据了。</p>
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>《深入理解计算机系统》，第2版，机械工业出版社</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>1.《深入理解计算机系统》，第2版，机械工业出版社<br>2.《UNIX网络编程》，第3版，人民邮电出版社</p>
 
       
     </div>
