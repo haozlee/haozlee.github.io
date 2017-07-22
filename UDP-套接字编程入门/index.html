@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Socket,UDP,套接字,sendto,recvfrom," />
+  <meta name="keywords" content="套接字,Socket,UDP,sendto,recvfrom," />
 
 
 
@@ -396,8 +396,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/UDP-套接字编程入门/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                <a href="/UDP-套接字编程入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="UDP-套接字编程入门/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -550,11 +551,11 @@
       
         <div class="post-tags">
           
+            <a href="/tags/套接字/" rel="tag"># 套接字</a>
+          
             <a href="/tags/Socket/" rel="tag"># Socket</a>
           
             <a href="/tags/UDP/" rel="tag"># UDP</a>
-          
-            <a href="/tags/套接字/" rel="tag"># 套接字</a>
           
             <a href="/tags/sendto/" rel="tag"># sendto</a>
           
@@ -609,7 +610,12 @@
           
   <div class="comments" id="comments">
     
-      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -864,6 +870,26 @@
 
   
 
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://leehao.me/UDP-套接字编程入门/';
+          this.page.identifier = 'UDP-套接字编程入门/';
+          this.page.title = 'UDP 套接字编程入门';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -874,21 +900,18 @@
 
 
   
-    
-    <script>
-      var cloudTieConfig = {
-        url: document.location.href, 
-        sourceId: "",
-        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
-        target: "cloud-tie-wrapper"
-      };
-    </script>
-    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+
+
+
+
+
   
 
 
 
 
+
+  
 
 
 

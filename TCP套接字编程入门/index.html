@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="套接字,TCP,socket,bind,connect,close,accept,listen," />
+  <meta name="keywords" content="TCP,socket,套接字,bind,connect,close,accept,listen," />
 
 
 
@@ -402,8 +402,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a class="cloud-tie-join-count" href="/TCP套接字编程入门/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count join-count" itemprop="commentCount"></span>
+                <a href="/TCP套接字编程入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="TCP套接字编程入门/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -547,11 +548,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/套接字/" rel="tag"># 套接字</a>
-          
             <a href="/tags/TCP/" rel="tag"># TCP</a>
           
             <a href="/tags/socket/" rel="tag"># socket</a>
+          
+            <a href="/tags/套接字/" rel="tag"># 套接字</a>
           
             <a href="/tags/bind/" rel="tag"># bind</a>
           
@@ -612,7 +613,12 @@
           
   <div class="comments" id="comments">
     
-      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -867,6 +873,26 @@
 
   
 
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://leehao.me/TCP套接字编程入门/';
+          this.page.identifier = 'TCP套接字编程入门/';
+          this.page.title = 'TCP套接字编程入门';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -877,21 +903,18 @@
 
 
   
-    
-    <script>
-      var cloudTieConfig = {
-        url: document.location.href, 
-        sourceId: "",
-        productKey: "e2b2916a7e2649a88b3071f6e8cabfde",
-        target: "cloud-tie-wrapper"
-      };
-    </script>
-    <script src="https://img1.ws.126.net/f2e/tie/yun/sdk/loader.js"></script>
+
+
+
+
+
   
 
 
 
 
+
+  
 
 
 
