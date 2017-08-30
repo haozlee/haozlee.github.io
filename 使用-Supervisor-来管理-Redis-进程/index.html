@@ -1,0 +1,975 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Redis,Supervisor,supervisord,supervisorctl," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Supervisor 是一个用 Python 实现的进程管理工具，可以很方便地启动，关闭，重启，查看，以及监控进程，当进程由于某种原因崩溃或者被误杀后，可以自动重启并发送事件通知。Supervisor 可谓运维利器，使用 Supervisor 来管理进程，可以提高系统的高可用特性。随着 Redis 越来越流行，越来越多的公司都使用上了 Redis，因此 Redis 的进程管理就成了很多公司都需要面">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 Supervisor 来管理 Redis 进程">
+<meta property="og:url" content="https://leehao.me/使用-Supervisor-来管理-Redis-进程/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="Supervisor 是一个用 Python 实现的进程管理工具，可以很方便地启动，关闭，重启，查看，以及监控进程，当进程由于某种原因崩溃或者被误杀后，可以自动重启并发送事件通知。Supervisor 可谓运维利器，使用 Supervisor 来管理进程，可以提高系统的高可用特性。随着 Redis 越来越流行，越来越多的公司都使用上了 Redis，因此 Redis 的进程管理就成了很多公司都需要面">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142510.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142551.jpg">
+<meta property="og:updated_time" content="2017-08-30T14:26:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 Supervisor 来管理 Redis 进程">
+<meta name="twitter:description" content="Supervisor 是一个用 Python 实现的进程管理工具，可以很方便地启动，关闭，重启，查看，以及监控进程，当进程由于某种原因崩溃或者被误杀后，可以自动重启并发送事件通知。Supervisor 可谓运维利器，使用 Supervisor 来管理进程，可以提高系统的高可用特性。随着 Redis 越来越流行，越来越多的公司都使用上了 Redis，因此 Redis 的进程管理就成了很多公司都需要面">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142510.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/使用-Supervisor-来管理-Redis-进程/"/>
+
+
+
+
+
+  <title> 使用 Supervisor 来管理 Redis 进程 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-Supervisor-来管理-Redis-进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用 Supervisor 来管理 Redis 进程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-30T22:23:10+08:00">
+                2017-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/使用-Supervisor-来管理-Redis-进程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="使用-Supervisor-来管理-Redis-进程/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Supervisor 是一个用 Python 实现的进程管理工具，可以很方便地启动，关闭，重启，查看，以及监控进程，当进程由于某种原因崩溃或者被误杀后，可以自动重启并发送事件通知。Supervisor 可谓运维利器，使用 Supervisor 来管理进程，可以提高系统的高可用特性。<br>随着 Redis 越来越流行，越来越多的公司都使用上了 Redis，因此 Redis 的进程管理就成了很多公司都需要面临的问题，本文介绍如何使用 Supervisor 来管理 Redis 进程。</p>
+<h2 id="Supervisor-简介"><a href="#Supervisor-简介" class="headerlink" title="Supervisor 简介"></a>Supervisor 简介</h2><p>Supervisor 包括以下四个组件。</p>
+<ul>
+<li><p>supervisord<br>服务端程序，主要功能是启动 supervisord 服务及其管理的子进程，记录日志，重启崩溃的子进程，等。</p>
+</li>
+<li><p>supervisorctl<br>命令行客户端程序，它提供一个类似 shell 的接口，通过 UNIX 域套接字或者 TCP 套接字并使用 XML_RPC 协议与 supervisord 进程进行数据通信。它的主要功能是管理（启动，关闭，重启，查看状态）子进程。</p>
+</li>
+</ul>
+<ul>
+<li>Web Server<br>实现在界面上管理进程，还能查看进程日志和清除日志。</li>
+</ul>
+<ul>
+<li>XML-RPC 接口<br>可以通过 XML_RPC 协议对 supervisord 进行远程管理，达到和 supervisorctl 以及 Web Server 一样的管理功能。</li>
+</ul>
+<p>进程被 Supervisor 管理后，其运行状态的转化图如下图 1 所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142510.jpg" alt=""><br>图 1 ：子进程状态转移图</p>
+<a id="more"></a>
+<p>我们挑几个重要的进程状态来说明。</p>
+<ul>
+<li>running：进程处于运行状态</li>
+<li>starting：Supervisor 收到启动请求后，进程处于正在启动过程中</li>
+<li>stopped：进程处于关闭状态</li>
+<li>stopping：Supervisor 收到关闭请求后，进程处于正在关闭过程中</li>
+<li>backoff：进程进入 starting 状态后，由于马上就退出导致没能进入 running 状态</li>
+<li>fatal：进程没有正常启动</li>
+<li>exited：进程从 running 状态退出</li>
+</ul>
+<p>没有接触过 Supervisor 的朋友可能对上面的描述感到有些抽象，不用担心，经过下面的实践后，会快速理解 Supervisor 涉及的这些名词的。</p>
+<h2 id="Supervisor-初体验"><a href="#Supervisor-初体验" class="headerlink" title="Supervisor 初体验"></a>Supervisor 初体验</h2><p>我们以 CentOS 平台下为例，说明如何使用 Supervisor 这一强大的进程管理工具。</p>
+<h3 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h3><p>可以使用<code>easy_intall</code>来安装 Supervisor：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">easy_install supervisor</div></pre></td></tr></table></figure></p>
+<p>也可以使用<code>pip</code>来安装 Supervisor：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install supervisor</div></pre></td></tr></table></figure></p>
+<p>安装过程比较简单，此处我们不再赘述。</p>
+<p>安装完毕后，可以使用以下命令来测试安装是否成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo_supervisord_conf</div></pre></td></tr></table></figure>
+<p><code>echo_supervisord_conf</code>将会在终端输出 Supervisor 配置的样例。</p>
+<h3 id="2-创建配置目录以及主配置文件"><a href="#2-创建配置目录以及主配置文件" class="headerlink" title="2. 创建配置目录以及主配置文件"></a>2. 创建配置目录以及主配置文件</h3><p>为了将 Supervisor 的配置放置到独立的目录中，我们先创建目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /etc</div><div class="line">mkdir supervisor</div></pre></td></tr></table></figure>
+<p>接着，可以继续使用<code>echo_supervisord_conf</code>命令，将 Supervisor 样例配置重定向输出到文件文件中：</p>
+<p><code>echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf</code></p>
+<p>这样，我们便生成了 Supervisor 的主配置文件<code>supervisord.conf</code>。</p>
+<p>为了将 Supervisor 管理的进程配置与主配置文件区分开来，我们创建独立的目录来存放进程配置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /etc/supervisor</div><div class="line">mkdir conf.d</div></pre></td></tr></table></figure>
+<p>然后，修改主配置文件 <code>supervisord.conf</code>，添加以下配置，将 conf.d 目录下的进程配置引入 Supervisor 管理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[include]</div><div class="line">files = ./conf.d/*.ini</div></pre></td></tr></table></figure>
+<h3 id="3-创建管理进程"><a href="#3-创建管理进程" class="headerlink" title="3. 创建管理进程"></a>3. 创建管理进程</h3><p>为方便测试 Supervisor 的功能，我们编写以下 Python 脚本，并保存为 hello.py。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> time</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        print(<span class="string">"hello\n"</span>)</div><div class="line">        sys.stdout.flush()</div><div class="line">        time.sleep(<span class="number">1</span>)</div></pre></td></tr></table></figure>
+<p>hello.py 的主要功能是往标准输出中不断地输出 “hello” 字符串。</p>
+<h3 id="4-创建进程配置"><a href="#4-创建进程配置" class="headerlink" title="4. 创建进程配置"></a>4. 创建进程配置</h3><p>为将 hello.py 脚本被 Supervisor 接管，我们在 /etc/supervisor/conf.d 目录创建其配置 hello.ini：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="section">[program:hello]</span></div><div class="line"><span class="attr">command</span>=python /home/lihao/codes/python/hello.py              </div><div class="line"><span class="attr">stdout_logfile</span>=/home/lihao/codes/python/hello.log</div><div class="line"><span class="attr">stderr_logfile</span>=/home/lihao/codes/python/hello_error.log</div></pre></td></tr></table></figure>
+<ul>
+<li>command：运行进程使用的命令</li>
+<li>stdout_logfile：指定标准输出文件</li>
+<li>stderr_logfile：标准错误输出文件</li>
+</ul>
+<p>需要指出的是，被 Supervisor 管理的进程，不能使用 daemon 模式，而必须在前台运行，否则会报错。</p>
+<h3 id="5-运行-supervisord"><a href="#5-运行-supervisord" class="headerlink" title="5. 运行 supervisord"></a>5. 运行 supervisord</h3><p>由于我们需要使用指定目录下的 Supervisor 主配置文件，在运行 Supervisord 时，需要使用<code>-c</code>参数来指定主配置文件的路径：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">supervisord -c /etc/supervisor/supervisord.conf</div></pre></td></tr></table></figure>
+<h3 id="6-使用-supervisorctl-管理进程"><a href="#6-使用-supervisorctl-管理进程" class="headerlink" title="6. 使用 supervisorctl 管理进程"></a>6. 使用 supervisorctl 管理进程</h3><p>使用 supervisorctl 可以查看监控的进程状态：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">supervisorctl -c /etc/supervisor/supervisord.conf</div></pre></td></tr></table></figure></p>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hello	RUNNING   pid 8475, uptime 7:59:46</div><div class="line">supervisor&gt;</div></pre></td></tr></table></figure>
+<p>可以看到，脚本 hello.py 已经运行了起来（当然使用 <code>ps aux | grep hello</code>也可以看到其进程信息）。打开文件 /home/lihao/codes/python/hello.log，可以看到文件中不断有”hello”输出。</p>
+<p>在 supervisorctl 命令行下，也可以使用<code>start</code>，<code>stop</code>，<code>restart</code>，<code>status</code>，等命令来启动，关闭，重启，查看状态监控的进程，也可以输入<code>help</code>来查看命令帮助。限于篇幅，此处不再展开，详细的 supervisorctl 命令可以参考：<a href="http://www.supervisord.org/running.html#running-supervisorctl" target="_blank" rel="external">http://www.supervisord.org/running.html#running-supervisorctl</a>。</p>
+<h2 id="Supervisor-管理-Redis-进程"><a href="#Supervisor-管理-Redis-进程" class="headerlink" title="Supervisor 管理 Redis 进程"></a>Supervisor 管理 Redis 进程</h2><p>在说完 Supervisor 的基本使用后，我们来看下如何使用 Supervisor 来管理 Redis 进程。</p>
+<h3 id="Redis-的-Supervisor-配置"><a href="#Redis-的-Supervisor-配置" class="headerlink" title="Redis 的 Supervisor 配置"></a>Redis 的 Supervisor 配置</h3><p>有了上面的基础，我们很容易写出 Redis 服务进程的 Supervisor 配置：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="section">[program:redis]</span></div><div class="line"><span class="attr">command</span>=/usr/local/bin/redis-server</div><div class="line"><span class="attr">autostart</span>=<span class="literal">true</span></div><div class="line"><span class="attr">autorestart</span>=<span class="literal">true</span></div><div class="line"><span class="attr">startsecs</span>=<span class="number">3</span></div></pre></td></tr></table></figure>
+<p>使用 supervisorctl reload 载入新的 Redis 配置后，Redis 进程便让 Supervisor 启动了起来。如果需要指定 Redis 的输出日志，可以通过<code>stdout_logfile</code>配置选项指定，具体也可以参考上述的 hello 例子。</p>
+<p>由于 Supervisor 管理的进程不能设置为 daemon 模式，故如果 Redis 无法正常启动，可以查看一下 Redis 的配置，并将<code>daemonize</code>选项设置为 no。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">daemonize no</div></pre></td></tr></table></figure>
+<h3 id="Supervisord-开机启动"><a href="#Supervisord-开机启动" class="headerlink" title="Supervisord 开机启动"></a>Supervisord 开机启动</h3><p>为了处理机器宕机重启的情况，Redis 服务进程需要实现机器重启后自动重启的功能。 为此，需要配置 supervisord 进程随着机器启动而启动。要实现这一目的 ，可以在 /etc/init 目录下添加 supervisord.conf 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">description     &quot;supervisord&quot;</div><div class="line">start on runlevel [2345]</div><div class="line">stop on runlevel [!2345]</div><div class="line"></div><div class="line">respawn</div><div class="line"></div><div class="line">exec supervisord -n -c /etc/supervisor/supervisord.conf</div></pre></td></tr></table></figure>
+<p>这样，每当机器重启后，supervisord 进程都会自动启动起来，避免机器每次重启后都需要手工启动 supervisord 进程的操作。Supervisord 进程启动后，接下来会将其管理的进程自动地启动起来。这样，便实现了被 Supervisor 管理的进程随着机器启动而启动的效果。读者可以自行在测试机器上测试一下。</p>
+<h3 id="Supervisor-Web-管理界面"><a href="#Supervisor-Web-管理界面" class="headerlink" title="Supervisor Web 管理界面"></a>Supervisor Web 管理界面</h3><p>如果需要开启 Web 管理界面功能，需要在<code>supervisord.conf</code>配置中添加以下配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">[inet_http_server]</div><div class="line">port=*:9001</div><div class="line">username=user</div><div class="line">password=123</div></pre></td></tr></table></figure>
+<p>然后，打开浏览器，输入地址 <a href="http://127.0.0.1:9001，这时，会弹出输入框，要求输入用户名和密码（用户名：user，密码：123），便可以进入" target="_blank" rel="external">http://127.0.0.1:9001，这时，会弹出输入框，要求输入用户名和密码（用户名：user，密码：123），便可以进入</a> Supervisor 提供的进程管理界面。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142551.jpg" alt=""></p>
+<p>图 2 ：Supervisor Web 管理界面</p>
+<p>在此界面下，可以对单个进程进行重启，关闭，查看日志等操作，也可以对所有的进程进行重启，关闭等操作。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://www.supervisord.org/" target="_blank" rel="external">http://www.supervisord.org/</a></li>
+<li>Python Web 开发实战，董伟明著，电子工业出版社</li>
+<li><a href="http://www.jianshu.com/p/9abffc905645" target="_blank" rel="external">http://www.jianshu.com/p/9abffc905645</a></li>
+<li><a href="http://www.supervisord.org/running.html#running-supervisorctl" target="_blank" rel="external">http://www.supervisord.org/running.html#running-supervisorctl</a></li>
+<li><a href="http://supervisord.org/configuration.html" target="_blank" rel="external">http://supervisord.org/configuration.html</a></li>
+<li><a href="http://www.supervisord.org/subprocess.html" target="_blank" rel="external">http://www.supervisord.org/subprocess.html</a></li>
+<li><a href="https://lincolnloop.com/blog/automatically-running-supervisord-startup/" target="_blank" rel="external">https://lincolnloop.com/blog/automatically-running-supervisord-startup/</a></li>
+<li><a href="https://serverfault.com/questions/96499/how-to-automatically-start-supervisord-on-linux-ubuntu" target="_blank" rel="external">https://serverfault.com/questions/96499/how-to-automatically-start-supervisord-on-linux-ubuntu</a></li>
+<li><a href="https://segmentfault.com/a/1190000003955182" target="_blank" rel="external">https://segmentfault.com/a/1190000003955182</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/Supervisor/" rel="tag"># Supervisor</a>
+          
+            <a href="/tags/supervisord/" rel="tag"># supervisord</a>
+          
+            <a href="/tags/supervisorctl/" rel="tag"># supervisorctl</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Redis-AOF-持久化学习笔记/" rel="next" title="Redis AOF 持久化学习笔记">
+                <i class="fa fa-chevron-left"></i> Redis AOF 持久化学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">49</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">125</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Supervisor-简介"><span class="nav-number">1.</span> <span class="nav-text">Supervisor 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Supervisor-初体验"><span class="nav-number">2.</span> <span class="nav-text">Supervisor 初体验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-安装"><span class="nav-number">2.1.</span> <span class="nav-text">1. 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-创建配置目录以及主配置文件"><span class="nav-number">2.2.</span> <span class="nav-text">2. 创建配置目录以及主配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-创建管理进程"><span class="nav-number">2.3.</span> <span class="nav-text">3. 创建管理进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-创建进程配置"><span class="nav-number">2.4.</span> <span class="nav-text">4. 创建进程配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-运行-supervisord"><span class="nav-number">2.5.</span> <span class="nav-text">5. 运行 supervisord</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-使用-supervisorctl-管理进程"><span class="nav-number">2.6.</span> <span class="nav-text">6. 使用 supervisorctl 管理进程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Supervisor-管理-Redis-进程"><span class="nav-number">3.</span> <span class="nav-text">Supervisor 管理 Redis 进程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis-的-Supervisor-配置"><span class="nav-number">3.1.</span> <span class="nav-text">Redis 的 Supervisor 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Supervisord-开机启动"><span class="nav-number">3.2.</span> <span class="nav-text">Supervisord 开机启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Supervisor-Web-管理界面"><span class="nav-number">3.3.</span> <span class="nav-text">Supervisor Web 管理界面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://leehao.me/使用-Supervisor-来管理-Redis-进程/';
+          this.page.identifier = '使用-Supervisor-来管理-Redis-进程/';
+          this.page.title = '使用 Supervisor 来管理 Redis 进程';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

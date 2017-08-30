@@ -4,6 +4,32 @@
 
     
   <url>
+    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8-Supervisor-%E6%9D%A5%E7%AE%A1%E7%90%86-Redis-%E8%BF%9B%E7%A8%8B/</loc>
+    <lastmod>2017-08-30T14:26:05.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用 Supervisor 来管理 Redis 进程</title>
+        <pubTime>2017-08-30T14:23:10.000Z</pubTime>
+        
+        <tag>Redis</tag>
+         
+        <tag>Supervisor</tag>
+         
+        <tag>supervisord</tag>
+         
+        <tag>supervisorctl</tag>
+         
+         
+           
+             
+              <breadCrumb title="Redis" url="https://leehao.me/categories/Redis/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://leehao.me/%E7%9B%91%E5%90%AC%E5%A5%97%E6%8E%A5%E5%AD%97%E4%B8%8E%E5%B7%B2%E8%BF%9E%E6%8E%A5%E5%A5%97%E6%8E%A5%E5%AD%97/</loc>
     <lastmod>2017-07-18T15:01:57.000Z</lastmod>
     <data>
@@ -1117,27 +1143,6 @@
 
     
   <url>
-    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    <data>
-        <display>
-        <title>Python Requests库简明使用教程</title>
-        <pubTime>2017-01-24T12:11:39.000Z</pubTime>
-        
-        <tag>Python</tag>
-         
-         
-           
-             
-              <breadCrumb title="Python" url="https://leehao.me/categories/Python/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
     <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     <data>
@@ -1158,6 +1163,7 @@
     </data>
     </url>
 
+    
     
   <url>
     <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
@@ -1180,4 +1186,24 @@
 
     
     
+    
+  <url>
+    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    <data>
+        <display>
+        <title>Python Requests库简明使用教程</title>
+        <pubTime>2017-01-24T12:11:39.000Z</pubTime>
+        
+        <tag>Python</tag>
+         
+         
+           
+             
+              <breadCrumb title="Python" url="https://leehao.me/categories/Python/"/>
+          
+        </display>
+    </data>
+    </url>
+
 </urlset>
