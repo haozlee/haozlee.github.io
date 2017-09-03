@@ -1,0 +1,882 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="性能优化,代码优化," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="忙了几个月的项目终于在生产环境上上线，虽然接下来还有不少工作需要跟进，但终究不像上段时间那么忙了，因此也就能利用周末的时间，对之前优化程序性能的过程作下记录，也当是个小小的经验总结。
+程序的应用场景是往 Redis 写入具有大量记录的二维表，或者从 Redis 读取具有大量记录的二维表数据。由于二维表的记录数量巨大，比如有些二维表的记录数达几十万条，因此对于程序的性能有较高的要求。
+程序使用 hi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次程序优化记录">
+<meta property="og:url" content="https://leehao.me/记一次程序优化记录/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="忙了几个月的项目终于在生产环境上上线，虽然接下来还有不少工作需要跟进，但终究不像上段时间那么忙了，因此也就能利用周末的时间，对之前优化程序性能的过程作下记录，也当是个小小的经验总结。
+程序的应用场景是往 Redis 写入具有大量记录的二维表，或者从 Redis 读取具有大量记录的二维表数据。由于二维表的记录数量巨大，比如有些二维表的记录数达几十万条，因此对于程序的性能有较高的要求。
+程序使用 hi">
+<meta property="og:updated_time" content="2017-09-03T02:18:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记一次程序优化记录">
+<meta name="twitter:description" content="忙了几个月的项目终于在生产环境上上线，虽然接下来还有不少工作需要跟进，但终究不像上段时间那么忙了，因此也就能利用周末的时间，对之前优化程序性能的过程作下记录，也当是个小小的经验总结。
+程序的应用场景是往 Redis 写入具有大量记录的二维表，或者从 Redis 读取具有大量记录的二维表数据。由于二维表的记录数量巨大，比如有些二维表的记录数达几十万条，因此对于程序的性能有较高的要求。
+程序使用 hi">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/记一次程序优化记录/"/>
+
+
+
+
+
+  <title> 记一次程序优化记录 | Leo的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录开发的点滴</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/记一次程序优化记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                记一次程序优化记录
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-03T10:16:34+08:00">
+                2017-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/记一次程序优化记录/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="记一次程序优化记录/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>忙了几个月的项目终于在生产环境上上线，虽然接下来还有不少工作需要跟进，但终究不像上段时间那么忙了，因此也就能利用周末的时间，对之前优化程序性能的过程作下记录，也当是个小小的经验总结。</p>
+<p>程序的应用场景是往 Redis 写入具有大量记录的二维表，或者从 Redis 读取具有大量记录的二维表数据。由于二维表的记录数量巨大，比如有些二维表的记录数达几十万条，因此对于程序的性能有较高的要求。</p>
+<p>程序使用 hiredis 来写入 redis 数据，由于二维表的数据量巨大，且没有采用 pipeline 的方式每次写入一行记录而是采用一次性写入所有记录的方式，因此，需要构造一个具有较大容量的字符串缓冲区来发送二维表数据。在初始化缓冲区时，使用了<code>memset</code>函数来将字符串缓冲区所有位置为0：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">memset</span>(buff, <span class="string">'\0'</span>, <span class="number">10240000</span>);</div></pre></td></tr></table></figure>
+<p>上面语句的作用是将<code>buff</code>所指向的缓冲区初始化为0，<code>10240000</code>表示缓冲区的大小约为10MB。</p>
+<p>程序运行后，发现性能很低，通过定位，发现性能的瓶颈正好是这个<code>memset</code>函数的使用，下面的代码可以测试<code>memset</code>的执行时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">clock_t start, finish;</div><div class="line">double duration;</div><div class="line">start = clock();</div><div class="line">memset(buff, &apos;\0&apos;, 10240000);</div><div class="line">finish = clock();</div><div class="line">duration = (double)(finish - start) / CLOCKS_PER_SEC;</div><div class="line">printf(&quot;memset run time: %f\n&quot;, duration);</div></pre></td></tr></table></figure>
+<p>发现程序执行<code>memset</code>时，不仅耗时而且还耗CPU，故需要对代码进行优化。通过分析，实际上自己并不需要将缓存区<code>buff</code>每个字节都置为0，在上面的例子中<code>buff</code>会被当成C语言的字符串来使用，因此，每次使用前，只需要将<code>buff</code>的末尾置为0就行了，例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 初始化</span></div><div class="line">buff[<span class="number">0</span>] = <span class="string">'\0'</span>;</div><div class="line"><span class="comment">// 对buff进行赋值后，再将其末尾置为0</span></div><div class="line">buff[n] = <span class="string">'\0'</span>;</div></pre></td></tr></table></figure>
+<p>去除了<code>memset</code>的使用，发现程序的性能有了大大的提高。</p>
+<a id="more"></a>
+<p>在写下这篇文章时，自己百度了一下<code>memset</code>的性能，发现这哥们也有类似的看法，参考链接：<a href="http://blog.csdn.net/wwp3321/article/details/4961993" target="_blank" rel="external">http://blog.csdn.net/wwp3321/article/details/4961993</a>。</p>
+<p>程序优化的第二个地方是<code>strcat</code>函数的使用。<code>strcat</code>用于字符串的拼接，且要求目的位置需要有足够的空间来存储拼接后的字符串。<br>在往 Redis 写入数据时，需要循环使用<code>strcat</code>来拼接构造二维表记录的索引字符串（用来支持快速查找二维表记录），代码示例如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="built_in">list</span>&lt;<span class="keyword">unsigned</span>&gt;::iterator itList = listRowIndex.begin(); itList != listRowIndex.end(); itList++) &#123;</div><div class="line">    <span class="built_in">sprintf</span>(sRowIndex, <span class="string">"%u\0"</span>, *itList);</div><div class="line">    <span class="keyword">if</span> (posList == <span class="number">0</span>) &#123;</div><div class="line">	    <span class="built_in">strcat</span>(sList, sRowIndex);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">	    <span class="built_in">strcat</span>(sList, SPLIT_FLAG);</div><div class="line">		<span class="built_in">strcat</span>(sList, sRowIndex);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码的功能是构造二维表索引字符串，使用<code>sList</code>来存放构造的索引。由于调用<code>strcat</code>时，每次都需要遍历目的字符串，找到目的字符串的结束字符<code>\0</code>，然后再将新的索引字符串添加到其末尾，因此，在<code>listRowIndex</code>元素数量很大时，上述的操作会导致出现大量重复的遍历字符串的操作，导致性能低下。</p>
+<p><code>strcat</code>函数的功能可以使用下面的函数来代替：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">unsigned</span> <span class="title">appendstr</span><span class="params">(<span class="keyword">char</span> *buff, <span class="keyword">unsigned</span> pos, <span class="keyword">const</span> <span class="keyword">char</span> *tail)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; tail[i] != <span class="string">'\0'</span>; ++i) &#123;</div><div class="line">        buff[pos++] = tail[i];</div><div class="line">    &#125;</div><div class="line">    buff[pos] = <span class="string">'\0'</span>;</div><div class="line">    <span class="keyword">return</span> pos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>appendstr</code>函数同样是将字符串添加到目的字符串的末尾，但与<code>strcat</code>不同的是，<code>appendstr</code>可以返回目的字符串的结束位置，这样一来，在不断地循环调用<code>appendstr</code>时，再也不用每次都重复遍历目的字符串以找到结束位置，提高了程序的效率。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="built_in">list</span>&lt;<span class="keyword">unsigned</span>&gt;::iterator itList = listRowIndex.begin(); itList != listRowIndex.end(); itList++) &#123;</div><div class="line">    <span class="built_in">sprintf</span>(sRowIndex, <span class="string">"%u\0"</span>, *itList);</div><div class="line">    <span class="keyword">if</span> (posList == <span class="number">0</span>) &#123;</div><div class="line">        posList = appendstr(sList, posList, sRowIndex);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        posList = appendstr(sList, posList, SPLIT_FLAG);</div><div class="line">        posList = appendstr(sList, posList, sRowIndex);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过使用<code>appendstr</code>函数代替<code>strcat</code>，程序的性能有了质的飞跃。</p>
+<p>这篇文章记录的两个优化点都是C语言字符串的操作函数，没想到这些函数还有不少需要注意的地方，看来以后使用时还得小心谨慎。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/uploads/tenpay.jpeg" alt="Leo WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/uploads/alipay.jpeg" alt="Leo Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/性能优化/" rel="tag"># 性能优化</a>
+          
+            <a href="/tags/代码优化/" rel="tag"># 代码优化</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/使用-Supervisor-来管理-Redis-进程/" rel="next" title="使用 Supervisor 来管理 Redis 进程">
+                <i class="fa fa-chevron-left"></i> 使用 Supervisor 来管理 Redis 进程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description">分布式，架构，C++，Python</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">127</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+</div>
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://leehao.me/记一次程序优化记录/';
+          this.page.identifier = '记一次程序优化记录/';
+          this.page.title = '记一次程序优化记录';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
