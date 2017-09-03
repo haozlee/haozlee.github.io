@@ -297,9 +297,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>poll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>poll</tag>
       </tags>
   </entry>
   <entry>
@@ -310,8 +310,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
       </tags>
   </entry>
   <entry>
@@ -322,10 +322,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -339,8 +339,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -412,9 +412,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
-        <tag>IO多路复用</tag>
         <tag>epoll</tag>
+        <tag>IO多路复用</tag>
+        <tag>select</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
