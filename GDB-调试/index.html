@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="GDB,Linux,调试," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="GDB 是一个功能强大的调试器，也是 Linux 系统中默认的调试器。GDB 主要提供以下四种功能，这些功能可以方便我们定位程序的 BUG。
+
+启动程序
+设置断点
+检查程序运行状态，例如查看变量的值
+修改程序运行状态，例如修改变量的值
+
+本文简单讲述 GDB 的调试方法。
+我们需要调试的程序如下所示，该程序只是为了演示 GDB 的用法，并没有实际的意义。
+123456789101112131415">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GDB 调试">
+<meta property="og:url" content="https://leehao.me/GDB-调试/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="GDB 是一个功能强大的调试器，也是 Linux 系统中默认的调试器。GDB 主要提供以下四种功能，这些功能可以方便我们定位程序的 BUG。
+
+启动程序
+设置断点
+检查程序运行状态，例如查看变量的值
+修改程序运行状态，例如修改变量的值
+
+本文简单讲述 GDB 的调试方法。
+我们需要调试的程序如下所示，该程序只是为了演示 GDB 的用法，并没有实际的意义。
+123456789101112131415">
+<meta property="og:updated_time" content="2017-10-20T14:14:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GDB 调试">
+<meta name="twitter:description" content="GDB 是一个功能强大的调试器，也是 Linux 系统中默认的调试器。GDB 主要提供以下四种功能，这些功能可以方便我们定位程序的 BUG。
+
+启动程序
+设置断点
+检查程序运行状态，例如查看变量的值
+修改程序运行状态，例如修改变量的值
+
+本文简单讲述 GDB 的调试方法。
+我们需要调试的程序如下所示，该程序只是为了演示 GDB 的用法，并没有实际的意义。
+123456789101112131415">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/GDB-调试/"/>
+
+
+
+
+
+  <title>GDB 调试 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/GDB-调试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">GDB 调试</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-20T22:11:12+08:00">
+                2017-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工具/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>GDB 是一个功能强大的调试器，也是 Linux 系统中默认的调试器。GDB 主要提供以下四种功能，这些功能可以方便我们定位程序的 BUG。</p>
+<ul>
+<li>启动程序</li>
+<li>设置断点</li>
+<li>检查程序运行状态，例如查看变量的值</li>
+<li>修改程序运行状态，例如修改变量的值</li>
+</ul>
+<p>本文简单讲述 GDB 的调试方法。</p>
+<p>我们需要调试的程序如下所示，该程序只是为了演示 GDB 的用法，并没有实际的意义。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">double</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">double</span> d)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> b = (a + <span class="number">5</span>) * <span class="number">2</span>;</div><div class="line">    <span class="keyword">double</span> ret = d * b;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">double</span> <span class="title">f2</span><span class="params">(<span class="keyword">float</span> f)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">int</span> a = <span class="number">10</span>;</div><div class="line">    <span class="keyword">double</span> d = <span class="number">3.14</span>;</div><div class="line">    <span class="keyword">double</span> ret = f * f1(a, d);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"begin to gdb test"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="keyword">float</span> f = <span class="number">1.1</span>;</div><div class="line">    <span class="keyword">double</span> ret = f2(f);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; ret &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>我们先对上面的程序进行编译，编译命令为：</p>
+<blockquote>
+<p>g++ -g -o hello hello.cpp</p>
+</blockquote>
+<ul>
+<li>-g 选项的含义是生成源代码的调试信息，方便我们在调试过程中查看源代码</li>
+<li>-o 选项可以指定生成的可执行程序名称</li>
+</ul>
+<p>本文的重点不在于介绍 gcc 或者 g++ 编译器的使用，有关 gcc 和 g++ 的使用，请参考其使用手册。</p>
+<p>编译好程序后，我们就可以使用 GDB 来调试程序了。</p>
+<blockquote>
+<p>gdb hello</p>
+</blockquote>
+<p>进入 GDB 的提示符界面，如果需要退出，可以使用 quit 命令即可。</p>
+<blockquote>
+<p>(gdb) quit</p>
+</blockquote>
+<h2 id="一、设置断点"><a href="#一、设置断点" class="headerlink" title="一、设置断点"></a>一、设置断点</h2><p>使用 break 命令可以设置程序的断点，例如，我们在程序的第 7 行设置一个断点。</p>
+<blockquote>
+<p>(gdb) break 7<br>Breakpoint 1 at 0x400860: file hello.cpp, line 7.</p>
+</blockquote>
+<p>如果当前需要调试的程序由多个源文件组成，则可以在设置断点时指定文件的名称，例如，下面的命令设置 hello.cpp 源文件中的第 8 行为断点。</p>
+<blockquote>
+<p>(gdb) break hello.cpp:8<br>Breakpoint 2 at 0x40086b: file hello.cpp, line 8.</p>
+</blockquote>
+<p>如果需要查看断点的信息，可以使用 info break 命令：</p>
+<blockquote>
+<p>(gdb) info break<br>Num     Type           Disp Enb Address            What<br>1       breakpoint     keep y   0x0000000000400860 in f1(int, double) at hello.cpp:7<br>2       breakpoint     keep y   0x000000000040086b in f1(int, double) at hello.cpp:8</p>
+</blockquote>
+<p>可以看到，程序设置了两个断点，分别是程序第 7 行和第 8 行。</p>
+<p>如果需要删除断点，可以使用 clear 命令。</p>
+<p>设置好断点后，就可以运行程序了，使用 run 命令运行程序。</p>
+<blockquote>
+<p>(gdb) run<br>Starting program: /home/lihao/code/cpp/test/hello<br>begin to gdb test<br>Breakpoint 1, f1 (a=10, d=3.1400000000000001) at hello.cpp:7<br>7    int b = (a + 5) * 2;</p>
+</blockquote>
+<p>可以看到程序运行到第 7 行即断点处，停了下来。</p>
+<h2 id="二、查看程序运行状态"><a href="#二、查看程序运行状态" class="headerlink" title="二、查看程序运行状态"></a>二、查看程序运行状态</h2><p>如果需要查看执行的源代码，可以使用 list 或者 l （小写字母 L）命令：</p>
+<blockquote>
+<p>(gdb) l<br>2<br>3    using namespace std;<br>4<br>5    double f1(int a, double d)<br>6    {<br>7    int b = (a + 5) <em> 2;<br>8    double ret = d </em> b;<br>9<br>10    return ret;<br>11    }</p>
+</blockquote>
+<p>可以看到，GDB 把当前程序执行位置前面和后面的代码都展示了出来。如果需要继续查看下面的代码，可以继续按下回车键。</p>
+<p>为了打印变量的值，可以使用 print 命令或者 p 命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">(gdb) p a</div><div class="line">$3 = 10</div><div class="line">(gdb) p d</div><div class="line">$4 = 3.1400000000000001</div><div class="line">(gdb) print a</div><div class="line">$5 = 10</div></pre></td></tr></table></figure>
+<p>如果变量为字符串类型，且值的长度很长，为了完整输出字符串的内容，可以使用以下命令设置打印变量时显示完整的字符串：</p>
+<blockquote>
+<p>set print element 0</p>
+</blockquote>
+<p>如果需要查看程序运行的堆栈，可以使用 bt 命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">(gdb) bt</div><div class="line">#0  f1 (a=10, d=3.1400000000000001) at hello.cpp:7</div><div class="line">#1  0x00000000004008c7 in f2 (f=1.10000002) at hello.cpp:18</div><div class="line">#2  0x0000000000400916 in main () at hello.cpp:27</div></pre></td></tr></table></figure>
+<p>可以看到，hello 程序的调用链为 main -&gt; f2 -&gt; f1。</p>
+<h2 id="三、执行程序"><a href="#三、执行程序" class="headerlink" title="三、执行程序"></a>三、执行程序</h2><p>为了便于演示，我们先将所有的断点删除，只保留第 7 行的断点。<br>如果需要在断点处继续执行程序，可以使用 step 命令或者 s 命令， step 命令的含义是逐语句执行。</p>
+<blockquote>
+<p>(gdb) step<br>8    double ret = d * b;</p>
+</blockquote>
+<p>程序继续执行到了第 8 行。<br>step 命令是逐语句执行，遇到子函数的情况，会进入子函数中逐语句继续执行。<br>next 命令也是逐语句执行，与 step 命令不同的是，遇到子函数，不会进入子函数中执行，只会把子函数当成一条语句执行。</p>
+<blockquote>
+<p>(gdb) next<br>10    return ret;</p>
+</blockquote>
+<p>程序执行过程中，如果需要让程序一直执行到下一个断点，可以使用 continue 命令或者 c 命令。</p>
+<blockquote>
+<p>(gdb) c<br>Continuing.<br>103.62<br>Program exited normally.</p>
+</blockquote>
+<p>本文只讲述 GDB 调试中涉及的最常用的几个命令，更详细和复杂的使用，可以参考 GDB 的说明文档。</p>
+<p>附：如何解决 GDB 运行时，提示 <strong>Missing separate debuginfos</strong> 异常的问题。<br>解决步骤</p>
+<ol>
+<li>修改 /etc/yum.repos.d/CentOS-Debuginfo.repo 文件，设置 enable=1</li>
+<li>安装 glibc，yum install glibc</li>
+<li>安装 yum-utils， yum install yum-utils</li>
+<li>debuginfo-install glibc-2.12-1.209.el6_9.2.x86_64 libgcc-4.4.7-18.el6.x86_64 libstdc++-4.4.7-18.el6.x86_64</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://www.gnu.org/software/gdb/" target="_blank" rel="external">http://www.gnu.org/software/gdb/</a></li>
+<li>Linux 程序设计，第四版，人民邮电出版社，Neil Matthew 等著</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GDB/" rel="tag"># GDB</a>
+          
+            <a href="/tags/Linux/" rel="tag"># Linux</a>
+          
+            <a href="/tags/调试/" rel="tag"># 调试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/记一次程序优化记录/" rel="next" title="记一次程序优化记录">
+                <i class="fa fa-chevron-left"></i> 记一次程序优化记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">130</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、设置断点"><span class="nav-number">1.</span> <span class="nav-text">一、设置断点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、查看程序运行状态"><span class="nav-number">2.</span> <span class="nav-text">二、查看程序运行状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、执行程序"><span class="nav-number">3.</span> <span class="nav-text">三、执行程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
