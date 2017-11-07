@@ -350,10 +350,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -367,8 +367,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
