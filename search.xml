@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Python 和 Java 进行 DES 加密和解密]]></title>
+    <url>%2FPython-%E5%92%8C-Java-%E8%BF%9B%E8%A1%8C-DES-%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86%2F</url>
+    <content type="text"><![CDATA[DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。 最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户的身份进行验证。采用的身份验证方法是由旧系统 S 对用户 ID 进行加密，然后新系统 N 对加密后的用户 ID 进行解密，从而获取用户 ID 并进行身份验证。由于旧系统 S 是用 Java 实现的，新系统 N 使用 Python 实现。也就是说，需要使用 Python 语言来对 Java DES 加密的用户 ID 进行解密。 这里贴出 Java 实现的 DES 加密的代码。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465import javax.crypto.spec.IvParameterSpec;import javax.crypto.Cipher;import javax.crypto.SecretKey;import javax.crypto.SecretKeyFactory;import javax.crypto.spec.DESKeySpec;public class Main &#123; public static void main(String[] args) &#123; String content = "zx"; String key = "20171117"; System.out.println("加密前：" + content); byte[] encrypted = DES_CBC_Encrypt(content.getBytes(), key.getBytes()); System.out.println("加密后：" + byteToHexString(encrypted)); byte[] decrypted = DES_CBC_Decrypt(encrypted, key.getBytes()); System.out.println("解密后：" + new String(decrypted)); &#125; public static byte[] DES_CBC_Encrypt(byte[] content, byte[] keyBytes) &#123; try &#123; DESKeySpec keySpec = new DESKeySpec(keyBytes); SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); SecretKey key = keyFactory.generateSecret(keySpec); Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(keySpec.getKey())); byte[] result = cipher.doFinal(content); return result; &#125; catch (Exception e) &#123; System.out.println("exception:" + e.toString()); &#125; return null; &#125; private static byte[] DES_CBC_Decrypt(byte[] content, byte[] keyBytes) &#123; try &#123; DESKeySpec keySpec = new DESKeySpec(keyBytes); SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); SecretKey key = keyFactory.generateSecret(keySpec); Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(keyBytes)); byte[] result = cipher.doFinal(content); return result; &#125; catch (Exception e) &#123; System.out.println("exception:" + e.toString()); &#125; return null; &#125; private static String byteToHexString(byte[] bytes) &#123; StringBuffer sb = new StringBuffer(bytes.length); String sTemp; for (int i = 0; i &lt; bytes.length; i++) &#123; sTemp = Integer.toHexString(0xFF &amp; bytes[i]); if (sTemp.length() &lt; 2) sb.append(0); sb.append(sTemp.toUpperCase()); &#125; return sb.toString(); &#125;&#125; Java 代码采用的 DES 加密采用 CBC 模式，采用 PKCS5Padding 的填充模式，使用的初始化向量是加密的密钥。 执行以上 Java 代码，输出： 123加密前：zx加密后：1DBBD4E9246EBFFA解密后：zx Python 利用 pyDes 对 Java 加密的字符串进行解密的代码如下所示。 12345678910111213141516171819202122232425262728293031323334import binasciifrom pyDes import des, CBC, PAD_PKCS5def des_encrypt(s): """ DES 加密 :param s: 原始字符串 :return: 加密后字符串，16进制 """ secret_key = '20171117' iv = secret_key k = des(secret_key, CBC, iv, pad=None, padmode=PAD_PKCS5) en = k.encrypt(s, padmode=PAD_PKCS5) return binascii.b2a_hex(en)def des_descrypt(s): """ DES 解密 :param s: 加密后的字符串，16进制 :return: 解密后的字符串 """ secret_key = '20171117' iv = secret_key k = des(secret_key, CBC, iv, pad=None, padmode=PAD_PKCS5) de = k.decrypt(binascii.a2b_hex(s), padmode=PAD_PKCS5) return destr_en = des_encrypt('zx')print(str_en)str_de = des_descrypt(str_en)print(str_de) Python 语言采用 pyDes 作为 DES 加解密处理的包。DES 解密时采用 CBC 模式，并采用 PAD_PKCS5 作为填充模式，使用解密密钥作为初始化向量。这些加密的设置跟 Java 语言使用的是一致的。 执行以上 Python 代码，得到以下输出：121dbbd4e9246ebffazx 可以看到，同对 Java 加密后的字符串，Python 语言可以正常解密。 参考资料 http://blog.csdn.net/qq_18870023/article/details/52180768 https://twhiteman.netfirms.com/des.html https://en.wikipedia.org/wiki/Data_Encryption_Standard https://baike.baidu.com/item/DES%E7%AE%97%E6%B3%95]]></content>
+      <categories>
+        <category>后台</category>
+      </categories>
+      <tags>
+        <tag>DES</tag>
+        <tag>Python</tag>
+        <tag>Java</tag>
+        <tag>加密</tag>
+        <tag>解密</tag>
+        <tag>密钥</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[搭建 Elastic Stack 日志系统]]></title>
     <url>%2F%E6%90%AD%E5%BB%BA-Elastic-Stack-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F%2F</url>
     <content type="text"><![CDATA[Elastic Stack 是原 ELK Stack 在 5.0 版本加入 Beats 套件后的新称呼。Elastic Stack 在实时日志处理领域已开成开源界的第一选择。本文讲述如何搭建 Elastic Stack 日志系统，使用的套件包括 Kibana，Elasticsearch，以及 Filebeat。搭建的环境选择阿里云 ECS 服务器，系统为 CentOS 7.4 64 位。 搭建 KibanaKibana 用来实现数据的可视化。Kibana 能够以图表的形式呈现数据，并且具有可扩展的用户界面，可以供我们全方位配置和管理 Elatic Stack。 搭建 Kibana 的步骤如下。 （1）添加 yum 源在 /etc/yum.repos.d 目录创建 kibana.repo 文件，内容如下： 12345678[kibana-5.x]name=Kibana repository for 5.x packagesbaseurl=https://artifacts.elastic.co/packages/5.x/yumgpgcheck=1gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearchenabled=1autorefresh=1type=rpm-md （2）安装 Kibana运行安装命令： yum install kibana Kibana 安装后的主目录为 /usr/share/kibana，日志目录为 /var/log/kibana/ 。 （3）查看系统的初始化进程 查找进程 ID 为 1 的进程： ps -p 1 输出： 12PID TTY TIME CMD 1 ? 00:00:00 systemd 可以看到我们的系统使用 systemd 作为初始化进程。 （4）配置 Kibana 随系统启动而启动 sudo /bin/systemctl daemon-reloadsudo /bin/systemctl enable kibana.service 如果系统使用 init 初始化，则命令为 sudo chkconfig –add kibana （5）修改 kibana 绑定的 IP 打开 kibana 的配置文件 /etc/kibana/kibana.yml，将 server.host 配置改成 “0.0.0.0”。 server.host: “0.0.0.0” 注意 ECS 实际上并没有公网IP的网卡，所以不能直接绑定公网IP，否则会导致 kibana 启动不成功。 （6）运行 Kibana sudo systemctl start kibana.service 关闭 Kibana 命令为 sudo systemctl stop kibana.service 如果系统使用 init 实始化，则启动和关闭的命令为 sudo -i service kibana startsudo -i service kibana stop （7）验证运行成功 打开浏览器，输入 Kibana 安装所在机器的 ip:5601，便可以看到以下的页面，说明 Kibana 已成功安装 。 搭建 ElasticsearchElasticsearch 用来搜索、分析和存储数据。Elasticsearch 是基于 JSON 的分布式搜索和分析引擎，专为实现水平扩展，高可用和管理便捷而设计。有了安装 Kibana 的经验，安装 Elasticsearch （下文称为 ES）就显得容易多了。 （1）安装 ES yum install elasticsearch 安装后的日志目录为 /var/log/elasticsearch/，配置文件为 /etc/sysconfig/elasticsearch 和 /etc/elasticsearch/elasticsearch.yml。 （2）配置 ES 随系统启动而启动 如果使用 systemd 作为启动进程： sudo /bin/systemctl daemon-reloadsudo /bin/systemctl enable elasticsearch.service 如果使用 init 作为启动进程: sudo chkconfig –add elasticsearch （3）更改 ES 绑定的 IP 和端口 vim /etc/elasticsearch/elasticsearch.yml 写入 network.host: 0.0.0.0 配置。如果需要更改端口，可以修改 http.port: 9200 配置。 （4）安装 Java 运行环境 ES 的运行依赖于 Java 运行环境，因此，需要安装 Java 运行环境。 yum install java-1.8.0-openjdk.x86_64 （5）启动 ES 如果使用 systemd 作为初始化进程，启动和关闭命令为 sudo systemctl start elasticsearch.servicesudo systemctl stop elasticsearch.service 如果需要查看 ES 的启动日志，可以使用命令： journalctl –unit elasticsearch 这个命令对于查看 ES 启动是否成功很有帮助，如果启动失败，此命令也便于定位问题。 如果使用 init 作为初始化进程，启动和关闭命令 sudo -i service elasticsearch startsudo -i service elasticsearch stop （6）验证 ES 运行是否成功 浏览器输入 http://IP:9200/，可以看到以下输出： { “name”: “0rXIiW1”, “cluster_name”: “elasticsearch”, “cluster_uuid”: “zD4DE0jHR3yroGTQau0ENQ”, “version”: { “number”: “5.6.3”, “build_hash”: “1a2f265”, “build_date”: “2017-10-06T20:33:39.012Z”, “build_snapshot”: false, “lucene_version”: “6.6.1” }, “tagline”: “You Know, for Search”} 说明 ES 启动已成功。 搭建 FilebeatElastic Stack 提供 Beats 和 Logstash 套件来采集任何来源、任何格式的数据。Beats 是一个轻量级的采集器，支持从边缘机器向 Logstash 和 Elasticsearch 发送数据。Logstash 是一个动态数据收集管道，能够与 Elasticsearch 产生协同作用。考虑到 Logstash 占用系统资源较多，我们采用 Filebeat 来作为我们的日志采集器。 （1）安装 Filebeat yum install filebeat Filebeat 的日志目录为 /var/log/filebeat，配置文件为 /etc/filebeat/filebeat.yml。 （2）修改 ES 的配置 在我们搭建的日志系统中，Filebeat 收集日志后发送给 ES ，故需要对 Filebeat 的 ES 配置进行修改。打开 /etc/filebeat/filebeat.yml 文件，改更 ES 的配置为 123output.elasticsearch: # Array of hosts to connect to. hosts: [&quot;127.0.0.1:9200&quot;] 使用 127.0.0.1 是由于 Filebeat 跟 ES 部署了在同一台机器，如果不在同一台机器，则需要根据实际情况填写 ES 的 IP。 （3）修改 Filebeat 监控的日志 打开 /etc/filebeat/filebeat.yml 文件，修改以下配置：1234- input_type: log # Paths that should be crawled and fetched. Glob based paths. paths: - /root/logs/*.log 即我们以目录 /root/logs 下的 *.log 日志作为 Filebeat 监控对象。 （4）运行 Filebeat sudo /bin/systemctl daemon-reloadsudo /bin/systemctl enable filebeat.servicesudo systemctl start filebeat.service 关闭命令为 sudo systemctl stop filebeat.service 如果以 init 作为初始化进程，则可以参考上述 Kibana 或者 ES 的命令，此处不再贅述。 （5）利用 Kibana 创建 index pattern 在 index pattern 输入框中输入 filebeat-*，即如下图所示： （6）验证 Filebeat 运行是否正常在 /root/logs 目录下创建 test.log 文件，然后执行 echo “hello\n” &gt;&gt; test.log 模拟日志文件产生了新的日志。 然后打开 Kibana，可以看到 hello 已显示出来。 （7）配置 Filebeat 支持多行日志 在日志文件中，常常会出现日志会占用多行的情况，例如 traceback 异常日志，输出 SQL 代码的日志，等。假设我们的日志格式都是以 DEBUG, INFO, WARN, ERROR 开头，例如 DEBUG 日志如下 WARN|2017-10-27 13:42:19 000|pubservice.cpp(330)-: LDAP认证失败，服务：FOS_101_0020，用户名: system 为了在 Kibana 中正常显示这种多行日志，可以通过修改 Filebeat 的配置来实现。 打开 /etc/filebeat/filebeat.yml 文件，修改以下配置： 其中 multiline.pattern 指定日志以 DEBUG, INFO, WARN, ERROR 开头。 参考资料 https://www.elastic.co/cn/products https://data.aliyun.com/product/elasticsearch https://www.elastic.co/guide/en/kibana/current/rpm.html https://www.elastic.co/guide/en/elasticsearch/reference/current/rpm.html https://www.elastic.co/guide/en/beats/filebeat/current/setup-repositories.html]]></content>
@@ -325,9 +341,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>poll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>poll</tag>
       </tags>
   </entry>
   <entry>
@@ -338,8 +354,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
       </tags>
   </entry>
   <entry>
@@ -441,8 +457,8 @@
       </categories>
       <tags>
         <tag>epoll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -602,8 +618,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>MongoDB</tag>
         <tag>Java</tag>
+        <tag>MongoDB</tag>
       </tags>
   </entry>
   <entry>

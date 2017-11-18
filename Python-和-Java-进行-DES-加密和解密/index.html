@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="DES,Python,Java,加密,解密,密钥," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。
+最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 和 Java 进行 DES 加密和解密">
+<meta property="og:url" content="https://leehao.me/Python-和-Java-进行-DES-加密和解密/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。
+最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户">
+<meta property="og:updated_time" content="2017-11-18T23:57:06.473Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 和 Java 进行 DES 加密和解密">
+<meta name="twitter:description" content="DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。
+最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-和-Java-进行-DES-加密和解密/"/>
+
+
+
+
+
+  <title>Python 和 Java 进行 DES 加密和解密 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-和-Java-进行-DES-加密和解密/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python 和 Java 进行 DES 加密和解密</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-19T07:55:27+08:00">
+                2017-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。</p>
+<p>最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户的身份进行验证。采用的身份验证方法是由旧系统 S 对用户 ID 进行加密，然后新系统 N 对加密后的用户 ID 进行解密，从而获取用户 ID 并进行身份验证。<br>由于旧系统 S 是用 Java 实现的，新系统 N 使用 Python 实现。也就是说，需要使用 Python 语言来对 Java DES 加密的用户 ID 进行解密。</p>
+<p>这里贴出 Java 实现的 DES 加密的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> javax.crypto.spec.IvParameterSpec;</div><div class="line"><span class="keyword">import</span> javax.crypto.Cipher;</div><div class="line"><span class="keyword">import</span> javax.crypto.SecretKey;</div><div class="line"><span class="keyword">import</span> javax.crypto.SecretKeyFactory;</div><div class="line"><span class="keyword">import</span> javax.crypto.spec.DESKeySpec;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        String content = <span class="string">"zx"</span>;</div><div class="line">        String key = <span class="string">"20171117"</span>;</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"加密前："</span> + content);</div><div class="line">        <span class="keyword">byte</span>[] encrypted = DES_CBC_Encrypt(content.getBytes(), key.getBytes());</div><div class="line">        System.out.println(<span class="string">"加密后："</span> + byteToHexString(encrypted));</div><div class="line"></div><div class="line">        <span class="keyword">byte</span>[] decrypted = DES_CBC_Decrypt(encrypted, key.getBytes());</div><div class="line">        System.out.println(<span class="string">"解密后："</span> + <span class="keyword">new</span> String(decrypted));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] DES_CBC_Encrypt(<span class="keyword">byte</span>[] content, <span class="keyword">byte</span>[] keyBytes) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            DESKeySpec keySpec = <span class="keyword">new</span> DESKeySpec(keyBytes);</div><div class="line">            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(<span class="string">"DES"</span>);</div><div class="line">            SecretKey key = keyFactory.generateSecret(keySpec);</div><div class="line"></div><div class="line">            Cipher cipher = Cipher.getInstance(<span class="string">"DES/CBC/PKCS5Padding"</span>);</div><div class="line">            cipher.init(Cipher.ENCRYPT_MODE, key, <span class="keyword">new</span> IvParameterSpec(keySpec.getKey()));</div><div class="line">            <span class="keyword">byte</span>[] result = cipher.doFinal(content);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            System.out.println(<span class="string">"exception:"</span> + e.toString());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] DES_CBC_Decrypt(<span class="keyword">byte</span>[] content, <span class="keyword">byte</span>[] keyBytes) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            DESKeySpec keySpec = <span class="keyword">new</span> DESKeySpec(keyBytes);</div><div class="line">            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(<span class="string">"DES"</span>);</div><div class="line">            SecretKey key = keyFactory.generateSecret(keySpec);</div><div class="line"></div><div class="line">            Cipher cipher = Cipher.getInstance(<span class="string">"DES/CBC/PKCS5Padding"</span>);</div><div class="line">            cipher.init(Cipher.DECRYPT_MODE, key, <span class="keyword">new</span> IvParameterSpec(keyBytes));</div><div class="line">            <span class="keyword">byte</span>[] result = cipher.doFinal(content);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            System.out.println(<span class="string">"exception:"</span> + e.toString());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">byteToHexString</span><span class="params">(<span class="keyword">byte</span>[] bytes)</span> </span>&#123;</div><div class="line">        StringBuffer sb = <span class="keyword">new</span> StringBuffer(bytes.length);</div><div class="line">        String sTemp;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; bytes.length; i++) &#123;</div><div class="line">            sTemp = Integer.toHexString(<span class="number">0xFF</span> &amp; bytes[i]);</div><div class="line">            <span class="keyword">if</span> (sTemp.length() &lt; <span class="number">2</span>)</div><div class="line">                sb.append(<span class="number">0</span>);</div><div class="line">            sb.append(sTemp.toUpperCase());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> sb.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Java 代码采用的 DES 加密采用 CBC 模式，采用 PKCS5Padding 的填充模式，使用的初始化向量是加密的密钥。</p>
+<p>执行以上 Java 代码，输出：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">加密前：zx</div><div class="line">加密后：1DBBD4E9246EBFFA</div><div class="line">解密后：zx</div></pre></td></tr></table></figure>
+<p>Python 利用 pyDes 对 Java 加密的字符串进行解密的代码如下所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> binascii</div><div class="line"><span class="keyword">from</span> pyDes <span class="keyword">import</span> des, CBC, PAD_PKCS5</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">des_encrypt</span><span class="params">(s)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    DES 加密</div><div class="line">    :param s: 原始字符串</div><div class="line">    :return: 加密后字符串，16进制</div><div class="line">    """</div><div class="line">    secret_key = <span class="string">'20171117'</span></div><div class="line">    iv = secret_key</div><div class="line">    k = des(secret_key, CBC, iv, pad=<span class="keyword">None</span>, padmode=PAD_PKCS5)</div><div class="line">    en = k.encrypt(s, padmode=PAD_PKCS5)</div><div class="line">    <span class="keyword">return</span> binascii.b2a_hex(en)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">des_descrypt</span><span class="params">(s)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    DES 解密</div><div class="line">    :param s: 加密后的字符串，16进制</div><div class="line">    :return:  解密后的字符串</div><div class="line">    """</div><div class="line">    secret_key = <span class="string">'20171117'</span></div><div class="line">    iv = secret_key</div><div class="line">    k = des(secret_key, CBC, iv, pad=<span class="keyword">None</span>, padmode=PAD_PKCS5)</div><div class="line">    de = k.decrypt(binascii.a2b_hex(s), padmode=PAD_PKCS5)</div><div class="line">    <span class="keyword">return</span> de</div><div class="line"></div><div class="line"></div><div class="line">str_en = des_encrypt(<span class="string">'zx'</span>)</div><div class="line">print(str_en)</div><div class="line">str_de = des_descrypt(str_en)</div><div class="line">print(str_de)</div></pre></td></tr></table></figure>
+<p>Python 语言采用 pyDes 作为 DES 加解密处理的包。DES 解密时采用 CBC 模式，并采用 PAD_PKCS5 作为填充模式，使用解密密钥作为初始化向量。这些加密的设置跟 Java 语言使用的是一致的。</p>
+<p>执行以上 Python 代码，得到以下输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">1dbbd4e9246ebffa</div><div class="line">zx</div></pre></td></tr></table></figure></p>
+<p>可以看到，同对 Java 加密后的字符串，Python 语言可以正常解密。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://blog.csdn.net/qq_18870023/article/details/52180768" target="_blank" rel="external">http://blog.csdn.net/qq_18870023/article/details/52180768</a></li>
+<li><a href="https://twhiteman.netfirms.com/des.html" target="_blank" rel="external">https://twhiteman.netfirms.com/des.html</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Data_Encryption_Standard" target="_blank" rel="external">https://en.wikipedia.org/wiki/Data_Encryption_Standard</a></li>
+<li><a href="https://baike.baidu.com/item/DES%E7%AE%97%E6%B3%95" target="_blank" rel="external">https://baike.baidu.com/item/DES%E7%AE%97%E6%B3%95</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/DES/" rel="tag"># DES</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/加密/" rel="tag"># 加密</a>
+          
+            <a href="/tags/解密/" rel="tag"># 解密</a>
+          
+            <a href="/tags/密钥/" rel="tag"># 密钥</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/搭建-Elastic-Stack-日志系统/" rel="next" title="搭建 Elastic Stack 日志系统">
+                <i class="fa fa-chevron-left"></i> 搭建 Elastic Stack 日志系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">139</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
