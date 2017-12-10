@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Node.js 概览]]></title>
+    <url>%2FNode-js-%E6%A6%82%E8%A7%88%2F</url>
+    <content type="text"><![CDATA[Node.js 是一个开源的项目，可以让 JavaScript 的代码在浏览器之外运行。我们知道，JavaScript 代码可以在浏览器中运行，它可以访问 window 和 document 这样的全局对象以及其他 API 和库函数。为了支持 JavaScrip 在浏览器以外的环境运行，谷歌工程师 Ryan Dahl 基于 Chrome V8 JavaScript 引擎开发了 Node.js。Node.js 是一个 JavaScript 运行环境，在这个环境下，JavaScript 代码能够访问硬盘驱动器，数据库，网络等。使用 Node.js 可以创建各种应用，下至命令行工具，上至 Web 服务器。图 1 展示了浏览器环境的 JavaScript 代码的运行环境；图 2 展示了 Node.js 环境的 JavaScript 代码的运行环境。 图1：在浏览器运行的 JavaScript 代码 图2：在 Node.js 运行的 JavaScript 代码 参考资料 https://baike.baidu.com/item/node.js/7567977 《Web 开发权威指南》，第 15 章]]></content>
+      <categories>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>nodejs</tag>
+        <tag>chrome</tag>
+        <tag>v8</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python 和 Java 进行 DES 加密和解密]]></title>
     <url>%2FPython-%E5%92%8C-Java-%E8%BF%9B%E8%A1%8C-DES-%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86%2F</url>
     <content type="text"><![CDATA[DES 为 Data Encryption Standard （数据加密标准）的缩写，是一种常见的对称加密算法。有关对称加密与非对称加密的特点及其应用场景，本文就不描述了，读者可以自行 google 。本文说明如何使用 Java 和 Python 两种语言来实现 DES 的加解密。 最近碰到的应用场景是这样的。我们需要对接一个系统 S，系统 S 已经对用户的身份进行了验证，新系统 N 也需要对用户的身份进行验证。采用的身份验证方法是由旧系统 S 对用户 ID 进行加密，然后新系统 N 对加密后的用户 ID 进行解密，从而获取用户 ID 并进行身份验证。由于旧系统 S 是用 Java 实现的，新系统 N 使用 Python 实现。也就是说，需要使用 Python 语言来对 Java DES 加密的用户 ID 进行解密。 这里贴出 Java 实现的 DES 加密的代码。 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465import javax.crypto.spec.IvParameterSpec;import javax.crypto.Cipher;import javax.crypto.SecretKey;import javax.crypto.SecretKeyFactory;import javax.crypto.spec.DESKeySpec;public class Main &#123; public static void main(String[] args) &#123; String content = "zx"; String key = "20171117"; System.out.println("加密前：" + content); byte[] encrypted = DES_CBC_Encrypt(content.getBytes(), key.getBytes()); System.out.println("加密后：" + byteToHexString(encrypted)); byte[] decrypted = DES_CBC_Decrypt(encrypted, key.getBytes()); System.out.println("解密后：" + new String(decrypted)); &#125; public static byte[] DES_CBC_Encrypt(byte[] content, byte[] keyBytes) &#123; try &#123; DESKeySpec keySpec = new DESKeySpec(keyBytes); SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); SecretKey key = keyFactory.generateSecret(keySpec); Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(keySpec.getKey())); byte[] result = cipher.doFinal(content); return result; &#125; catch (Exception e) &#123; System.out.println("exception:" + e.toString()); &#125; return null; &#125; private static byte[] DES_CBC_Decrypt(byte[] content, byte[] keyBytes) &#123; try &#123; DESKeySpec keySpec = new DESKeySpec(keyBytes); SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES"); SecretKey key = keyFactory.generateSecret(keySpec); Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding"); cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(keyBytes)); byte[] result = cipher.doFinal(content); return result; &#125; catch (Exception e) &#123; System.out.println("exception:" + e.toString()); &#125; return null; &#125; private static String byteToHexString(byte[] bytes) &#123; StringBuffer sb = new StringBuffer(bytes.length); String sTemp; for (int i = 0; i &lt; bytes.length; i++) &#123; sTemp = Integer.toHexString(0xFF &amp; bytes[i]); if (sTemp.length() &lt; 2) sb.append(0); sb.append(sTemp.toUpperCase()); &#125; return sb.toString(); &#125;&#125; Java 代码采用的 DES 加密采用 CBC 模式，采用 PKCS5Padding 的填充模式，使用的初始化向量是加密的密钥。 执行以上 Java 代码，输出： 123加密前：zx加密后：1DBBD4E9246EBFFA解密后：zx Python 利用 pyDes 对 Java 加密的字符串进行解密的代码如下所示。 12345678910111213141516171819202122232425262728293031323334import binasciifrom pyDes import des, CBC, PAD_PKCS5def des_encrypt(s): """ DES 加密 :param s: 原始字符串 :return: 加密后字符串，16进制 """ secret_key = '20171117' iv = secret_key k = des(secret_key, CBC, iv, pad=None, padmode=PAD_PKCS5) en = k.encrypt(s, padmode=PAD_PKCS5) return binascii.b2a_hex(en)def des_descrypt(s): """ DES 解密 :param s: 加密后的字符串，16进制 :return: 解密后的字符串 """ secret_key = '20171117' iv = secret_key k = des(secret_key, CBC, iv, pad=None, padmode=PAD_PKCS5) de = k.decrypt(binascii.a2b_hex(s), padmode=PAD_PKCS5) return destr_en = des_encrypt('zx')print(str_en)str_de = des_descrypt(str_en)print(str_de) Python 语言采用 pyDes 作为 DES 加解密处理的包。DES 解密时采用 CBC 模式，并采用 PAD_PKCS5 作为填充模式，使用解密密钥作为初始化向量。这些加密的设置跟 Java 语言使用的是一致的。 执行以上 Python 代码，得到以下输出：121dbbd4e9246ebffazx 可以看到，同对 Java 加密后的字符串，Python 语言可以正常解密。 参考资料 http://blog.csdn.net/qq_18870023/article/details/52180768 https://twhiteman.netfirms.com/des.html https://en.wikipedia.org/wiki/Data_Encryption_Standard https://baike.baidu.com/item/DES%E7%AE%97%E6%B3%95]]></content>
@@ -8,9 +21,9 @@
         <category>后台</category>
       </categories>
       <tags>
+        <tag>Java</tag>
         <tag>DES</tag>
         <tag>Python</tag>
-        <tag>Java</tag>
         <tag>加密</tag>
         <tag>解密</tag>
         <tag>密钥</tag>
@@ -456,9 +469,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
         <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -618,8 +631,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>MongoDB</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
