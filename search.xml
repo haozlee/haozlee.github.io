@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Nginx 日志接入 Elastic Stack 系统]]></title>
+    <url>%2FNginx-%E6%97%A5%E5%BF%97%E6%8E%A5%E5%85%A5-Elastic-Stack-%E7%B3%BB%E7%BB%9F%2F</url>
+    <content type="text"><![CDATA[文章《搭建 Elastic Stack 日志系统》 描述了如何利用 Kibana，Elasticsearch，Filebeat 来搭建日志系统。本文在上一篇 Elastic Stack 文章的基础上，说明如何将 Nginx 的日志接入 Elastic Stack 日志系统。 为了更新在 Kibana 上展示 Nginx 的日志，可以先将 Nginx 的日志改成 json 格式，如何更改 Nginx 的日志格式，可以参考文章 《Nginx 日志改成 JSON 格式》。 假设我们的 Nginx 访问日志路径为 /usr/local/nginx/logs/access.log ，错误日志路径为 /usr/local/nginx/logs/error.log，那么我们的 Filebeat 配置可以这样写： 1234567891011filebeat.prospectors:- input_type: log paths: - /usr/local/nginx/logs/access.log json.keys_under_root: true json.message_key:- input_type: log paths: - /usr/local/nginx/logs/error.log 由于我们只对 Nginx 的访问日志以 json 的格式打印，错误日志并没有以 json 格式打印，因此我们使用了两个 input_type 的配置项。 Filebeat 提供对 json 格式日志的处理功能。我们设置json.keys_under_root以打开 Filebeat 解析 json 日志功能。有关 json 日志解析的配置，可以参考官网的介绍，此处不再贅述，参考链接：https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#config-json。 配置完 Filebeat 的输入后，我们接下来配置 Filebeat 的输出。 123output.elasticsearch: hosts: [&quot;10.88.102.179:9200&quot;] index: &quot;nginx-%&#123;+yyyy.MM.dd&#125;&quot; 由于使用 Elasticsearch 来接收日志，所以需要配置 Elasticsearch 的地址 hosts。在 Kibana 中可能需要展示多个 index 的日志，为了区分，需要配置 index 的值，这里我们使用 nginx-%{+yyyy.MM.dd}，在 Kibana 中显示的 index 实际为 nginx-2017.12.12 这种形式。读者可以根据需要自行配置 index。 Filebeat 配置好后，重启 Filebeat 进程以让配置生效。最后我们转到 Kibana 配置新的 index。打开 Kibana 页面，进入 Management - Index Patterns - Create Index Pattern，以创建一个新的 index。在 Index pattern 输入框输入 nginx-*，创建上面我们的 Nginx 日志索引。创建好 index 后，在 Discover 中选择 nginx-* 索引，便可以看到 Nginx 的日志。 参考资料 http://www.jianshu.com/p/39453a671ce8 http://www.voidcn.com/article/p-apavxvnu-bqt.html http://www.iyunw.cn/archives/filebeat-shou-ji-json-ge-shi-de-nginx-ri-zhi-fa-song-gei-elasticsearch/ https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#config-json https://discuss.elastic.co/t/filebeat-config-for-nginx-logs/84540/2]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>日志</tag>
+        <tag>Elastic Stack</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Nginx 日志改成 JSON 格式]]></title>
+    <url>%2FNginx-%E6%97%A5%E5%BF%97%E6%94%B9%E6%88%90-JSON-%E6%A0%BC%E5%BC%8F%2F</url>
+    <content type="text"><![CDATA[Nginx 日志默认为普通文本的格式，例如，下面是 Nginx 的一行访问日志： 110.88.122.105 - - [02/Dec/2017:09:15:04 +0800] &quot;GET /js/pagination.js HTTP/1.1&quot; 304 0 &quot;http://10.88.105.20:8063/stockrecommand.html&quot; &quot;Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)&quot; &quot;-&quot; 0.000 为了便于利用 Elastic Stack 日志平台收集展示 Nginx 的日志，可以将 Nginx 的日志改成 json 的格式。修改后的 json 日志格式如下所示： 1&#123; &quot;@timestamp&quot;: &quot;12/Dec/2017:14:30:40 +0800&quot;, &quot;remote_addr&quot;: &quot;10.88.122.108&quot;, &quot;referer&quot;: &quot;-&quot;, &quot;request&quot;: &quot;GET / HTTP/1.1&quot;, &quot;status&quot;: 304, &quot;bytes&quot;:0, &quot;agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36&quot;, &quot;x_forwarded&quot;: &quot;-&quot;, &quot;up_addr&quot;: &quot;-&quot;,&quot;up_host&quot;: &quot;-&quot;,&quot;up_resp_time&quot;: &quot;-&quot;,&quot;request_time&quot;: &quot;0.000&quot; &#125; 为了修改 Nginx 的日志格式改成 json，需要修改 Nginx 的配置文件，笔者 Nginx 的配置文件为 /usr/local/nginx/conf/nginx.conf。 123456789101112131415161718192021222324252627http &#123; include mime.types; default_type application/octet-stream; charset utf-8; log_format main &apos;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &apos; &apos;$status $body_bytes_sent &quot;$http_referer&quot; &apos; &apos;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot; $request_time&apos;; log_format log_json &apos;&#123; &quot;@timestamp&quot;: &quot;$time_local&quot;, &apos;&apos;&quot;remote_addr&quot;: &quot;$remote_addr&quot;, &apos;&apos;&quot;referer&quot;: &quot;$http_referer&quot;, &apos;&apos;&quot;request&quot;: &quot;$request&quot;, &apos;&apos;&quot;status&quot;: $status, &apos;&apos;&quot;bytes&quot;: $body_bytes_sent, &apos;&apos;&quot;agent&quot;: &quot;$http_user_agent&quot;, &apos;&apos;&quot;x_forwarded&quot;: &quot;$http_x_forwarded_for&quot;, &apos;&apos;&quot;up_addr&quot;: &quot;$upstream_addr&quot;,&apos;&apos;&quot;up_host&quot;: &quot;$upstream_http_host&quot;,&apos;&apos;&quot;up_resp_time&quot;: &quot;$upstream_response_time&quot;,&apos;&apos;&quot;request_time&quot;: &quot;$request_time&quot;&apos;&apos; &#125;&apos;; access_log logs/access.log log_json; (省略内容)&#125; 在 Nginx 的配置文件nginx.conf中，我们定义了两种的日志格式：main和log_json，其中，main为普通的文本格式，log_json为 json 格式。log_json其实就是手工构造一个 json 字符串。定义了 json 的日志格式后，便可以指定 access log 为 json 格式： 1access_log logs/access.log log_json; 修改 Nginx 的配置，重启 Nginx ，便可以看到 json 格式的日志，重启 Nginx： 1nginx -s reload 参考资料 http://www.ttlsa.com/nginx/nginx-log-records-in-json-format/ http://www.iteye.com/topic/1138111]]></content>
+      <categories>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>json</tag>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Node.js 概览]]></title>
     <url>%2FNode-js-%E6%A6%82%E8%A7%88%2F</url>
     <content type="text"><![CDATA[Node.js 是一个开源的项目，可以让 JavaScript 的代码在浏览器之外运行。我们知道，JavaScript 代码可以在浏览器中运行，它可以访问 window 和 document 这样的全局对象以及其他 API 和库函数。为了支持 JavaScrip 在浏览器以外的环境运行，谷歌工程师 Ryan Dahl 基于 Chrome V8 JavaScript 引擎开发了 Node.js。Node.js 是一个 JavaScript 运行环境，在这个环境下，JavaScript 代码能够访问硬盘驱动器，数据库，网络等。使用 Node.js 可以创建各种应用，下至命令行工具，上至 Web 服务器。图 1 展示了浏览器环境的 JavaScript 代码的运行环境；图 2 展示了 Node.js 环境的 JavaScript 代码的运行环境。 图1：在浏览器运行的 JavaScript 代码 图2：在 Node.js 运行的 JavaScript 代码 参考资料 https://baike.baidu.com/item/node.js/7567977 《Web 开发权威指南》，第 15 章]]></content>
@@ -22,8 +48,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>DES</tag>
         <tag>Python</tag>
+        <tag>DES</tag>
         <tag>加密</tag>
         <tag>解密</tag>
         <tag>密钥</tag>
@@ -255,10 +281,10 @@
         <category>建站</category>
       </categories>
       <tags>
+        <tag>Nginx</tag>
         <tag>阿里云</tag>
         <tag>Hexo</tag>
         <tag>建站</tag>
-        <tag>Nginx</tag>
         <tag>SLB</tag>
         <tag>ECS</tag>
         <tag>负载均衡</tag>
@@ -354,9 +380,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -367,8 +393,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -469,9 +495,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>epoll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
