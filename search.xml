@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[记一次 BUG 的排查过程]]></title>
     <url>%2F%E8%AE%B0%E4%B8%80%E6%AC%A1-BUG-%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B%2F</url>
-    <content type="text"><![CDATA[最近生产上上线了一个新的功能，在业务人员使用过程中，通过查看日志我们发现一个诡异的问题。这篇文章记录一下这个问题的排查过程以及解决方法。 存在问题的程序使用了 C 语言的 Redis 客户端 hiredis 来连接和操作 Redis。由于处于分布式的环境，所以我们使用了 Redis 的事务的特性，以避免多个客户端同时对 Redis 数据进行更改导致数据错乱的情况出现。有关 hiredis 的使用以及 Redis 事务特殊的介绍，可以参考文章《Redis C 语言客户端 hiredis 的使用》，以及《Hiredis 实现 Redis 流水线》。 程序原始代码如下： 123456789101112131415161718192021222324252627282930313233343536373839void GFRedisClient::QueryRowsByFields(const char *key, map&lt;string, string&gt; &amp;mapField2Value, vector&lt;map&lt;string, string&gt; &gt; &amp;outRecords)&#123; if (!key || strlen(key) &lt;= 0) &#123; KSBLog(WARN, "传入的服务代码为空"); return; &#125; // 获取Redis连接 redisContext *ctx = CreateContext(); if (ctx == NULL) &#123; KSBLog(WARN, "查询二维表出错，无法获取Redis连接，服务：%s", key); return; &#125; // 监控二维表数据 SendWatch(ctx, key); // 取出指定记录 vector&lt;string&gt; vecRecordRowIds; GetSpecRecords(ctx, key, mapField2Value, vecRecordRowIds); if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); ReleaseContext(ctx); return; &#125; // 以事务实现 int pipelineCount = 0; SendMulti(ctx, pipelineCount); // 取出字段名称 SendQueryFields(ctx, key, pipelineCount); // 取出指定记录 SendQuerySpecRecords(ctx, key, vecRecordRowIds, pipelineCount); // 执行事务 SendExec(ctx, pipelineCount); // 处理返回结果 ProposeQueryRows(ctx, key, pipelineCount, outRecords); // 归还连接 KSBLog(INFO, "查询二维表归还Redis连接，服务：%s", key); ReleaseContext(ctx);&#125; 这段代码的主要功能是从 Redis 中查询指定二维表记录。由于需要使用 Redis 的流水线事务的特性，而一些 Redis 命令操作依赖于前面 Redis 命令执行的结果，因此我们使用了 Redis 的 WATCH命令，以监控指定的 Redis 有没被更改。如果键被更改过，则执行EXEC命令会失败，返回nil；如果键没有被更改，则执行EXEC命令会返回正常结果。上面的这段代码已经运行几个月了，期间没有发现问题。 最近在生产上，我们通过查看异常日志，观察到一个异常的情况。异常日志输出如下： 1234DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：OK，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：QUEUED，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：QUEUED，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：4，返回结果：(null)，返回的子结果：0 最后一行是执行EXEC的输出日志，即执行EXEC命令失败了？！通过排查日志，可以确认在该时间点没有执行更新相同键的操作。那么，执行EXEC失败是什么导致的呢？一开始，我们甚至还怀疑是不是 hiredis 的实现有 BUG，后来马上放弃了这个想法。Hiredis 出来已经很久了，而且应用广泛，理应不会出现如何低端的 BUG。由于没有其他头绪，只能再次回到代码本身。代码包括以下的处理： 12345if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); ReleaseContext(ctx); return;&#125; 如果没能取出指定的记录，则会直接返回，而不会继续执行下面的MULTI和EXEC操作。这时灵光一现，会不会是这个原因导致的？为了确认，翻看了前两天的日志。真的发现了查打不到指定记录的日志： 1INFO|2017-12-11 19:23:30 168|gfredis.cpp(254)-&lt;QueryRowsByFields&gt;: 从Redis查找不到指定条件的记录，服务： 顺着这个思路，我们使用 redis-cli 做了个试验，试验过程如下： 时间 客户端A 客户端B T1 WATCH abcd T2 SET abcd 1 T3 WATCH abcd T4 GET abcd T5 MULTI T6 SET abcd 2 T7 EXEC 客户端A对键 abcd 执行WATCH命令后，客户端B对键 abcd 执行更新操作。接下来客户端A继续执行WATCH，虽然第二次执行WATCH到EXEC期间，没有客户端对键进行修改，但执行EXEC还是返回了 nil，即事务执行失败。 我们继续对 Redis 的源代码进行分析，可以看到 Redis 服务执行WATCH命令时，会判断客户端是否已监视过，如果已监视，则会直接返回。也就是说，在执行MULTI之前，同一个客户端执行多次WATCH跟第一次执行一次WATCH的效果是一样的。 1234567891011121314151617181920212223242526272829/* Watch for the specified key */void watchForKey(redisClient *c, robj *key) &#123; list *clients = NULL; listIter li; listNode *ln; watchedKey *wk; /* Check if we are already watching for this key */ listRewind(c-&gt;watched_keys,&amp;li); while((ln = listNext(&amp;li))) &#123; wk = listNodeValue(ln); if (wk-&gt;db == c-&gt;db &amp;&amp; equalStringObjects(key,wk-&gt;key)) return; /* Key already watched */ &#125; /* This key is not already watched in this DB. Let's add it */ clients = dictFetchValue(c-&gt;db-&gt;watched_keys,key); if (!clients) &#123; clients = listCreate(); dictAdd(c-&gt;db-&gt;watched_keys,key,clients); incrRefCount(key); &#125; listAddNodeTail(clients,c); /* Add the new key to the list of keys watched by this client */ wk = zmalloc(sizeof(*wk)); wk-&gt;key = key; wk-&gt;db = c-&gt;db; incrRefCount(key); listAddNodeTail(c-&gt;watched_keys,wk);&#125; 这样，导致问题出现的原因就很清晰了。程序在12月12日执行了一次WATCH的命令且没有继续执行EXEC命令，这是由于从 Redis 无法查询到指定记录而造成的。接下来在12月13日，我们再次执行WATCH命令。但在12月12日至12月13日之间，存在其他客户端对相同的键执行了更新操作。因此，在12月13日再次执行MULTI和EXEC时，便会出现执行事务失败的情况，EXEC返回 nil。 为了修正这个问题，我们需要在从 Redis 查找不到指定记录返回前，添加执行UNWATCH命令的操作。（有关UNWATCH命令的介绍可以参考https://redis.io/commands/unwatch）这样一来，下次再开始执行事务时，不再受原来WATCH命令的影响。修正后的代码如下： 123456if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); SendUnWatch(ctx)； ReleaseContext(ctx); return;&#125; 小结这篇文章记录了一次 Redis 使用程序 BUG 的发现过程。由于 BUG 在测试环境较难重现，增加了 BUG 的修复难度。当然，如果一个 BUG 可以重现，修正就不在话下。在山重水复疑无路时，通过分析程序代码和日志，竟获得了柳暗花明又一村的意外结果。因此，在实际排查 BUG 的过程中，可以从尝试分析程序代码和日志入手，以便最终将问题修复。 参考资料 https://redis.io/topics/transactions https://redis.io/commands/watch https://redis.io/commands/unwatch https://redis.io/commands/discard https://redisbook.readthedocs.io/en/latest/feature/transaction.html]]></content>
+    <content type="text"><![CDATA[最近生产上上线了一个新的功能，在业务人员使用过程中，通过查看日志我们发现一个诡异的问题。这篇文章记录一下这个问题的排查过程以及解决方法。 存在问题的程序使用了 C 语言的 Redis 客户端 hiredis 来连接和操作 Redis。由于处于分布式的环境，所以我们使用了 Redis 的事务的特性，以避免多个客户端同时对 Redis 数据进行更改导致数据错乱的情况出现。有关 hiredis 的使用以及 Redis 事务特殊的介绍，可以参考文章《Redis C 语言客户端 hiredis 的使用》，以及《Hiredis 实现 Redis 流水线》。 程序原始代码如下： 123456789101112131415161718192021222324252627282930313233343536373839void GFRedisClient::QueryRowsByFields(const char *key, map&lt;string, string&gt; &amp;mapField2Value, vector&lt;map&lt;string, string&gt; &gt; &amp;outRecords)&#123; if (!key || strlen(key) &lt;= 0) &#123; KSBLog(WARN, "传入的服务代码为空"); return; &#125; // 获取Redis连接 redisContext *ctx = CreateContext(); if (ctx == NULL) &#123; KSBLog(WARN, "查询二维表出错，无法获取Redis连接，服务：%s", key); return; &#125; // 监控二维表数据 SendWatch(ctx, key); // 取出指定记录 vector&lt;string&gt; vecRecordRowIds; GetSpecRecords(ctx, key, mapField2Value, vecRecordRowIds); if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); ReleaseContext(ctx); return; &#125; // 以事务实现 int pipelineCount = 0; SendMulti(ctx, pipelineCount); // 取出字段名称 SendQueryFields(ctx, key, pipelineCount); // 取出指定记录 SendQuerySpecRecords(ctx, key, vecRecordRowIds, pipelineCount); // 执行事务 SendExec(ctx, pipelineCount); // 处理返回结果 ProposeQueryRows(ctx, key, pipelineCount, outRecords); // 归还连接 KSBLog(INFO, "查询二维表归还Redis连接，服务：%s", key); ReleaseContext(ctx);&#125; 这段代码的主要功能是从 Redis 中查询指定二维表记录。由于需要使用 Redis 的流水线事务的特性，而一些 Redis 命令操作依赖于前面 Redis 命令执行的结果，因此我们使用了 Redis 的 WATCH命令，以监控指定的 Redis 有没被更改。如果键被更改过，则执行EXEC命令会失败，返回nil；如果键没有被更改，则执行EXEC命令会返回正常结果。上面的这段代码已经运行几个月了，期间没有发现问题。 最近在生产上，我们通过查看异常日志，观察到一个异常的情况。异常日志输出如下： 1234DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：OK，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：QUEUED，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：5，返回结果：QUEUED，返回的子结果：0DEBUG|2017-12-13 11:30:38 -185|gfredis.cpp(430)-&lt;ProposeQueryRows&gt;: 执行流水线命令返回，类型：4，返回结果：(null)，返回的子结果：0 最后一行是执行EXEC的输出日志，即执行EXEC命令失败了？！通过排查日志，可以确认在该时间点没有执行更新相同键的操作。那么，执行EXEC失败是什么导致的呢？一开始，我们甚至还怀疑是不是 hiredis 的实现有 BUG，后来马上放弃了这个想法。Hiredis 出来已经很久了，而且应用广泛，理应不会出现如何低端的 BUG。由于没有其他头绪，只能再次回到代码本身。代码包括以下的处理： 12345if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); ReleaseContext(ctx); return;&#125; 如果没能取出指定的记录，则会直接返回，而不会继续执行下面的MULTI和EXEC操作。这时灵光一现，会不会是这个原因导致的？为了确认，翻看了前两天的日志。真的发现了查打不到指定记录的日志： 1INFO|2017-12-11 19:23:30 168|gfredis.cpp(254)-&lt;QueryRowsByFields&gt;: 从Redis查找不到指定条件的记录，服务： 顺着这个思路，我们使用 redis-cli 做了个试验，试验过程如下： 时间 客户端A 客户端B T1 WATCH abcd T2 SET abcd 1 T3 WATCH abcd T4 GET abcd T5 MULTI T6 SET abcd 2 T7 EXEC 客户端A对键 abcd 执行WATCH命令后，客户端B对键 abcd 执行更新操作。接下来客户端A继续执行WATCH，虽然第二次执行WATCH到EXEC期间，没有客户端对键进行修改，但执行EXEC还是返回了 nil，即事务执行失败。 我们继续对 Redis 的源代码进行分析，可以看到 Redis 服务执行WATCH命令时，会判断客户端是否已监视过，如果已监视，则会直接返回。也就是说，在执行MULTI之前，同一个客户端执行多次WATCH跟第一次执行一次WATCH的效果是一样的。 1234567891011121314151617181920212223242526272829/* Watch for the specified key */void watchForKey(redisClient *c, robj *key) &#123; list *clients = NULL; listIter li; listNode *ln; watchedKey *wk; /* Check if we are already watching for this key */ listRewind(c-&gt;watched_keys,&amp;li); while((ln = listNext(&amp;li))) &#123; wk = listNodeValue(ln); if (wk-&gt;db == c-&gt;db &amp;&amp; equalStringObjects(key,wk-&gt;key)) return; /* Key already watched */ &#125; /* This key is not already watched in this DB. Let's add it */ clients = dictFetchValue(c-&gt;db-&gt;watched_keys,key); if (!clients) &#123; clients = listCreate(); dictAdd(c-&gt;db-&gt;watched_keys,key,clients); incrRefCount(key); &#125; listAddNodeTail(clients,c); /* Add the new key to the list of keys watched by this client */ wk = zmalloc(sizeof(*wk)); wk-&gt;key = key; wk-&gt;db = c-&gt;db; incrRefCount(key); listAddNodeTail(c-&gt;watched_keys,wk);&#125; 这样，导致问题出现的原因就很清晰了。程序在12月11日执行了一次WATCH的命令且没有继续执行EXEC命令，这是由于从 Redis 无法查询到指定记录而造成的。接下来在12月13日，我们再次执行WATCH命令。但在12月11日至12月13日之间，存在其他客户端对相同的键执行了更新操作。因此，在12月13日再次执行MULTI和EXEC时，便会出现执行事务失败的情况，EXEC返回 nil。 为了修正这个问题，我们需要在从 Redis 查找不到指定记录返回前，添加执行UNWATCH命令的操作。（有关UNWATCH命令的介绍可以参考https://redis.io/commands/unwatch）这样一来，下次再开始执行事务时，不再受原来WATCH命令的影响。修正后的代码如下： 123456if (vecRecordRowIds.empty()) &#123; KSBLog(INFO, "从Redis查找不到指定条件的记录，服务：%s", key); SendUnWatch(ctx)； ReleaseContext(ctx); return;&#125; 小结这篇文章记录了一次 Redis 使用程序 BUG 的发现过程。由于 BUG 在测试环境较难重现，增加了 BUG 的修复难度。当然，如果一个 BUG 可以重现，修正就不在话下。在山重水复疑无路时，通过分析程序代码和日志，竟获得了柳暗花明又一村的意外结果。因此，在实际排查 BUG 的过程中，可以从尝试分析程序代码和日志入手，以便最终将问题修复。 参考资料 https://redis.io/topics/transactions https://redis.io/commands/watch https://redis.io/commands/unwatch https://redis.io/commands/discard https://redisbook.readthedocs.io/en/latest/feature/transaction.html]]></content>
       <categories>
         <category>Redis</category>
       </categories>
@@ -33,8 +33,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>json</tag>
         <tag>日志</tag>
+        <tag>json</tag>
       </tags>
   </entry>
   <entry>
@@ -391,9 +391,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -404,8 +404,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -416,10 +416,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -433,8 +433,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -506,8 +506,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
