@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leehao.me/Python-%E5%90%8D%E7%A7%B0%E7%A9%BA%E9%97%B4%E4%B8%8E%E4%BD%9C%E7%94%A8%E5%9F%9F/</loc>
+    
+    <lastmod>2018-01-20T15:14:04.122Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://leehao.me/%E8%AE%B0%E4%B8%80%E6%AC%A1-BUG-%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/</loc>
     
     <lastmod>2017-12-19T13:57:00.369Z</lastmod>
@@ -359,14 +366,14 @@
   </url>
   
   <url>
-    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
+    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8Redis-SETNX-%E5%91%BD%E4%BB%A4%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
+    <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
@@ -401,7 +408,7 @@
   </url>
   
   <url>
-    <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
+    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8Redis-SETNX-%E5%91%BD%E4%BB%A4%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
@@ -415,6 +422,13 @@
   </url>
   
   <url>
+    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
@@ -422,21 +436,14 @@
   </url>
   
   <url>
-    <loc>https://leehao.me/categories/index.html</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://leehao.me/tags/index.html</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/categories/index.html</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     

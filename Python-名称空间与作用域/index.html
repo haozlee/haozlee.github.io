@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="命名空间,名称空间,namespace,scope,作用域," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.jpeg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="这篇文章介绍 Python 的名称空间以及变量的作用域。
+Python 的名称Python 的名称（Name）是对象的一个标识（Identifier）。我们知道，在 Python 里面一切皆对象，名称就是用来引用对象的。说得有点玄乎，我们以例子说明。
+例如，在a = 2这个语句中，2是个存储在内存中的一个对象，名称a则会引用2这个对象，“引用”的含义是指可以通过名称a来使用2这个对象。我们可以使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 名称空间与作用域">
+<meta property="og:url" content="https://leehao.me/Python-名称空间与作用域/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="这篇文章介绍 Python 的名称空间以及变量的作用域。
+Python 的名称Python 的名称（Name）是对象的一个标识（Identifier）。我们知道，在 Python 里面一切皆对象，名称就是用来引用对象的。说得有点玄乎，我们以例子说明。
+例如，在a = 2这个语句中，2是个存储在内存中的一个对象，名称a则会引用2这个对象，“引用”的含义是指可以通过名称a来使用2这个对象。我们可以使用">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-01-20-004522.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-01-20-004957.png">
+<meta property="og:updated_time" content="2018-01-20T15:14:04.122Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 名称空间与作用域">
+<meta name="twitter:description" content="这篇文章介绍 Python 的名称空间以及变量的作用域。
+Python 的名称Python 的名称（Name）是对象的一个标识（Identifier）。我们知道，在 Python 里面一切皆对象，名称就是用来引用对象的。说得有点玄乎，我们以例子说明。
+例如，在a = 2这个语句中，2是个存储在内存中的一个对象，名称a则会引用2这个对象，“引用”的含义是指可以通过名称a来使用2这个对象。我们可以使用">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-01-20-004522.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-名称空间与作用域/"/>
+
+
+
+
+
+  <title>Python 名称空间与作用域 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-名称空间与作用域/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python 名称空间与作用域</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-20T23:10:25+08:00">
+                2018-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章介绍 Python 的名称空间以及变量的作用域。</p>
+<h2 id="Python-的名称"><a href="#Python-的名称" class="headerlink" title="Python 的名称"></a>Python 的名称</h2><p>Python 的名称（Name）是对象的一个标识（Identifier）。我们知道，在 Python 里面一切皆对象，名称就是用来引用对象的。说得有点玄乎，我们以例子说明。</p>
+<p>例如，在<code>a = 2</code>这个语句中，<code>2</code>是个存储在内存中的一个对象，名称<code>a</code>则会引用<code>2</code>这个对象，“引用”的含义是指可以通过名称<code>a</code>来使用<code>2</code>这个对象。我们可以使用<code>id()</code>函数来获取对象的地址。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">a = <span class="number">2</span></div><div class="line">print(id(<span class="number">2</span>))</div><div class="line">print(id(a))</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>43547988<br>43547988</p>
+</blockquote>
+<p>可以看到，两都均指向同一个对象。我们再来看复杂一点的代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">a = <span class="number">2</span></div><div class="line"><span class="keyword">print</span> <span class="string">'id(a) = %s'</span> % id(a)</div><div class="line">a = a + <span class="number">1</span></div><div class="line"><span class="keyword">print</span> <span class="string">'id(a) = %s'</span> % id(a)</div><div class="line"><span class="keyword">print</span> <span class="string">'id(3) = %s'</span> % id(<span class="number">3</span>)</div><div class="line">b = <span class="number">2</span></div><div class="line"><span class="keyword">print</span> <span class="string">'id(2) = %s'</span> % id(<span class="number">2</span>)</div><div class="line"><span class="keyword">print</span> <span class="string">'id(b) = %s'</span> % id(b)</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>id(a) = 55606612<br>id(a) = 55606600<br>id(3) = 55606600<br>id(2) = 55606612<br>id(b) = 55606612</p>
+</blockquote>
+<p>上述的代码发生了什么呢？我们以图1来说明。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-01-20-004522.png" alt=""><br>图1：Python 的名称与对象</p>
+<a id="more"></a>
+<p>起初，名称<code>a</code>引用对象<code>2</code>；<br>然后，执行操作<code>a = a + 1</code>，这时对象<code>3</code>被创建，名称<code>a</code>引用对象<code>3</code>，所以<code>id(a)</code>和<code>id(3)</code>输出相同的地址;<br>最后，执行<code>b = 2</code>，名称<code>b</code>引用对象<code>2</code>，所以<code>id(2)</code>和<code>id(b)</code>输出相同的地址</p>
+<p>这个例子也展示了 Python 在执行变量的赋值时，并不会重复创建一个对象的事实。名称采用动态绑定的机制使得 Python 更加高效，同一个名称可以引用不同类型的对象。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">a = <span class="number">5</span></div><div class="line">a = <span class="string">'hello world'</span></div><div class="line">a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div></pre></td></tr></table></figure>
+<p>可以看到，<code>a</code>先后引用了数字，字符串，列表的类型的对象，这在 Python 中完全是合法的。</p>
+<h2 id="Python-的名称空间"><a href="#Python-的名称空间" class="headerlink" title="Python 的名称空间"></a>Python 的名称空间</h2><p>了解 Python 的名称后，我们来看 Python 的名称空间。</p>
+<blockquote>
+<p>名称空间是名称到对象的映射。</p>
+</blockquote>
+<p>在 Python 中，名称空间采用字典来实现。Python 的名称空间包括：</p>
+<ul>
+<li>内置名称空间，例如，内置名称空间包含 Python 的内置函数，如，<code>abs()</code></li>
+<li>模块名称空间，全局名称空间，在模块内定义的名称</li>
+<li>局部名称空间，例如，在函数（function）或者类（class）被调用时，其内部包含的名称</li>
+</ul>
+<p>不同的名称空间内的名称不会相互冲突，即是它们采用相同的名称。这也正是名称空间的作用。</p>
+<p>内置名称空间在 Python 解释器启动时就创建了，直到 Python 解释器退出时内置名称空间才失效。这使得我们可以在程序的任何位置使用内置名称空间内的名称，例如，<code>id()</code>，<code>print()</code>等函数。<br>模块名称空间当模块被引用时创建，直到 Python 解释器退出时模块名称空间才失效。<br>函数名称空间在函数被调用时创建，函数返回后失效。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-01-20-004957.png" alt=""><br>图2：Python 的名称空间</p>
+<h2 id="Python-变量的作用域"><a href="#Python-变量的作用域" class="headerlink" title="Python 变量的作用域"></a>Python 变量的作用域</h2><p>Python 的作用域（scope）决定了我们在程序中能否直接使用名称空间中的名称，直接访问的意思是指不需要在名称前添加名称空间的前缀。对于 Python 来说，至少存在以下三类的作用域。</p>
+<ul>
+<li>函数作用域，包括了函数内的局部名称</li>
+<li>模块作用域，包括了模块内的全局名称</li>
+<li>内置作用域，包括了内置名称</li>
+</ul>
+<p>当在函数内部使用一个名称时，为了查找出该名称所引用的对象，Python 解释器先在函数名称空间查找，接着在模块名称空间查找，最后在内置名称空间查找，直到寻找到该名称为止。<br>当函数 A 处于函数 B 的内部时，函数 A 的作用域处于函数 B 作用域之内。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">outer_function</span><span class="params">()</span>:</span></div><div class="line">    b = <span class="number">20</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inner_func</span><span class="params">()</span>:</span></div><div class="line">        c = <span class="number">30</span></div><div class="line"></div><div class="line">a = <span class="number">10</span></div></pre></td></tr></table></figure>
+<p>在这个例子中，名称<code>a</code>在全局名称空间中，名称<code>b</code>在函数<code>outer_function</code>的局部名称空间，名称<code>c</code>则在函数<code>inner_func</code>的局部名称空间。<br>当我们在函数<code>inner_func</code>时，<code>c</code>是个局部的名称，<code>b</code>是个非局部的名称，而<code>a</code>则是个全局的名称。在函数<code>inner_func</code>中，我们可以对<code>c</code>进行读取操作和赋值操作，而只能对<code>b</code>和<code>a</code>进行读取操作。当对<code>b</code>进行赋值时，一个新的名称将会被创建，这个新的名称处于<code>inner_func</code>函数局部名称空间中。对<code>a</code>进行赋值时也会在局部名称空间中创建一个新的名称。</p>
+<p>我们使用以下的例子来说明。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">outer_function</span><span class="params">()</span>:</span></div><div class="line">    a = <span class="number">20</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inner_function</span><span class="params">()</span>:</span></div><div class="line">        a = <span class="number">30</span></div><div class="line">        print(<span class="string">'a = %s'</span> % a)</div><div class="line"></div><div class="line">    inner_function()</div><div class="line">    print(<span class="string">'a = %s'</span> % a)</div><div class="line"></div><div class="line"></div><div class="line">a = <span class="number">10</span></div><div class="line">outer_function()</div><div class="line">print(<span class="string">'a = %s'</span> % a)</div></pre></td></tr></table></figure></p>
+<p>输出：</p>
+<blockquote>
+<p>a = 30<br>a = 20<br>a = 10</p>
+</blockquote>
+<p>在函数<code>inner_function</code>中，我们对<code>a</code>进行了赋值操作，但函数<code>outer_function</code>中的<code>a</code>仍然为<code>20</code>，全局名称空间中的<code>a</code>则仍然为<code>10</code>。</p>
+<p>为了在函数作用域中对全局的名称进行读取或者赋值操作，需要将这个名称声明为<code>global</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">outer_function</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">global</span> a</div><div class="line">    a = <span class="number">20</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inner_function</span><span class="params">()</span>:</span></div><div class="line">        <span class="keyword">global</span> a</div><div class="line">        a = <span class="number">30</span></div><div class="line">        print(<span class="string">'a = %s'</span> % a)</div><div class="line"></div><div class="line">    inner_function()</div><div class="line">    print(<span class="string">'a = %s'</span> % a)</div><div class="line"></div><div class="line"></div><div class="line">a = <span class="number">10</span></div><div class="line">outer_function()</div><div class="line">print(<span class="string">'a = %s'</span> % a)</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>a = 30<br>a = 30<br>a = 30</p>
+</blockquote>
+<p>可以看到，通过<code>global</code>，我们在不同的作用域对全局名称<code>a</code>进行了赋值操作，最后在函数<code>inner_function</code>中对<code>a</code>的赋值也就是全局名称<code>a</code>的值。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://www.programiz.com/python-programming/namespace" target="_blank" rel="external">https://www.programiz.com/python-programming/namespace</a></li>
+<li><a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="external">https://docs.python.org/3/tutorial/classes.html</a></li>
+<li><a href="https://www.python-course.eu/namespaces.php" target="_blank" rel="external">https://www.python-course.eu/namespaces.php</a></li>
+<li><a href="https://www.python-course.eu/global_vs_local_variables.php" target="_blank" rel="external">https://www.python-course.eu/global_vs_local_variables.php</a></li>
+<li><a href="https://www.programiz.com/python-programming/modules" target="_blank" rel="external">https://www.programiz.com/python-programming/modules</a></li>
+<li><a href="https://code.tutsplus.com/tutorials/what-are-python-namespaces-and-why-are-they-needed--cms-28598" target="_blank" rel="external">https://code.tutsplus.com/tutorials/what-are-python-namespaces-and-why-are-they-needed--cms-28598</a></li>
+<li><a href="https://bytebaker.com/2008/07/30/python-namespaces/" target="_blank" rel="external">https://bytebaker.com/2008/07/30/python-namespaces/</a></li>
+<li><a href="https://stackoverflow.com/questions/3190706/nonlocal-keyword-in-python-2-x" target="_blank" rel="external">https://stackoverflow.com/questions/3190706/nonlocal-keyword-in-python-2-x</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/命名空间/" rel="tag"># 命名空间</a>
+          
+            <a href="/tags/名称空间/" rel="tag"># 名称空间</a>
+          
+            <a href="/tags/namespace/" rel="tag"># namespace</a>
+          
+            <a href="/tags/scope/" rel="tag"># scope</a>
+          
+            <a href="/tags/作用域/" rel="tag"># 作用域</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/记一次-BUG-的排查过程/" rel="next" title="记一次 BUG 的排查过程">
+                <i class="fa fa-chevron-left"></i> 记一次 BUG 的排查过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">151</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-的名称"><span class="nav-number">1.</span> <span class="nav-text">Python 的名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-的名称空间"><span class="nav-number">2.</span> <span class="nav-text">Python 的名称空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-变量的作用域"><span class="nav-number">3.</span> <span class="nav-text">Python 变量的作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">4.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
