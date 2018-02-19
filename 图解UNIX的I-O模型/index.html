@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="epoll,IO多路复用,select,IO模型,异步,非阻塞,同步,阻塞," />
+  <meta name="keywords" content="select,IO多路复用,epoll,IO模型,异步,非阻塞,同步,阻塞," />
 
 
 
@@ -383,6 +383,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/图解UNIX的I-O模型/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="图解UNIX的I-O模型/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -476,11 +487,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/epoll/" rel="tag"># epoll</a>
+            <a href="/tags/select/" rel="tag"># select</a>
           
             <a href="/tags/IO多路复用/" rel="tag"># IO多路复用</a>
           
-            <a href="/tags/select/" rel="tag"># select</a>
+            <a href="/tags/epoll/" rel="tag"># epoll</a>
           
             <a href="/tags/IO模型/" rel="tag"># IO模型</a>
           
@@ -544,6 +555,13 @@
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -819,6 +837,26 @@
 
   
 
+    
+      <script id="dsq-count-scr" src="https://leehao-me.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'https://leehao.me/图解UNIX的I-O模型/';
+          this.page.identifier = '图解UNIX的I-O模型/';
+          this.page.title = '图解UNIX的I/O模型';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://leehao-me.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -831,10 +869,6 @@
   
 
 
-
-
-
-  
 
 
 
