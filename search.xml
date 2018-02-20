@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Python 装饰器浅析]]></title>
+    <url>%2FPython-%E8%A3%85%E9%A5%B0%E5%99%A8%E6%B5%85%E6%9E%90%2F</url>
+    <content type="text"><![CDATA[Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。 本文剖析 Python 装饰器的定义与用法。 不带参数的装饰器我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子： 123@decoratordef fun(): print('fun() is called') 前面提到，装饰器只是 Python 提供的语法糖，使用@decorator作为装饰器相当于： 123def fun(): print('fun() is called')fun = decorator(fun) 我们再来看一下装饰器decorator本身的定义。装饰器可以使用函数实现，也可以使用类来实现，这里我们介绍函数的实现方式。 123456def decorator(fun): def decorated_function(): print('before fun, do something') fun() print('after fun, do something') return decorated_function 装饰器decorator被定义成一个函数，这个函数返回一个新的函数。同时，我们看到decorator接受一个fun的形参，fun作为一个函数，会在decorated_function中被调用。 使用装饰器后，如果调用fun()，则会输出： before fun, do somethingfun() is calledafter fun, do something 通过装饰器decorator，原来的fun函数，被赋值成decorator(fun)，而decorator(fun)会触发decorator函数的调用并返回decorated_function这个函数。在decorated_function中，会先输出before fun, do something，然后调用fun()，最后输出after fun, do something。 带参数的装饰器装饰器支持带参数，我们先来看下带参数的装饰器的使用方式。 123@cached(5)def fun(): print(&apos;fun() is called&apos;) 上面带参数的装饰器的使用，等价于以下的代码： 123def fun(): print('fun() is called')fun = cached(5)(fun) 装饰器cached被定义成一个函数，它的定义如下： 12345678def cached(timeout): def decorator(func): def decorated_function(): print('before fun, do something, timeout=%d' % timeout) func() print('after fun, do something, timeout=%d' % timeout) return decorated_function return decorator 即cached是一个函数，它接受一个timeout的形参，并返回一个decorator的函数。cached(5)会进行函数调用且函数的实参为5，并返回decorator。decorator也是个函数，decorator(fun)（即cached(5)(fun)）相当于上面不带参数的装饰器的使用，它返回decorated_function这个函数。看起来有点复杂，实际上，带参数的装饰器只是在不参数的装饰器的基础上再多一层函数的封装而已，多的这层函数是为了将装饰器的参数传递进去。 使用装饰器后，如果调用fun()函数，则会输出： before fun, do something, timeout=5fun() is calledafter fun, do something, timeout=5 参考资料 http://www.lightxue.com/understand-python-decorator-the-easy-way https://mp.weixin.qq.com/s/98JA68TX9X4j6wPABiMJNA https://mp.weixin.qq.com/s/Om98PpncG52Ba1ZQ8NIjLA http://code.oneapm.com/python/2015/04/27/python-decorator-mistake/ http://www.jianshu.com/p/d03e4dfc5a78 http://blog.guoyb.com/2016/04/19/python-decorator/]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>装饰器</tag>
+        <tag>语法糖</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python 名称空间与作用域]]></title>
     <url>%2FPython-%E5%90%8D%E7%A7%B0%E7%A9%BA%E9%97%B4%E4%B8%8E%E4%BD%9C%E7%94%A8%E5%9F%9F%2F</url>
     <content type="text"><![CDATA[这篇文章介绍 Python 的名称空间以及变量的作用域。 Python 的名称Python 的名称（Name）是对象的一个标识（Identifier）。我们知道，在 Python 里面一切皆对象，名称就是用来引用对象的。说得有点玄乎，我们以例子说明。 例如，在a = 2这个语句中，2是个存储在内存中的一个对象，名称a则会引用2这个对象，“引用”的含义是指可以通过名称a来使用2这个对象。我们可以使用id()函数来获取对象的地址。 123a = 2print(id(2))print(id(a)) 输出： 4354798843547988 可以看到，两都均指向同一个对象。我们再来看复杂一点的代码。 12345678a = 2print 'id(a) = %s' % id(a)a = a + 1print 'id(a) = %s' % id(a)print 'id(3) = %s' % id(3)b = 2print 'id(2) = %s' % id(2)print 'id(b) = %s' % id(b) 输出： id(a) = 55606612id(a) = 55606600id(3) = 55606600id(2) = 55606612id(b) = 55606612 上述的代码发生了什么呢？我们以图1来说明。 图1：Python 的名称与对象 起初，名称a引用对象2；然后，执行操作a = a + 1，这时对象3被创建，名称a引用对象3，所以id(a)和id(3)输出相同的地址;最后，执行b = 2，名称b引用对象2，所以id(2)和id(b)输出相同的地址 这个例子也展示了 Python 在执行变量的赋值时，并不会重复创建一个对象的事实。名称采用动态绑定的机制使得 Python 更加高效，同一个名称可以引用不同类型的对象。 123a = 5a = 'hello world'a = [1, 2, 3] 可以看到，a先后引用了数字，字符串，列表的类型的对象，这在 Python 中完全是合法的。 Python 的名称空间了解 Python 的名称后，我们来看 Python 的名称空间。 名称空间是名称到对象的映射。 在 Python 中，名称空间采用字典来实现。Python 的名称空间包括： 内置名称空间，例如，内置名称空间包含 Python 的内置函数，如，abs() 模块名称空间，全局名称空间，在模块内定义的名称 局部名称空间，例如，在函数（function）或者类（class）被调用时，其内部包含的名称 不同的名称空间内的名称不会相互冲突，即是它们采用相同的名称。这也正是名称空间的作用。 内置名称空间在 Python 解释器启动时就创建了，直到 Python 解释器退出时内置名称空间才失效。这使得我们可以在程序的任何位置使用内置名称空间内的名称，例如，id()，print()等函数。模块名称空间当模块被引用时创建，直到 Python 解释器退出时模块名称空间才失效。函数名称空间在函数被调用时创建，函数返回后失效。 图2：Python 的名称空间 Python 变量的作用域Python 的作用域（scope）决定了我们在程序中能否直接使用名称空间中的名称，直接访问的意思是指不需要在名称前添加名称空间的前缀。对于 Python 来说，至少存在以下三类的作用域。 函数作用域，包括了函数内的局部名称 模块作用域，包括了模块内的全局名称 内置作用域，包括了内置名称 当在函数内部使用一个名称时，为了查找出该名称所引用的对象，Python 解释器先在函数名称空间查找，接着在模块名称空间查找，最后在内置名称空间查找，直到寻找到该名称为止。当函数 A 处于函数 B 的内部时，函数 A 的作用域处于函数 B 作用域之内。 例子123456def outer_function(): b = 20 def inner_func(): c = 30a = 10 在这个例子中，名称a在全局名称空间中，名称b在函数outer_function的局部名称空间，名称c则在函数inner_func的局部名称空间。当我们在函数inner_func时，c是个局部的名称，b是个非局部的名称，而a则是个全局的名称。在函数inner_func中，我们可以对c进行读取操作和赋值操作，而只能对b和a进行读取操作。当对b进行赋值时，一个新的名称将会被创建，这个新的名称处于inner_func函数局部名称空间中。对a进行赋值时也会在局部名称空间中创建一个新的名称。 我们使用以下的例子来说明。1234567891011121314def outer_function(): a = 20 def inner_function(): a = 30 print('a = %s' % a) inner_function() print('a = %s' % a)a = 10outer_function()print('a = %s' % a) 输出： a = 30a = 20a = 10 在函数inner_function中，我们对a进行了赋值操作，但函数outer_function中的a仍然为20，全局名称空间中的a则仍然为10。 为了在函数作用域中对全局的名称进行读取或者赋值操作，需要将这个名称声明为global。 12345678910111213141516def outer_function(): global a a = 20 def inner_function(): global a a = 30 print('a = %s' % a) inner_function() print('a = %s' % a)a = 10outer_function()print('a = %s' % a) 输出： a = 30a = 30a = 30 可以看到，通过global，我们在不同的作用域对全局名称a进行了赋值操作，最后在函数inner_function中对a的赋值也就是全局名称a的值。 参考资料 https://www.programiz.com/python-programming/namespace https://docs.python.org/3/tutorial/classes.html https://www.python-course.eu/namespaces.php https://www.python-course.eu/global_vs_local_variables.php https://www.programiz.com/python-programming/modules https://code.tutsplus.com/tutorials/what-are-python-namespaces-and-why-are-they-needed--cms-28598 https://bytebaker.com/2008/07/30/python-namespaces/ https://stackoverflow.com/questions/3190706/nonlocal-keyword-in-python-2-x]]></content>
@@ -431,10 +444,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -448,8 +461,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -521,9 +534,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
         <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>

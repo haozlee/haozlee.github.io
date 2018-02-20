@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Python,装饰器,语法糖," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。
+本文剖析 Python 装饰器的定义与用法。
+不带参数的装饰器我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子：
+123@decoratordef f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 装饰器浅析">
+<meta property="og:url" content="https://leehao.me/Python-装饰器浅析/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。
+本文剖析 Python 装饰器的定义与用法。
+不带参数的装饰器我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子：
+123@decoratordef f">
+<meta property="og:updated_time" content="2018-02-20T01:43:40.349Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 装饰器浅析">
+<meta name="twitter:description" content="Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。
+本文剖析 Python 装饰器的定义与用法。
+不带参数的装饰器我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子：
+123@decoratordef f">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-装饰器浅析/"/>
+
+
+
+
+
+  <title>Python 装饰器浅析 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-装饰器浅析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python 装饰器浅析</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-20T09:42:26+08:00">
+                2018-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。</p>
+<p>本文剖析 Python 装饰器的定义与用法。</p>
+<h2 id="不带参数的装饰器"><a href="#不带参数的装饰器" class="headerlink" title="不带参数的装饰器"></a>不带参数的装饰器</h2><p>我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@decorator</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'fun() is called'</span>)</div></pre></td></tr></table></figure>
+<p>前面提到，装饰器只是 Python 提供的语法糖，使用<code>@decorator</code>作为装饰器相当于：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'fun() is called'</span>)</div><div class="line">fun = decorator(fun)</div></pre></td></tr></table></figure>
+<p>我们再来看一下装饰器<code>decorator</code>本身的定义。装饰器可以使用函数实现，也可以使用类来实现，这里我们介绍函数的实现方式。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(fun)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decorated_function</span><span class="params">()</span>:</span></div><div class="line">        print(<span class="string">'before fun, do something'</span>)</div><div class="line">        fun()</div><div class="line">        print(<span class="string">'after fun, do something'</span>)</div><div class="line">    <span class="keyword">return</span> decorated_function</div></pre></td></tr></table></figure>
+<p>装饰器<code>decorator</code>被定义成一个函数，这个函数返回一个新的函数。同时，我们看到<code>decorator</code>接受一个<code>fun</code>的形参，<code>fun</code>作为一个函数，会在<code>decorated_function</code>中被调用。</p>
+<p>使用装饰器后，如果调用<code>fun()</code>，则会输出：</p>
+<blockquote>
+<p>before fun, do something<br>fun() is called<br>after fun, do something</p>
+</blockquote>
+<p>通过装饰器<code>decorator</code>，原来的<code>fun</code>函数，被赋值成<code>decorator(fun)</code>，而<code>decorator(fun)</code>会触发<code>decorator</code>函数的调用并返回<code>decorated_function</code>这个函数。在<code>decorated_function</code>中，会先输出<code>before fun, do something</code>，然后调用<code>fun()</code>，最后输出<code>after fun, do something</code>。</p>
+<h2 id="带参数的装饰器"><a href="#带参数的装饰器" class="headerlink" title="带参数的装饰器"></a>带参数的装饰器</h2><p>装饰器支持带参数，我们先来看下带参数的装饰器的使用方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@cached(5)</div><div class="line">def fun():</div><div class="line">    print(&apos;fun() is called&apos;)</div></pre></td></tr></table></figure>
+<p>上面带参数的装饰器的使用，等价于以下的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'fun() is called'</span>)</div><div class="line">fun = cached(<span class="number">5</span>)(fun)</div></pre></td></tr></table></figure>
+<p>装饰器<code>cached</code>被定义成一个函数，它的定义如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cached</span><span class="params">(timeout)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(func)</span>:</span></div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">decorated_function</span><span class="params">()</span>:</span></div><div class="line">            print(<span class="string">'before fun, do something, timeout=%d'</span> % timeout)</div><div class="line">            func()</div><div class="line">            print(<span class="string">'after fun, do something, timeout=%d'</span> % timeout)</div><div class="line">        <span class="keyword">return</span> decorated_function</div><div class="line">    <span class="keyword">return</span> decorator</div></pre></td></tr></table></figure>
+<p>即<code>cached</code>是一个函数，它接受一个<code>timeout</code>的形参，并返回一个<code>decorator</code>的函数。<code>cached(5)</code>会进行函数调用且函数的实参为5，并返回<code>decorator</code>。<code>decorator</code>也是个函数，<code>decorator(fun)</code>（即<code>cached(5)(fun)</code>）相当于上面不带参数的装饰器的使用，它返回<code>decorated_function</code>这个函数。<br>看起来有点复杂，实际上，带参数的装饰器只是在不参数的装饰器的基础上再多一层函数的封装而已，多的这层函数是为了将装饰器的参数传递进去。</p>
+<p>使用装饰器后，如果调用<code>fun()</code>函数，则会输出：</p>
+<blockquote>
+<p>before fun, do something, timeout=5<br>fun() is called<br>after fun, do something, timeout=5</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://www.lightxue.com/understand-python-decorator-the-easy-way" target="_blank" rel="external">http://www.lightxue.com/understand-python-decorator-the-easy-way</a></li>
+<li><a href="https://mp.weixin.qq.com/s/98JA68TX9X4j6wPABiMJNA" target="_blank" rel="external">https://mp.weixin.qq.com/s/98JA68TX9X4j6wPABiMJNA</a></li>
+<li><a href="https://mp.weixin.qq.com/s/Om98PpncG52Ba1ZQ8NIjLA" target="_blank" rel="external">https://mp.weixin.qq.com/s/Om98PpncG52Ba1ZQ8NIjLA</a></li>
+<li><a href="http://code.oneapm.com/python/2015/04/27/python-decorator-mistake/" target="_blank" rel="external">http://code.oneapm.com/python/2015/04/27/python-decorator-mistake/</a></li>
+<li><a href="http://www.jianshu.com/p/d03e4dfc5a78" target="_blank" rel="external">http://www.jianshu.com/p/d03e4dfc5a78</a></li>
+<li><a href="http://blog.guoyb.com/2016/04/19/python-decorator/" target="_blank" rel="external">http://blog.guoyb.com/2016/04/19/python-decorator/</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/装饰器/" rel="tag"># 装饰器</a>
+          
+            <a href="/tags/语法糖/" rel="tag"># 语法糖</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Python-名称空间与作用域/" rel="next" title="Python 名称空间与作用域">
+                <i class="fa fa-chevron-left"></i> Python 名称空间与作用域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#不带参数的装饰器"><span class="nav-number">1.</span> <span class="nav-text">不带参数的装饰器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#带参数的装饰器"><span class="nav-number">2.</span> <span class="nav-text">带参数的装饰器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

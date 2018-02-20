@@ -312,6 +312,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-装饰器浅析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Python-装饰器浅析/" itemprop="url">Python 装饰器浅析</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-20T09:42:26+08:00">
+                2018-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Python 装饰器是 Python 中常常使用到的一种语法糖，它可以大幅度减少重复代码，使用起来十分方便。另一方面，装饰器的定义往往会导致出现函数重重嵌套的情况，这会给装饰器的实现者带来阅读代码的困难。</p>
+<p>本文剖析 Python 装饰器的定义与用法。</p>
+<h2 id="不带参数的装饰器"><a href="#不带参数的装饰器" class="headerlink" title="不带参数的装饰器"></a>不带参数的装饰器</h2><p>我们先来看一下不带参数的装饰器的实现，这种情况比较简单。以下是一个不带参数的装饰器的使用例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@decorator</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'fun() is called'</span>)</div></pre></td></tr></table></figure>
+<p>前面提到，装饰器只是 Python 提供的语法糖，使用<code>@decorator</code>作为装饰器相当于：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'fun() is called'</span>)</div><div class="line">fun = decorator(fun)</div></pre></td></tr></table></figure>
+<p>我们再来看一下装饰器<code>decorator</code>本身的定义。装饰器可以使用函数实现，也可以使用类来实现，这里我们介绍函数的实现方式。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Python-装饰器浅析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-名称空间与作用域/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1680,167 +1832,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-Supervisor-来管理-Redis-进程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/使用-Supervisor-来管理-Redis-进程/" itemprop="url">使用 Supervisor 来管理 Redis 进程</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-30T22:23:10+08:00">
-                2017-08-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Supervisor 是一个用 Python 实现的进程管理工具，可以很方便地启动，关闭，重启，查看，以及监控进程，当进程由于某种原因崩溃或者被误杀后，可以自动重启并发送事件通知。Supervisor 可谓运维利器，使用 Supervisor 来管理进程，可以提高系统的高可用特性。<br>随着 Redis 越来越流行，越来越多的公司都使用上了 Redis，因此 Redis 的进程管理就成了很多公司都需要面临的问题，本文介绍如何使用 Supervisor 来管理 Redis 进程。</p>
-<h2 id="Supervisor-简介"><a href="#Supervisor-简介" class="headerlink" title="Supervisor 简介"></a>Supervisor 简介</h2><p>Supervisor 包括以下四个组件。</p>
-<ul>
-<li><p>supervisord<br>服务端程序，主要功能是启动 supervisord 服务及其管理的子进程，记录日志，重启崩溃的子进程，等。</p>
-</li>
-<li><p>supervisorctl<br>命令行客户端程序，它提供一个类似 shell 的接口，通过 UNIX 域套接字或者 TCP 套接字并使用 XML_RPC 协议与 supervisord 进程进行数据通信。它的主要功能是管理（启动，关闭，重启，查看状态）子进程。</p>
-</li>
-</ul>
-<ul>
-<li>Web Server<br>实现在界面上管理进程，还能查看进程日志和清除日志。</li>
-</ul>
-<ul>
-<li>XML-RPC 接口<br>可以通过 XML_RPC 协议对 supervisord 进行远程管理，达到和 supervisorctl 以及 Web Server 一样的管理功能。</li>
-</ul>
-<p>进程被 Supervisor 管理后，其运行状态的转化图如下图 1 所示：</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-08-30-142510.jpg" alt=""><br>图 1 ：子进程状态转移图</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/使用-Supervisor-来管理-Redis-进程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1891,7 +1882,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">59</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1913,7 +1904,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">151</span>
+                <span class="site-state-item-count">153</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
