@@ -312,6 +312,174 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/I-O多路复用之-epoll-系统调用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/I-O多路复用之-epoll-系统调用/" itemprop="url">I/O多路复用之 epoll 系统调用</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-07T09:39:49+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>I/O多路复用除了之前我们提到的<code>select</code>和<code>poll</code>外，epoll 也可以检查多个文件描述符的就绪状态，以达到I/O多路复用的目的。<br>epoll 系统调用是 Linux 系统专有的，在 Linux 内核 2.6 版本新增，epoll 的主要优点有：</p>
+<ul>
+<li>当检查大量的文件描述符时，epoll 的性能比<code>select</code>和<code>poll</code>高很多</li>
+<li>epoll 既支持水平触发也支持边缘触发，<code>select</code>和<code>poll</code>只支持水平触发</li>
+</ul>
+<p>epoll 编程接口的核心数据结构为 epoll 实例，它和一个打开的文件描述符相关联。这个文件描述符是内核数据结构的句柄，该内核数据结构的作用主要有两个：</p>
+<ul>
+<li>记录在进程中声明过的感兴趣的文件描述符列表，即 interest list</li>
+<li>维护处于I/O就绪状态中文件描述符列表，即 ready list </li>
+</ul>
+<p>其中，ready list 是 interest list 的子集。</p>
+<p>epoll 编程接口由以下3个系统调用组成：</p>
+<ul>
+<li><code>epoll_create</code>创建一个 epoll 实例，返回代码该实例的文件描述符</li>
+<li><code>epoll_ctl</code>增删改 epoll 实例的 interest list</li>
+<li><code>epoll_wait</code>返回与 epoll 实例相关联的就绪列表中的成员</li>
+</ul>
+<h2 id="创建-epoll-实例-epoll-create"><a href="#创建-epoll-实例-epoll-create" class="headerlink" title="创建 epoll 实例: epoll_create"></a>创建 epoll 实例: epoll_create</h2><p>系统调用<code>epoll_create</code>创建一个新的 epoll 实例，其对应的 interest list 初始化为空。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/epoll.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;</div></pre></td></tr></table></figure>
+<p>参数<code>size</code>指定了我们想要通过 epoll 实例来检查的文件描述符个数，该参数并不是一个上限，而是告诉内核应该如何为内部数据结构划分初始大小。<code>epoll_create</code>返回新创建 epoll 实例的文件描述符，这个文件描述符在其他几个 epoll 系统调用中会被用来表示 epoll 实例。当这个文件描述符不再使用时，应该通过<code>close</code>来关闭。</p>
+<blockquote>
+<p>从 Linux 2.6.27 版内核以来，Linux 支持了一个新的系统调用 <code>epoll_create1</code>。该系统调用执行的任务同<code>epoll_create</code>，但是去掉了无用的参数<code>size</code>，并增加了一个可用来修改系统调用行为的<code>flag</code>标志。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/I-O多路复用之-epoll-系统调用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-性能测试记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1662,155 +1830,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/epoll-水平触发与边缘触发/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/epoll-水平触发与边缘触发/" itemprop="url">epoll 水平触发与边缘触发</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-28T08:40:15+08:00">
-                2017-03-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网络基础/" itemprop="url" rel="index">
-                    <span itemprop="name">网络基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>epoll也是实现I/O多路复用的一种方法，为了深入了解epoll的原理，我们先来看下epoll水平触发（level trigger，LT，LT为epoll的默认工作模式）与边缘触发（edge trigger，ET）两种工作模式。</p>
-<p>使用脉冲信号来解释LT和ET可能更加贴切。Level是指信号只需要处于水平，就一直会触发；而edge则是指信号为上升沿或者下降沿时触发。说得还有点玄乎，我们以生活中的一个例子来类比LT和ET是如何确定<strong>读操作</strong>是否就绪的。</p>
-<p><strong>水平触发</strong><br>儿子：妈妈，我收到了500元的压岁钱。<br>妈妈：嗯，省着点花。<br>儿子：妈妈，我今天花了200元买了个变形金刚。<br>妈妈：以后不要乱花钱。<br>儿子：妈妈，我今天买了好多好吃的，还剩下100元。<br>妈妈：用完了这些钱，我可不会再给你钱了。<br>儿子：妈妈，那100元我没花，我攒起来了<br>妈妈：这才是明智的做法！<br>儿子：妈妈，那100元我还没花，我还有钱的。<br>妈妈：嗯，继续保持。<br>儿子：妈妈，我还有100元钱。<br>妈妈：…</p>
-<p>接下来的情形就是没完没了了：只要儿子一直有钱，他就一直会向他的妈妈汇报。LT模式下，只要内核缓冲区中还有未读数据，就会一直返回描述符的就绪状态，即不断地唤醒应用进程。在上面的例子中，儿子是缓冲区，钱是数据，妈妈则是应用进程了解儿子的压岁钱状况（读操作）。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/epoll-水平触发与边缘触发/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1861,7 +1880,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">60</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1883,7 +1902,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">153</span>
+                <span class="site-state-item-count">157</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
