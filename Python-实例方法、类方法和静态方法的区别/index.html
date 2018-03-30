@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Python,classmethod,staticmethod," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="在 Python 中，实例方法（instance method），类方法（class method）与静态方法（static method）经常容易混淆。本文通过代码例子来说明它们的区别。
+实例方法Python 的实例方法用得最多，也最常见。我们先来看 Python 的实例方法。
+12345678910111213class Kls(object):    def __init__(self, d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 实例方法、类方法和静态方法的区别">
+<meta property="og:url" content="https://leehao.me/Python-实例方法、类方法和静态方法的区别/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="在 Python 中，实例方法（instance method），类方法（class method）与静态方法（static method）经常容易混淆。本文通过代码例子来说明它们的区别。
+实例方法Python 的实例方法用得最多，也最常见。我们先来看 Python 的实例方法。
+12345678910111213class Kls(object):    def __init__(self, d">
+<meta property="og:updated_time" content="2018-03-30T15:13:52.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 实例方法、类方法和静态方法的区别">
+<meta name="twitter:description" content="在 Python 中，实例方法（instance method），类方法（class method）与静态方法（static method）经常容易混淆。本文通过代码例子来说明它们的区别。
+实例方法Python 的实例方法用得最多，也最常见。我们先来看 Python 的实例方法。
+12345678910111213class Kls(object):    def __init__(self, d">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-实例方法、类方法和静态方法的区别/"/>
+
+
+
+
+
+  <title>Python 实例方法、类方法和静态方法的区别 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-实例方法、类方法和静态方法的区别/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python 实例方法、类方法和静态方法的区别</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-30T23:12:45+08:00">
+                2018-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 Python 中，实例方法（instance method），类方法（class method）与静态方法（static method）经常容易混淆。本文通过代码例子来说明它们的区别。</p>
+<h2 id="实例方法"><a href="#实例方法" class="headerlink" title="实例方法"></a>实例方法</h2><p>Python 的实例方法用得最多，也最常见。我们先来看 Python 的实例方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kls</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data)</span>:</span></div><div class="line">        self.data = data</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">printd</span><span class="params">(self)</span>:</span></div><div class="line">        print(self.data)</div><div class="line"></div><div class="line"></div><div class="line">ik1 = Kls(<span class="string">'leo'</span>)</div><div class="line">ik2 = Kls(<span class="string">'lee'</span>)</div><div class="line"></div><div class="line">ik1.printd()</div><div class="line">ik2.printd()</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>leo<br>lee</p>
+</blockquote>
+<p>上述例子中，<code>printd</code>为一个实例方法。实例方法第一个参数为<code>self</code>，当使用<code>ik1.printd()</code>调用实例方法时，实例<code>ik1</code>会传递给<code>self</code>参数，这样<code>self</code>参数就可以引用当前正在调用实例方法的实例。利用实例方法的这个特性，上述代码正确输出了两个实例的成员数据。</p>
+<a id="more"></a>
+<h2 id="类方法"><a href="#类方法" class="headerlink" title="类方法"></a>类方法</h2><p>Python 的类方法采用装饰器<code>@classmethod</code>来定义，我们直接看例子。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kls</span><span class="params">(object)</span>:</span></div><div class="line">    num_inst = <span class="number">0</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        Kls.num_inst = Kls.num_inst + <span class="number">1</span></div><div class="line"></div><div class="line"><span class="meta">    @classmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_no_of_instance</span><span class="params">(cls)</span>:</span></div><div class="line">        <span class="keyword">return</span> cls.num_inst</div><div class="line"></div><div class="line"></div><div class="line">ik1 = Kls()</div><div class="line">ik2 = Kls()</div><div class="line"></div><div class="line"><span class="keyword">print</span> ik1.get_no_of_instance()</div><div class="line"><span class="keyword">print</span> Kls.get_no_of_instance()</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>2<br>2</p>
+</blockquote>
+<p>在上述例子中，我们需要统计类<code>Kls</code>实例的个数，因此定义了一个类变量<code>num_inst</code>来存放实例个数。通过装饰器<code>@classmethod</code>的使用，方法<code>get_no_of_instance</code>被定义成一个类方法。在调用类方法时，Python 会将类（class Kls）传递给<code>cls</code>，这样在<code>get_no_of_instance</code>内部就可以引用类变量<code>num_inst</code>。<br>由于在调用类方法时，只需要将类型本身传递给类方法，因此，既可以通过类也可以通过实例来调用类方法。</p>
+<h2 id="静态方法"><a href="#静态方法" class="headerlink" title="静态方法"></a>静态方法</h2><p>在开发中，我们常常需要定义一些方法，这些方法跟类有关，但在实现时并不需要引用类或者实例，例如，设置环境变量，修改另一个类的变量，等。这个时候，我们可以使用静态方法。<br>Python 使用装饰器<code>@staticmethod</code>来定义一个静态方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">IND = <span class="string">'ON'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kls</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data)</span>:</span></div><div class="line">        self.data = data</div><div class="line"></div><div class="line"><span class="meta">    @staticmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">checkind</span><span class="params">()</span>:</span></div><div class="line">        <span class="keyword">return</span> IND == <span class="string">'ON'</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">do_reset</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.checkind():</div><div class="line">            print(<span class="string">'Reset done for: %s'</span> % self.data)</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">set_db</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">if</span> self.checkind():</div><div class="line">            print(<span class="string">'DB connection made for: %s'</span> % self.data)</div><div class="line"></div><div class="line"></div><div class="line">ik1 = Kls(<span class="number">24</span>)</div><div class="line">ik1.do_reset()</div><div class="line">ik1.set_db()</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>Reset done for: 24<br>DB connection made for: 24</p>
+</blockquote>
+<p>在代码中，我们定义了一个全局变量<code>IND</code>，由于<code>IND</code>跟类<code>Kls</code>相关，所以我们将方法<code>checkind</code>放置在类<code>Kls</code>中定义。方法<code>checkind</code>只需检查<code>IND</code>的值，而不需要引用类或者实例，因此，我们将方法<code>checkind</code>定义为静态方法。<br>对于静态方法，Python 并不需要传递类或者实例，因此，既可以使用类也可以使用实例来调用静态方法。</p>
+<h2 id="实例方法，类方法与静态方法的区别"><a href="#实例方法，类方法与静态方法的区别" class="headerlink" title="实例方法，类方法与静态方法的区别"></a>实例方法，类方法与静态方法的区别</h2><p>我们用代码说明实例方法，类方法，静态方法的区别。注意下述代码中方法<code>foo</code>，<code>class_foo</code>，<code>static_foo</code>的定义以及使用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Kls</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(self, x)</span>:</span></div><div class="line">        print(<span class="string">'executing foo(%s,%s)'</span> % (self, x))</div><div class="line"></div><div class="line"><span class="meta">    @classmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">class_foo</span><span class="params">(cls,x)</span>:</span></div><div class="line">        print(<span class="string">'executing class_foo(%s,%s)'</span> % (cls,x))</div><div class="line"></div><div class="line"><span class="meta">    @staticmethod</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">static_foo</span><span class="params">(x)</span>:</span></div><div class="line">        print(<span class="string">'executing static_foo(%s)'</span> % x)</div><div class="line"></div><div class="line"></div><div class="line">ik = Kls()</div><div class="line"></div><div class="line"><span class="comment"># 实例方法</span></div><div class="line">ik.foo(<span class="number">1</span>)</div><div class="line">print(ik.foo)</div><div class="line">print(<span class="string">'=========================================='</span>)</div><div class="line"></div><div class="line"><span class="comment"># 类方法</span></div><div class="line">ik.class_foo(<span class="number">1</span>)</div><div class="line">Kls.class_foo(<span class="number">1</span>)</div><div class="line">print(ik.class_foo)</div><div class="line">print(<span class="string">'=========================================='</span>)</div><div class="line"></div><div class="line"><span class="comment"># 静态方法</span></div><div class="line">ik.static_foo(<span class="number">1</span>)</div><div class="line">Kls.static_foo(<span class="string">'hi'</span>)</div><div class="line">print(ik.static_foo)</div></pre></td></tr></table></figure>
+<p>输出：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">executing foo(&lt;__main__.Kls object at 0x0551E190&gt;,1)</div><div class="line">&lt;bound method Kls.foo of &lt;__main__.Kls object at 0x0551E190&gt;&gt;</div><div class="line">==========================================</div><div class="line">executing class_foo(&lt;class <span class="string">'__main__.Kls'</span>&gt;,1)</div><div class="line">executing class_foo(&lt;class <span class="string">'__main__.Kls'</span>&gt;,1)</div><div class="line">&lt;bound method type.class_foo of &lt;class <span class="string">'__main__.Kls'</span>&gt;&gt;</div><div class="line">==========================================</div><div class="line">executing static_foo(1)</div><div class="line">executing static_foo(hi)</div><div class="line">&lt;<span class="keyword">function</span> static_foo at 0x055238B0&gt;</div></pre></td></tr></table></figure></p>
+<p>对于实例方法，调用时会把实例<code>ik</code>作为第一个参数传递给<code>self</code>参数。因此，调用<code>ik.foo(1)</code>时输出了实例<code>ik</code>的地址。</p>
+<p>对于类方法，调用时会把类<code>Kls</code>作为第一个参数传递给<code>cls</code>参数。因此，调用<code>ik.class_foo(1)</code>时输出了<code>Kls</code>类型信息。<br>前面提到，可以通过类也可以通过实例来调用类方法，在上述代码中，我们再一次进行了验证。</p>
+<p>对于静态方法，调用时并不需要传递类或者实例。其实，静态方法很像我们在类外定义的函数，只不过静态方法可以通过类或者实例来调用而已。</p>
+<p>值得注意的是，在上述例子中，<code>foo</code>只是个函数，但当调用<code>ik.foo</code>的时候我们得到的是一个已经跟实例<code>ik</code>绑定的函数。调用<code>foo</code>时需要两个参数，但调用<code>ik.foo</code>时只需要一个参数。<code>foo</code>跟<code>ik</code>进行了绑定，因此，当我们打印<code>ik.foo</code>时，会看到以下输出:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;bound method Kls.foo of &lt;__main__.Kls object at 0x0551E190&gt;&gt;</div></pre></td></tr></table></figure>
+<p>当调用<code>ik.class_foo</code>时，由于<code>class_foo</code>是类方法，因此，<code>class_foo</code>跟<code>Kls</code>进行了绑定（而不是跟<code>ik</code>绑定）。当我们打印<code>ik.class_foo</code>时，输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;bound method type.class_foo of &lt;class <span class="string">'__main__.Kls'</span>&gt;&gt;</div></pre></td></tr></table></figure>
+<p>当调用<code>ik.static_foo</code>时，静态方法并不会与类或者实例绑定，因此，打印<code>ik.static_foo</code>（或者<code>Kls.static_foo</code>）时输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">function</span> static_foo at 0x055238B0&gt;</div></pre></td></tr></table></figure>
+<p>概括来说，是否与类或者实例进行绑定，这就是实例方法，类方法，静态方法的区别。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://www.pythoncentral.io/difference-between-staticmethod-and-classmethod-in-python/" target="_blank" rel="external">https://www.pythoncentral.io/difference-between-staticmethod-and-classmethod-in-python/</a></li>
+<li><a href="https://taizilongxu.gitbooks.io/stackoverflow-about-python/content/14/README.html" target="_blank" rel="external">https://taizilongxu.gitbooks.io/stackoverflow-about-python/content/14/README.html</a></li>
+<li><a href="https://kuanghy.github.io/2015/12/19/python-variable" target="_blank" rel="external">https://kuanghy.github.io/2015/12/19/python-variable</a></li>
+<li><a href="https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python" target="_blank" rel="external">https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/classmethod/" rel="tag"># classmethod</a>
+          
+            <a href="/tags/staticmethod/" rel="tag"># staticmethod</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Hexo-网站配置免费阿里云证书/" rel="next" title="Hexo 网站配置免费阿里云证书">
+                <i class="fa fa-chevron-left"></i> Hexo 网站配置免费阿里云证书
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">159</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例方法"><span class="nav-number">1.</span> <span class="nav-text">实例方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类方法"><span class="nav-number">2.</span> <span class="nav-text">类方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态方法"><span class="nav-number">3.</span> <span class="nav-text">静态方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例方法，类方法与静态方法的区别"><span class="nav-number">4.</span> <span class="nav-text">实例方法，类方法与静态方法的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
