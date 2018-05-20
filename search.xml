@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Python 实现 Shell 脚本功能]]></title>
+    <url>%2FPython-%E5%AE%9E%E7%8E%B0-Shell-%E8%84%9A%E6%9C%AC%E5%8A%9F%E8%83%BD%2F</url>
+    <content type="text"><![CDATA[最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能解决:(。一气之下，决定还是用回了自己熟悉的 Python 来实现。 Python 中执行 Shell 命令有多种方法，stackoverflow 上有对这些方法进行比较的讨论，Calling an external command in Python 指出使用subprocess模块来实现更优。因此，本文说明如何使用subprocess模块来实现 Shell 脚本的功能。subprocess模块提供多种方法来实现执行 Linux 的命令，例如subprocess.call()方法，subprocess.check_call()方法，等。这些方法都是对Popen类的封装，故本文着重讲述Popen类的使用。 执行 Shell 命令可以通过向Popen()传递需要执行的命令来创建一个Popen对象，这样，便会创建一个子进程来执行命令。例如： 1child = subprocess.Popen(["ping","-c","5","leehao.me"]) 上面的代码会创建一个子进程来执行ping -c 5 leehao.me命令，这个命令采用列表的形式传递给Popen()方法。如果我们想直接采用ping -c 5 leehao.me字符串形式，可以添加shell=True来实现： 1child = subprocess.Popen("ping -c 5 leehao.me", shell=True) 官方文档指出由于安全原因故不建议使用shell=True，详细说明可以参考官方文档的描述。 等待子进程执行子进程执行命令后，主进程并不会等待子进程执行。为了让主进程等待子进程执行结束，需要显示调用Popen.wait()方法。例如： 123child = subprocess.Popen(["ping","-c","5","leehao.me"])child.wait()print 'parent finish' 这样，主进程会等待子进程执行ping命令完毕后，才会打印出parent finish的输出。 获取执行结果为了获取Popen()子进程的输出，可以使用Popen.communicate()方法，例如： 123456def subprocess_cmd(command): process = subprocess.Popen(command,stdout=subprocess.PIPE, shell=True) proc_stdout = process.communicate()[0].strip() print proc_stdoutsubprocess_cmd('echo leehao.me; echo www.leehao.me') 输出： leehao.mewww.leehao.me process.communicate()方法可以实现主进程与子进程的通信。主进程可以通过它向子进程发送数据，也可以读取子进程的输出的数据。上面的例子中，我们在创建Popen对象时指定stdout=subprocess.PIPE，这样主进程便可以读取子进程的输出。communicate()方法返回一个元组：(stdoutdata, stderrdata)，process.communicate()[0]即获取子进程的标准输出。需要指出的是，调用communicate()方法后，主进程也会等待子进程执行完毕。上面的例子中，子进程向标准输出打印两个字符串，主进程接收到了这些输出，并打印出来。 有了上面的基础，实现我们的监控脚本就易如反掌了，下面是我们的脚本代码。为了免受骚扰，将手机号码替换了:) 附：监控脚本123456789101112131415161718192021222324252627282930313233from datetime import datetimeimport subprocessdef safe_int(s): try: n = int(s) except Exception, ex: n = 0 return ndef run(): print 'begin to monitor task num, time: %s' % datetime.now() child = subprocess.Popen('grep "socket进入队列" /home/lihao/logs/ksb.txt | tail -n 1 | cut -d "：" -f 3', shell=True, stdout=subprocess.PIPE) out = child.communicate()[0] out = out.strip() print(out) num = safe_int(out) if num &gt; 5: print 'task num is over limit, num: %s, time: %s' % (num, datetime.now()) msg = '%s, 193 task num is over limit, task num: %s' % (datetime.now(), num) cmd = ['/home/soft/SendMsg/SendMsg', '1', '13800138000', msg] print cmd child = subprocess.Popen(cmd, cwd="/home/soft/SendMsg") child.wait() else: print 'task num is ok, num: %s, time: %s' % (num, datetime.now())if __name__ == '__main__': run() 参考资料 https://docs.python.org/2/library/subprocess.html http://www.cnblogs.com/vamei/archive/2012/09/23/2698014.html https://stackoverflow.com/questions/17742789/running-multiple-bash-commands-with-subprocess http://blog.51cto.com/zhou123/1312791 https://stackoverflow.com/questions/89228/calling-an-external-command-in-python]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Shell</tag>
+        <tag>Popen</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python 实例方法、类方法和静态方法]]></title>
     <url>%2FPython-%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95%E3%80%81%E7%B1%BB%E6%96%B9%E6%B3%95%E5%92%8C%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
     <content type="text"><![CDATA[在 Python 中，实例方法（instance method），类方法（class method）与静态方法（static method）经常容易混淆。本文通过代码例子来说明它们的区别。 实例方法Python 的实例方法用得最多，也最常见。我们先来看 Python 的实例方法。 12345678910111213class Kls(object): def __init__(self, data): self.data = data def printd(self): print(self.data)ik1 = Kls('leo')ik2 = Kls('lee')ik1.printd()ik2.printd() 输出： leolee 上述例子中，printd为一个实例方法。实例方法第一个参数为self，当使用ik1.printd()调用实例方法时，实例ik1会传递给self参数，这样self参数就可以引用当前正在调用实例方法的实例。利用实例方法的这个特性，上述代码正确输出了两个实例的成员数据。 类方法Python 的类方法采用装饰器@classmethod来定义，我们直接看例子。 12345678910111213141516class Kls(object): num_inst = 0 def __init__(self): Kls.num_inst = Kls.num_inst + 1 @classmethod def get_no_of_instance(cls): return cls.num_instik1 = Kls()ik2 = Kls()print ik1.get_no_of_instance()print Kls.get_no_of_instance() 输出： 22 在上述例子中，我们需要统计类Kls实例的个数，因此定义了一个类变量num_inst来存放实例个数。通过装饰器@classmethod的使用，方法get_no_of_instance被定义成一个类方法。在调用类方法时，Python 会将类（class Kls）传递给cls，这样在get_no_of_instance内部就可以引用类变量num_inst。由于在调用类方法时，只需要将类型本身传递给类方法，因此，既可以通过类也可以通过实例来调用类方法。 静态方法在开发中，我们常常需要定义一些方法，这些方法跟类有关，但在实现时并不需要引用类或者实例，例如，设置环境变量，修改另一个类的变量，等。这个时候，我们可以使用静态方法。Python 使用装饰器@staticmethod来定义一个静态方法。 1234567891011121314151617181920212223IND = 'ON'class Kls(object): def __init__(self, data): self.data = data @staticmethod def checkind(): return IND == 'ON' def do_reset(self): if self.checkind(): print('Reset done for: %s' % self.data) def set_db(self): if self.checkind(): print('DB connection made for: %s' % self.data)ik1 = Kls(24)ik1.do_reset()ik1.set_db() 输出： Reset done for: 24DB connection made for: 24 在代码中，我们定义了一个全局变量IND，由于IND跟类Kls相关，所以我们将方法checkind放置在类Kls中定义。方法checkind只需检查IND的值，而不需要引用类或者实例，因此，我们将方法checkind定义为静态方法。对于静态方法，Python 并不需要传递类或者实例，因此，既可以使用类也可以使用实例来调用静态方法。 实例方法，类方法与静态方法的区别我们用代码说明实例方法，类方法，静态方法的区别。注意下述代码中方法foo，class_foo，static_foo的定义以及使用。 123456789101112131415161718192021222324252627282930class Kls(object): def foo(self, x): print('executing foo(%s,%s)' % (self, x)) @classmethod def class_foo(cls,x): print('executing class_foo(%s,%s)' % (cls,x)) @staticmethod def static_foo(x): print('executing static_foo(%s)' % x)ik = Kls()# 实例方法ik.foo(1)print(ik.foo)print('==========================================')# 类方法ik.class_foo(1)Kls.class_foo(1)print(ik.class_foo)print('==========================================')# 静态方法ik.static_foo(1)Kls.static_foo('hi')print(ik.static_foo) 输出：12345678910executing foo(&lt;__main__.Kls object at 0x0551E190&gt;,1)&lt;bound method Kls.foo of &lt;__main__.Kls object at 0x0551E190&gt;&gt;==========================================executing class_foo(&lt;class '__main__.Kls'&gt;,1)executing class_foo(&lt;class '__main__.Kls'&gt;,1)&lt;bound method type.class_foo of &lt;class '__main__.Kls'&gt;&gt;==========================================executing static_foo(1)executing static_foo(hi)&lt;function static_foo at 0x055238B0&gt; 对于实例方法，调用时会把实例ik作为第一个参数传递给self参数。因此，调用ik.foo(1)时输出了实例ik的地址。 对于类方法，调用时会把类Kls作为第一个参数传递给cls参数。因此，调用ik.class_foo(1)时输出了Kls类型信息。前面提到，可以通过类也可以通过实例来调用类方法，在上述代码中，我们再一次进行了验证。 对于静态方法，调用时并不需要传递类或者实例。其实，静态方法很像我们在类外定义的函数，只不过静态方法可以通过类或者实例来调用而已。 值得注意的是，在上述例子中，foo只是个函数，但当调用ik.foo的时候我们得到的是一个已经跟实例ik绑定的函数。调用foo时需要两个参数，但调用ik.foo时只需要一个参数。foo跟ik进行了绑定，因此，当我们打印ik.foo时，会看到以下输出: 1&lt;bound method Kls.foo of &lt;__main__.Kls object at 0x0551E190&gt;&gt; 当调用ik.class_foo时，由于class_foo是类方法，因此，class_foo跟Kls进行了绑定（而不是跟ik绑定）。当我们打印ik.class_foo时，输出： 1&lt;bound method type.class_foo of &lt;class '__main__.Kls'&gt;&gt; 当调用ik.static_foo时，静态方法并不会与类或者实例绑定，因此，打印ik.static_foo（或者Kls.static_foo）时输出： 1&lt;function static_foo at 0x055238B0&gt; 概括来说，是否与类或者实例进行绑定，这就是实例方法，类方法，静态方法的区别。 参考资料 https://www.pythoncentral.io/difference-between-staticmethod-and-classmethod-in-python/ https://taizilongxu.gitbooks.io/stackoverflow-about-python/content/14/README.html https://kuanghy.github.io/2015/12/19/python-variable https://stackoverflow.com/questions/136097/what-is-the-difference-between-staticmethod-and-classmethod-in-python]]></content>
@@ -447,9 +460,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>poll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>poll</tag>
       </tags>
   </entry>
   <entry>
@@ -460,8 +473,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
       </tags>
   </entry>
   <entry>
@@ -562,8 +575,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
         <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>

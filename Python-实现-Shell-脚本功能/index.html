@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Python,Shell,Popen," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 实现 Shell 脚本功能">
+<meta property="og:url" content="https://leehao.me/Python-实现-Shell-脚本功能/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能">
+<meta property="og:updated_time" content="2018-05-20T13:22:05.618Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 实现 Shell 脚本功能">
+<meta name="twitter:description" content="最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Python-实现-Shell-脚本功能/"/>
+
+
+
+
+
+  <title>Python 实现 Shell 脚本功能 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Python-实现-Shell-脚本功能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python 实现 Shell 脚本功能</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-20T21:18:35+08:00">
+                2018-05-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。<br>本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能解决:(。一气之下，决定还是用回了自己熟悉的 Python 来实现。</p>
+<p>Python 中执行 Shell 命令有多种方法，stackoverflow 上有对这些方法进行比较的讨论，<a href="https://stackoverflow.com/questions/89228/calling-an-external-command-in-python" target="_blank" rel="external">Calling an external command in Python</a> 指出使用<code>subprocess</code>模块来实现更优。因此，本文说明如何使用<code>subprocess</code>模块来实现 Shell 脚本的功能。<br><code>subprocess</code>模块提供多种方法来实现执行 Linux 的命令，例如<code>subprocess.call()</code>方法，<code>subprocess.check_call()</code>方法，等。这些方法都是对<code>Popen</code>类的封装，故本文着重讲述<code>Popen</code>类的使用。</p>
+<h2 id="执行-Shell-命令"><a href="#执行-Shell-命令" class="headerlink" title="执行 Shell 命令"></a>执行 Shell 命令</h2><p>可以通过向<code>Popen()</code>传递需要执行的命令来创建一个<code>Popen</code>对象，这样，便会创建一个子进程来执行命令。例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">child = subprocess.Popen([<span class="string">"ping"</span>,<span class="string">"-c"</span>,<span class="string">"5"</span>,<span class="string">"leehao.me"</span>])</div></pre></td></tr></table></figure>
+<p>上面的代码会创建一个子进程来执行<code>ping -c 5 leehao.me</code>命令，这个命令采用列表的形式传递给<code>Popen()</code>方法。如果我们想直接采用<code>ping -c 5 leehao.me</code>字符串形式，可以添加<code>shell=True</code>来实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">child = subprocess.Popen(<span class="string">"ping -c 5 leehao.me"</span>, shell=<span class="keyword">True</span>)</div></pre></td></tr></table></figure>
+<p><a href="https://docs.python.org/2/library/subprocess.html" target="_blank" rel="external">官方文档</a>指出由于安全原因故不建议使用<code>shell=True</code>，详细说明可以参考官方文档的描述。</p>
+<a id="more"></a>
+<h2 id="等待子进程执行"><a href="#等待子进程执行" class="headerlink" title="等待子进程执行"></a>等待子进程执行</h2><p>子进程执行命令后，主进程并不会等待子进程执行。为了让主进程等待子进程执行结束，需要显示调用<code>Popen.wait()</code>方法。例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">child = subprocess.Popen([<span class="string">"ping"</span>,<span class="string">"-c"</span>,<span class="string">"5"</span>,<span class="string">"leehao.me"</span>])</div><div class="line">child.wait()</div><div class="line"><span class="keyword">print</span> <span class="string">'parent finish'</span></div></pre></td></tr></table></figure>
+<p>这样，主进程会等待子进程执行<code>ping</code>命令完毕后，才会打印出<code>parent finish</code>的输出。</p>
+<h2 id="获取执行结果"><a href="#获取执行结果" class="headerlink" title="获取执行结果"></a>获取执行结果</h2><p>为了获取<code>Popen()</code>子进程的输出，可以使用<code>Popen.communicate()</code>方法，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">subprocess_cmd</span><span class="params">(command)</span>:</span></div><div class="line">    process = subprocess.Popen(command,stdout=subprocess.PIPE, shell=<span class="keyword">True</span>)</div><div class="line">    proc_stdout = process.communicate()[<span class="number">0</span>].strip()</div><div class="line">    <span class="keyword">print</span> proc_stdout</div><div class="line"></div><div class="line">subprocess_cmd(<span class="string">'echo leehao.me; echo www.leehao.me'</span>)</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>leehao.me<br>www.leehao.me</p>
+</blockquote>
+<p><code>process.communicate()</code>方法可以实现主进程与子进程的通信。主进程可以通过它向子进程发送数据，也可以读取子进程的输出的数据。上面的例子中，我们在创建<code>Popen</code>对象时指定<code>stdout=subprocess.PIPE</code>，这样主进程便可以读取子进程的输出。<br><code>communicate()</code>方法返回一个元组：<code>(stdoutdata, stderrdata)</code>，<code>process.communicate()[0]</code>即获取子进程的标准输出。<br>需要指出的是，调用<code>communicate()</code>方法后，主进程也会等待子进程执行完毕。<br>上面的例子中，子进程向标准输出打印两个字符串，主进程接收到了这些输出，并打印出来。</p>
+<p>有了上面的基础，实现我们的监控脚本就易如反掌了，下面是我们的脚本代码。为了免受骚扰，将手机号码替换了:)</p>
+<h2 id="附：监控脚本"><a href="#附：监控脚本" class="headerlink" title="附：监控脚本"></a>附：监控脚本</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">import</span> subprocess</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">safe_int</span><span class="params">(s)</span>:</span></div><div class="line">    <span class="keyword">try</span>:</div><div class="line">        n = int(s)</div><div class="line">    <span class="keyword">except</span> Exception, ex:</div><div class="line">        n = <span class="number">0</span></div><div class="line">    <span class="keyword">return</span> n</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'begin to monitor task num, time: %s'</span> % datetime.now()</div><div class="line">    child = subprocess.Popen(<span class="string">'grep "socket进入队列" /home/lihao/logs/ksb.txt | tail -n 1 | cut -d "：" -f 3'</span>,</div><div class="line">                             shell=<span class="keyword">True</span>, stdout=subprocess.PIPE)</div><div class="line">    out = child.communicate()[<span class="number">0</span>]</div><div class="line">    out = out.strip()</div><div class="line">    print(out)</div><div class="line">    num = safe_int(out)</div><div class="line">    <span class="keyword">if</span> num &gt; <span class="number">5</span>:</div><div class="line">        <span class="keyword">print</span> <span class="string">'task num is over limit, num: %s, time: %s'</span> % (num, datetime.now())</div><div class="line">        msg = <span class="string">'%s, 193 task num is over limit, task num: %s'</span> % (datetime.now(), num)</div><div class="line">        cmd = [<span class="string">'/home/soft/SendMsg/SendMsg'</span>, <span class="string">'1'</span>, <span class="string">'13800138000'</span>, msg]</div><div class="line">        <span class="keyword">print</span> cmd</div><div class="line">        child = subprocess.Popen(cmd, cwd=<span class="string">"/home/soft/SendMsg"</span>)</div><div class="line">        child.wait()</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">print</span> <span class="string">'task num is ok, num: %s, time: %s'</span> % (num, datetime.now())</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    run()</div></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://docs.python.org/2/library/subprocess.html" target="_blank" rel="external">https://docs.python.org/2/library/subprocess.html</a></li>
+<li><a href="http://www.cnblogs.com/vamei/archive/2012/09/23/2698014.html" target="_blank" rel="external">http://www.cnblogs.com/vamei/archive/2012/09/23/2698014.html</a></li>
+<li><a href="https://stackoverflow.com/questions/17742789/running-multiple-bash-commands-with-subprocess" target="_blank" rel="external">https://stackoverflow.com/questions/17742789/running-multiple-bash-commands-with-subprocess</a></li>
+<li><a href="http://blog.51cto.com/zhou123/1312791" target="_blank" rel="external">http://blog.51cto.com/zhou123/1312791</a></li>
+<li><a href="https://stackoverflow.com/questions/89228/calling-an-external-command-in-python" target="_blank" rel="external">https://stackoverflow.com/questions/89228/calling-an-external-command-in-python</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Shell/" rel="tag"># Shell</a>
+          
+            <a href="/tags/Popen/" rel="tag"># Popen</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Python-实例方法、类方法和静态方法的区别/" rel="next" title="Python 实例方法、类方法和静态方法">
+                <i class="fa fa-chevron-left"></i> Python 实例方法、类方法和静态方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">62</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">161</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#执行-Shell-命令"><span class="nav-number">1.</span> <span class="nav-text">执行 Shell 命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#等待子进程执行"><span class="nav-number">2.</span> <span class="nav-text">等待子进程执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取执行结果"><span class="nav-number">3.</span> <span class="nav-text">获取执行结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附：监控脚本"><span class="nav-number">4.</span> <span class="nav-text">附：监控脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
