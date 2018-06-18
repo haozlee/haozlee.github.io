@@ -312,6 +312,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/夯实基础：Redis-的数据结构介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/夯实基础：Redis-的数据结构介绍/" itemprop="url">夯实基础：Redis 的数据结构介绍</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-14T07:24:21+08:00">
+                2017-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>使用 Redis 这么久，发现自己还没写过一篇有关 Redis 数据结构的文章，从构造 Redis 整个知识体系来说，显示是不完整的。故这篇文章再次让自己回归到 Redis 的五种基本数据结构，除了描述这些数据结构的特点，也介绍如何使用 Redis 命令来操作这些数据结构。<br>Redis 支持的数据结构包括：</p>
+<ul>
+<li>字符串 </li>
+<li>列表</li>
+<li>集合</li>
+<li>有序集合</li>
+<li>哈希表</li>
+</ul>
+<p>需要指出的是，这些数据结构不是指 Redis 内部实现所采用的数据结构，而是指 Redis 提供给用户使用的数据结构。例如，对于集合这种数据结构，其内部可以使用整数集合（intset）来实现，也可以使用哈希表（hashtable）来实现。一般情况下，对于用户来说，我们并不需要关心集合内部的实现，只需要知道集合这种数据结构的应用场景以及集合为我们提供的操作命令就可以了。<br>接下来，本文依次对 Redis 这些数据结构进行介绍。</p>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>字符串是 Redis 最简单的数据结构。熟悉 Memcached 的朋友对于字符串这种数据结构一定感到很亲切，因为 Memcached 也提供了这种数据结构。跟 Memcached 不同的是，Redis 除了提供字符串这种数据结构外，还提供了其他的数据结构，而 Memcached 则只提供字符串数据结构而已。<br>Redis 字符串使用 <a href="https://redis.io/topics/internals-sds">SDS</a> 来实现。SDS 是 Redis 内部使用的一种数据结构，用作 Redis 字符串的表示。由于 Redis 的键都是字符串，这里我们说字符串是指 Redis 值的数据结构类型，例如客户端执行下面命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SET website leehao.me</div></pre></td></tr></table></figure>
+<p>那么，Redis 将创建一个新的键值对，其中，</p>
+<ul>
+<li>键是一个字符串，字符串内部使用 SDS 来实现，用来保存“website”</li>
+<li>值也是一个字符串，字符串内部也是使用 SDS 来实现，用来保存“leehao.me”</li>
+</ul>
+<p>下文我们所说的数据结构也是针对键值对的值的数据结构类型来说的，且值的数据结构是什么，我们就称之什么类型的键，例如字符串键，即键值对的值的数据结构为字符串。<br>使用命令 SET 可以设置字符串的值，如果需要取出字符串，可以使用命令 GET。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/夯实基础：Redis-的数据结构介绍/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/Hiredis-实现-Redis-流水线/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1685,156 +1847,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/在阿里云部署-Hexo-网站/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/在阿里云部署-Hexo-网站/" itemprop="url">在阿里云部署 Hexo 网站</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-16T00:06:50+08:00">
-                2017-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/建站/" itemprop="url" rel="index">
-                    <span itemprop="name">建站</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>一开始自己的网站 <a href="https://leehao.me">leehao.me</a> 托管在 GitHub 上面，考虑到 GitHub 的访问可能不稳定，另外，也是抱着学习的目的，就将网站迁移到阿里云上面来了。</p>
-<p>网站的总体结构如下图所示：</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152418.jpg" alt=""></p>
-<p>域名 leehao.me 指向负载均衡 SLB（Server Load Balancer）的 IP，在 SLB 后面部署两台后端服务器 ECS（Elastic Compute Service），ECS 上部署 Hexo 的静态资源。</p>
-<p>SLB 的监听配置如下：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152738.jpg" alt=""><br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/在阿里云部署-Hexo-网站/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1885,7 +1897,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">65</span>
+                <span class="site-state-item-count">66</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1896,7 +1908,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1907,7 +1919,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">165</span>
+                <span class="site-state-item-count">166</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

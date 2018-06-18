@@ -312,6 +312,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Hibernate-实现增删查改/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Hibernate-实现增删查改/" itemprop="url">Hibernate 实现增删查改</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-18T21:40:42+08:00">
+                2018-06-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Hibernate 是一种 Java 语言下的对象关系映射的解决方案，它为面向对象的领域模型到传统的关系型数据库的映射提供了一个使用方便的框架。<br>本文讲述如何使用 Hibernate 来实现数据库中基本的增删查改操作。</p>
+<h2 id="创建数据库表"><a href="#创建数据库表" class="headerlink" title="创建数据库表"></a>创建数据库表</h2><p>为实现我们的例子，我们先创建一个表<code>EMPLOYEES</code>并插入一些数据。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> EMPLOYEES (</div><div class="line">    EMP_ID <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line">    <span class="keyword">NAME</span> <span class="built_in">VARCHAR</span>(<span class="number">252</span>),</div><div class="line">    DEPARTMENT <span class="built_in">VARCHAR</span>(<span class="number">128</span>),</div><div class="line">    SALARY <span class="built_in">BIGINT</span>,</div><div class="line">    JOINED_ON <span class="keyword">TIMESTAMP</span>,</div><div class="line">    PRIMARY <span class="keyword">KEY</span> (EMP_ID)</div><div class="line">);</div><div class="line"> </div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">'Nataraja G'</span>, <span class="string">'Documentation'</span>, <span class="number">10000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">'Amar M'</span>, <span class="string">'Entertainment'</span>, <span class="number">12000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">'Nagesh Y'</span>, <span class="string">'Admin'</span>, <span class="number">25000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">'Vasu V'</span>, <span class="string">'Security'</span>, <span class="number">2500</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div></pre></td></tr></table></figure>
+<h2 id="创建-Maven-项目"><a href="#创建-Maven-项目" class="headerlink" title="创建 Maven 项目"></a>创建 Maven 项目</h2><p>使用 IntelliJ IDEA 创建一个 Maven 项目，选择 quickstart 类型。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-134224.jpg" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Hibernate-实现增删查改/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/IntelliJ-IDEA-添加-MySQL-图形访问界面/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -404,18 +554,17 @@
 
       
         
-          
-            <p>IntelliJ IDEA 不愧为一款强大的 Java IDE，其提供的访问 MySQL 数据库的图形界面也异常的强大。<br>本文讲述如何配置 IntelliJ IDEA 来添加访问 MySQL 的图形界面。</p>
+          <p>IntelliJ IDEA 不愧为一款强大的 Java IDE，其提供的访问 MySQL 数据库的图形界面也异常的强大。<br>本文讲述如何配置 IntelliJ IDEA 来添加访问 MySQL 的图形界面。</p>
 <p>打开 Database 选项窗口，View - Tool windows - Database。点击 + 号，新建一个 MySQL 数据库来源。</p>
 <p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-133628.jpg" alt=""></p>
 <p>在 Data Sources and Drivers 窗口，配置 MySQL 的主机地址，用户名和密码。配置完毕后，可以点击 Test Connection 进行连接的测试，正常情况下，会提示连接成功。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-133654.jpg" alt=""></p>
-<p>配置完毕后，在 Database 选项窗口，会出现刚才配置的 MySQL 数据库。<br>选择数据库后，双击表名称，可以查询表的数据，如下图所示：</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-133736.jpg" alt=""></p>
-<p>也可以编写 SQL 并执行，在编辑框内编辑 SQL 后，点击运行按钮，可以得到对应的执行结果。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-133808.jpg" alt=""></p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/IntelliJ-IDEA-添加-MySQL-图形访问界面/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1682,155 +1831,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Nginx-日志接入-Elastic-Stack-系统/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Nginx-日志接入-Elastic-Stack-系统/" itemprop="url">Nginx 日志接入 Elastic Stack 系统</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-13T23:02:32+08:00">
-                2017-12-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/工具/" itemprop="url" rel="index">
-                    <span itemprop="name">工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>文章<a href="https://leehao.me/%E6%90%AD%E5%BB%BA-Elastic-Stack-%E6%97%A5%E5%BF%97%E7%B3%BB%E7%BB%9F/">《搭建 Elastic Stack 日志系统》</a> 描述了如何利用 Kibana，Elasticsearch，Filebeat 来搭建日志系统。本文在上一篇 Elastic Stack 文章的基础上，说明如何将 Nginx 的日志接入 Elastic Stack 日志系统。</p>
-<p>为了更新在 Kibana 上展示 Nginx 的日志，可以先将 Nginx 的日志改成 json 格式，如何更改 Nginx 的日志格式，可以参考文章 <a href="https://leolee.pro/?p=94">《Nginx 日志改成 JSON 格式》</a>。</p>
-<p>假设我们的 Nginx 访问日志路径为 /usr/local/nginx/logs/access.log ，错误日志路径为 /usr/local/nginx/logs/error.log，那么我们的 Filebeat 配置可以这样写：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">filebeat.prospectors:</div><div class="line"></div><div class="line">- input_type: log </div><div class="line">  paths:</div><div class="line">    - /usr/local/nginx/logs/access.log</div><div class="line">  json.keys_under_root: true</div><div class="line">  json.message_key:</div><div class="line"></div><div class="line">- input_type: log</div><div class="line">  paths:</div><div class="line">    - /usr/local/nginx/logs/error.log</div></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Nginx-日志接入-Elastic-Stack-系统/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1881,7 +1881,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">65</span>
+                <span class="site-state-item-count">66</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1892,7 +1892,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1903,7 +1903,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">165</span>
+                <span class="site-state-item-count">166</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
