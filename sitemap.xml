@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5MySQL/</loc>
+    
+    <lastmod>2018-06-18T13:28:04.707Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/CentOS-7-%E5%AE%89%E8%A3%85-MySQL/</loc>
+    
+    <lastmod>2018-06-18T13:22:15.589Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://leehao.me/Python-%E5%AE%9E%E7%8E%B0-Shell-%E8%84%9A%E6%9C%AC%E5%8A%9F%E8%83%BD/</loc>
     
     <lastmod>2018-05-20T13:22:05.618Z</lastmod>
@@ -394,28 +408,7 @@
   </url>
   
   <url>
-    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/%E4%B8%80%E8%87%B4%E6%80%A7Hash-Consistent-Hashing-%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%80/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
@@ -429,21 +422,28 @@
   </url>
   
   <url>
+    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%B8%80/</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/%E4%B8%80%E8%87%B4%E6%80%A7Hash-Consistent-Hashing-%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BA%8C/</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89%E2%80%94%E2%80%94%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
-    
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://leehao.me/baidu_verify_c09cDuMB9y.html</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
@@ -457,7 +457,14 @@
   </url>
   
   <url>
-    <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
+    <loc>https://leehao.me/baidu_verify_c09cDuMB9y.html</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     
@@ -465,6 +472,13 @@
   
   <url>
     <loc>https://leehao.me/categories/index.html</loc>
+    
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
     
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     

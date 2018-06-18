@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[使用 JDBC 连接MySQL]]></title>
+    <url>%2F%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5MySQL%2F</url>
+    <content type="text"><![CDATA[JDBC（Java Database Connectivity，Java数据库连接）是 Java 语言中用来规范客户端程序如何来访问数据库的应用程序接口，提供了诸如查询和更新数据库中数据的方法。本文讲述如何使用 JDBC 来连接和访问数据库。 为方便引入 JDBC 依赖包，我们创建 Maven 项目来实现我们的示例程序。打开 IntelliJ IDEA 客户端，File - New - Project ，选择创建 Maven 项目，如下图所示： 填完必要的信息后，进入项目的编辑界面。 在 MVN Repositoty 网站找到 JDBC 的引入方式，链接http://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.11： 123456&lt;!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java --&gt;&lt;dependency&gt; &lt;groupId&gt;mysql&lt;/groupId&gt; &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt; &lt;version&gt;8.0.11&lt;/version&gt;&lt;/dependency&gt; 将以上依赖写入 Maven 项目的 pom.xml 文件中。 为方便测试，我们先在 MySQL 的test数据库中创建表并插入数据。 12345678910111213CREATE TABLE EMPLOYEES ( EMP_ID BIGINT NOT NULL AUTO_INCREMENT, NAME VARCHAR(252), DEPARTMENT VARCHAR(128), SALARY BIGINT, JOINED_ON TIMESTAMP, PRIMARY KEY (EMP_ID)); INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (1, 'Nataraja G', 'Documentation', 10000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (2, 'Amar M', 'Entertainment', 12000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (3, 'Nagesh Y', 'Admin', 25000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (4, 'Vasu V', 'Security', 2500, CURRENT_TIMESTAMP); 接下来就可以编写 JDBC 的代码了。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546package com.test;import java.sql.*;public class App &#123; public static void main(String[] args) &#123; System.out.println("MySQL JDBC Example."); Connection conn = null; String url = "jdbc:mysql://*.*.*.*:3306/test?autoReconnect=true&amp;useSSL=false"; String driver = "com.mysql.cj.jdbc.Driver"; String userName = "root"; String password = "XXXXXXXX"; Statement stmt = null; ResultSet rs = null; try &#123; Class.forName(driver); conn = DriverManager.getConnection(url, userName, password); stmt = conn.createStatement(); String sql = "select * from EMPLOYEES"; rs = stmt.executeQuery(sql); while (rs.next()) &#123; int id = rs.getInt("emp_id"); String name = rs.getString("name"); System.out.println("id = " + id + ", name = " + name); &#125; // 关闭资源 rs.close(); stmt.close(); conn.close(); &#125; catch (Exception e) &#123; e.printStackTrace(); &#125; finally &#123; if (rs != null) &#123; try &#123; rs.close(); &#125; catch (SQLException sqlEx) &#123; &#125; // ignore &#125; if (stmt != null) &#123; try &#123; stmt.close(); &#125; catch (SQLException sqlEx) &#123; &#125; // ignore &#125; &#125; &#125;&#125; 上述代码中，我们首先注册 JDBC 驱动，然后通过DriverManager我们获取与 MySQL 的连接。获得 MySQL 的连接后，我们执行 SQL 查询语句，并遍历输出查询的结果集。为增加程序的健壮性，我们在程序中添加了关闭资源的操作，以避免资源泄露。另外，上述代码隐藏了 MySQL 的主机地址和密码，读者可以根据实际情况进行替换即可。 输出结果如下所示: MySQL JDBC Example.id = 1, name = Nataraja Gid = 2, name = Amar Mid = 3, name = Nagesh Yid = 4, name = Vasu V 参考资料 http://www.runoob.com/java/java-mysql-connect.html https://zh.wikipedia.org/wiki/Java数据库连接 https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-usagenotes-statements.html https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-usagenotes-connect-drivermanager.html https://stackoverflow.com/questions/34189756/warning-about-ssl-connection-when-connecting-to-mysql-database]]></content>
+      <categories>
+        <category>MySQL</category>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+        <tag>JDBC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CentOS 7 安装 MySQL]]></title>
+    <url>%2FCentOS-7-%E5%AE%89%E8%A3%85-MySQL%2F</url>
+    <content type="text"><![CDATA[官方推荐使用 yum 源来安装 MySQL，本文讲述如何使用 yum 源来安装 MySQL。 一、添加 MySQL yum 源可以采用yum localinstall命令来添加 MySQL 源。在 https://dev.mysql.com/downloads/repo/yum/ 页面选择合适 rpm 包，这些 rpm 包的作用就是添加 MySQL yum 源的。笔者下载的是 mysql80-community-release-el7-1.noarch.rpm。下载后，然后执行命令： 1sudo yum localinstall mysql80-community-release-el7-1.noarch.rpm 执行yum localinstall命令后，可以看到/etc/yum.repos.d目录多了两个文件： mysql-community.repo mysql-community-source.repo 有兴趣的同学可以打开来看下里面的内容。 安装添加好 yum 源后，就可以执行安装命令了。假设我们安装的是最新版本 MySQL ，执行以下命令： 1sudo yum install mysql-community-server 不出意外的话，会成功安装 MySQL。 启动使用以下命令启动 MySQL 服务器进程： 1systemctl start mysqld.service 使用systemctl status mysqld.servic命令可以观察 MySQL 的运行状态。 如果需要关闭 MySQL ，可以执行命令： 1systemctl stop mysqld.service 更改密码MySQL 默认创建了 root 用户的密码，这个密码打印在 MySQL 的日志文件/var/log/mysqld.log中，可以通过temporary password关键字来找出这个临时的密码。 1grep 'temporary password' /var/log/mysqld.log 使用该密码连接 MySQL： 1mysql -uroot -p 然后修改密码， 1mysql&gt; ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass4!'; 将密码修改为MyNewPass4!。 ##开放其他地址连接 MySQL 安装后，默认只开放本机连接，为了支持其他主机连接，可以通过修改表mysql的host字段来实现。 1234mysql -u root -pmysql&gt;use mysql;mysql&gt;update user set host = '%' where user = 'root';mysql&gt;flush privileges; 参考资料 https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html https://dev.mysql.com/doc/refman/8.0/en/connecting-disconnecting.html https://dev.mysql.com/doc/refman/8.0/en/mysql-server.html http://dev.mysql.com/downloads/repo/yum/]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>CentOS</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Python 实现 Shell 脚本功能]]></title>
     <url>%2FPython-%E5%AE%9E%E7%8E%B0-Shell-%E8%84%9A%E6%9C%AC%E5%8A%9F%E8%83%BD%2F</url>
     <content type="text"><![CDATA[最近生产环境上发现有服务器进程出现任务堆积的情况，由于一时无法定位出原因，故对堆积的任务数量进行监控。进程日志中已有任务数量的输出，故只需要编写一个脚本读取日志中的任务数量，发现任务数量超过某个阈值就发送告警短信即可。本想使用 Shell 脚本来实现，没想到 Shell 的语法实在不好掌握，赋值语法，数值比较语法，字符串与数字的转换，等等，这些语法的问题经过了多次 google 和百度后，还是没能解决:(。一气之下，决定还是用回了自己熟悉的 Python 来实现。 Python 中执行 Shell 命令有多种方法，stackoverflow 上有对这些方法进行比较的讨论，Calling an external command in Python 指出使用subprocess模块来实现更优。因此，本文说明如何使用subprocess模块来实现 Shell 脚本的功能。subprocess模块提供多种方法来实现执行 Linux 的命令，例如subprocess.call()方法，subprocess.check_call()方法，等。这些方法都是对Popen类的封装，故本文着重讲述Popen类的使用。 执行 Shell 命令可以通过向Popen()传递需要执行的命令来创建一个Popen对象，这样，便会创建一个子进程来执行命令。例如： 1child = subprocess.Popen(["ping","-c","5","leehao.me"]) 上面的代码会创建一个子进程来执行ping -c 5 leehao.me命令，这个命令采用列表的形式传递给Popen()方法。如果我们想直接采用ping -c 5 leehao.me字符串形式，可以添加shell=True来实现： 1child = subprocess.Popen("ping -c 5 leehao.me", shell=True) 官方文档指出由于安全原因故不建议使用shell=True，详细说明可以参考官方文档的描述。 等待子进程执行子进程执行命令后，主进程并不会等待子进程执行。为了让主进程等待子进程执行结束，需要显示调用Popen.wait()方法。例如： 123child = subprocess.Popen(["ping","-c","5","leehao.me"])child.wait()print 'parent finish' 这样，主进程会等待子进程执行ping命令完毕后，才会打印出parent finish的输出。 获取执行结果为了获取Popen()子进程的输出，可以使用Popen.communicate()方法，例如： 123456def subprocess_cmd(command): process = subprocess.Popen(command,stdout=subprocess.PIPE, shell=True) proc_stdout = process.communicate()[0].strip() print proc_stdoutsubprocess_cmd('echo leehao.me; echo www.leehao.me') 输出： leehao.mewww.leehao.me process.communicate()方法可以实现主进程与子进程的通信。主进程可以通过它向子进程发送数据，也可以读取子进程的输出的数据。上面的例子中，我们在创建Popen对象时指定stdout=subprocess.PIPE，这样主进程便可以读取子进程的输出。communicate()方法返回一个元组：(stdoutdata, stderrdata)，process.communicate()[0]即获取子进程的标准输出。需要指出的是，调用communicate()方法后，主进程也会等待子进程执行完毕。上面的例子中，子进程向标准输出打印两个字符串，主进程接收到了这些输出，并打印出来。 有了上面的基础，实现我们的监控脚本就易如反掌了，下面是我们的脚本代码。为了免受骚扰，将手机号码替换了:) 附：监控脚本123456789101112131415161718192021222324252627282930313233from datetime import datetimeimport subprocessdef safe_int(s): try: n = int(s) except Exception, ex: n = 0 return ndef run(): print 'begin to monitor task num, time: %s' % datetime.now() child = subprocess.Popen('grep "socket进入队列" /home/lihao/logs/ksb.txt | tail -n 1 | cut -d "：" -f 3', shell=True, stdout=subprocess.PIPE) out = child.communicate()[0] out = out.strip() print(out) num = safe_int(out) if num &gt; 5: print 'task num is over limit, num: %s, time: %s' % (num, datetime.now()) msg = '%s, 193 task num is over limit, task num: %s' % (datetime.now(), num) cmd = ['/home/soft/SendMsg/SendMsg', '1', '13800138000', msg] print cmd child = subprocess.Popen(cmd, cwd="/home/soft/SendMsg") child.wait() else: print 'task num is ok, num: %s, time: %s' % (num, datetime.now())if __name__ == '__main__': run() 参考资料 https://docs.python.org/2/library/subprocess.html http://www.cnblogs.com/vamei/archive/2012/09/23/2698014.html https://stackoverflow.com/questions/17742789/running-multiple-bash-commands-with-subprocess http://blog.51cto.com/zhou123/1312791 https://stackoverflow.com/questions/89228/calling-an-external-command-in-python]]></content>
@@ -102,8 +127,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>日志</tag>
         <tag>json</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -128,8 +153,8 @@
       </categories>
       <tags>
         <tag>Java</tag>
-        <tag>Python</tag>
         <tag>DES</tag>
+        <tag>Python</tag>
         <tag>加密</tag>
         <tag>解密</tag>
         <tag>密钥</tag>
@@ -485,10 +510,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -502,8 +527,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
