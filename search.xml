@@ -41,7 +41,6 @@
     <url>%2F%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5MySQL%2F</url>
     <content type="text"><![CDATA[JDBC（Java Database Connectivity，Java数据库连接）是 Java 语言中用来规范客户端程序如何来访问数据库的应用程序接口，提供了诸如查询和更新数据库中数据的方法。本文讲述如何使用 JDBC 来连接和访问数据库。 为方便引入 JDBC 依赖包，我们创建 Maven 项目来实现我们的示例程序。打开 IntelliJ IDEA 客户端，File - New - Project ，选择创建 Maven 项目，如下图所示： 填完必要的信息后，进入项目的编辑界面。 在 MVN Repositoty 网站找到 JDBC 的引入方式，链接http://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.11： 123456&lt;!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java --&gt;&lt;dependency&gt; &lt;groupId&gt;mysql&lt;/groupId&gt; &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt; &lt;version&gt;8.0.11&lt;/version&gt;&lt;/dependency&gt; 将以上依赖写入 Maven 项目的 pom.xml 文件中。 为方便测试，我们先在 MySQL 的test数据库中创建表并插入数据。 12345678910111213CREATE TABLE EMPLOYEES ( EMP_ID BIGINT NOT NULL AUTO_INCREMENT, NAME VARCHAR(252), DEPARTMENT VARCHAR(128), SALARY BIGINT, JOINED_ON TIMESTAMP, PRIMARY KEY (EMP_ID)); INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (1, 'Nataraja G', 'Documentation', 10000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (2, 'Amar M', 'Entertainment', 12000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (3, 'Nagesh Y', 'Admin', 25000, CURRENT_TIMESTAMP);INSERT INTO EMPLOYEES (EMP_ID, NAME, DEPARTMENT, SALARY, JOINED_ON) VALUES (4, 'Vasu V', 'Security', 2500, CURRENT_TIMESTAMP); 接下来就可以编写 JDBC 的代码了。 12345678910111213141516171819202122232425262728293031323334353637383940414243444546package com.test;import java.sql.*;public class App &#123; public static void main(String[] args) &#123; System.out.println("MySQL JDBC Example."); Connection conn = null; String url = "jdbc:mysql://*.*.*.*:3306/test?autoReconnect=true&amp;useSSL=false"; String driver = "com.mysql.cj.jdbc.Driver"; String userName = "root"; String password = "XXXXXXXX"; Statement stmt = null; ResultSet rs = null; try &#123; Class.forName(driver); conn = DriverManager.getConnection(url, userName, password); stmt = conn.createStatement(); String sql = "select * from EMPLOYEES"; rs = stmt.executeQuery(sql); while (rs.next()) &#123; int id = rs.getInt("emp_id"); String name = rs.getString("name"); System.out.println("id = " + id + ", name = " + name); &#125; // 关闭资源 rs.close(); stmt.close(); conn.close(); &#125; catch (Exception e) &#123; e.printStackTrace(); &#125; finally &#123; if (rs != null) &#123; try &#123; rs.close(); &#125; catch (SQLException sqlEx) &#123; &#125; // ignore &#125; if (stmt != null) &#123; try &#123; stmt.close(); &#125; catch (SQLException sqlEx) &#123; &#125; // ignore &#125; &#125; &#125;&#125; 上述代码中，我们首先注册 JDBC 驱动，然后通过DriverManager我们获取与 MySQL 的连接。获得 MySQL 的连接后，我们执行 SQL 查询语句，并遍历输出查询的结果集。为增加程序的健壮性，我们在程序中添加了关闭资源的操作，以避免资源泄露。另外，上述代码隐藏了 MySQL 的主机地址和密码，读者可以根据实际情况进行替换即可。 输出结果如下所示: MySQL JDBC Example.id = 1, name = Nataraja Gid = 2, name = Amar Mid = 3, name = Nagesh Yid = 4, name = Vasu V 参考资料 http://www.runoob.com/java/java-mysql-connect.html https://zh.wikipedia.org/wiki/Java数据库连接 https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-usagenotes-statements.html https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-usagenotes-connect-drivermanager.html https://stackoverflow.com/questions/34189756/warning-about-ssl-connection-when-connecting-to-mysql-database]]></content>
       <categories>
-        <category>MySQL</category>
         <category>Java</category>
       </categories>
       <tags>
@@ -163,8 +162,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>日志</tag>
         <tag>json</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -521,9 +520,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -534,8 +533,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -637,8 +636,8 @@
       </categories>
       <tags>
         <tag>epoll</tag>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
