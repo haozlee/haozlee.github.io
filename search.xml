@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Java 使用 Rserve 实现与 R 的通信]]></title>
+    <url>%2FJava-%E4%BD%BF%E7%94%A8-Rserve-%E5%AE%9E%E7%8E%B0%E4%B8%8E-R-%E7%9A%84%E9%80%9A%E4%BF%A1%2F</url>
+    <content type="text"><![CDATA[Rserve 是一个基于 TCP/IP 的服务器程序，它允许其他语言调用 R 语言。由于 Rserve 采用 C/S （客户端/服务器）的调用方式，因此客户端并不需要链接 R 语言库，客户端程序与 R 程序可以实现低耦合的目的。为调用 R 语言，需要实现一个与 Rserve 通信的客户端程序，幸运的是目前常用的语言包括 C/C++，PHP，Java 等都实现提供与 Rserve 通信的客户端程序。本文讲述 Java 语言如何利用 Rserve 实现与 R 语言的通信。 安装 Rserve假设 R 的运行环境是 CentOS（CentOS 使用yum install R来安装 R），在 CentOS 我们已经安装好 R。在 Linux 命令行中输入 1R 进入 R 的交互环境，然后输入 1&gt; install.packages(&quot;Rserve&quot;) 接下来就可以安装 Rserve。 启动 Rserve启动 Rserve 有两种方式，一种是在 R 程序中启动，另一种是在命令行中启动。 1. R 程序启动 Rserve打开 R 的交互环境，输入以下命令： 12library(Rserve)Rserve() 执行后，Rserve 便启动起来。 2. 命令行启动 Rserve也可以直接在命令行中输入：1R CMD Rserve 启动 Rserve。 为让 Rserve 支持远程连接，可以加入--RS-enable-remote参数： 1R CMD Rserve --RS-enable-remote Java 调用 R使用 IntelliJ IDEA 创建一个 Maven quickstart 项目，然后在 pom.xml 中添加 Java 版本的 Rserve 客户端的依赖： 123456&lt;!-- https://mvnrepository.com/artifact/org.rosuda.REngine/Rserve --&gt;&lt;dependency&gt; &lt;groupId&gt;org.rosuda.REngine&lt;/groupId&gt; &lt;artifactId&gt;Rserve&lt;/artifactId&gt; &lt;version&gt;1.8.1&lt;/version&gt;&lt;/dependency&gt; 然后编写调用 R 的代码。 12345678910111213141516171819202122232425262728293031323334import org.rosuda.REngine.REXP;import org.rosuda.REngine.Rserve.RConnection;import org.rosuda.REngine.Rserve.RserveException;import org.rosuda.REngine.REXPMismatchException;public class RserveDemo&#123; public static void main ( String[] args ) throws RserveException, REXPMismatchException &#123; RserveDemo rserveDemo = new RserveDemo(); rserveDemo.callRserve(); &#125; private void callRserve() throws RserveException, REXPMismatchException &#123; // 连接 Rserve RConnection c = new RConnection("120.78.80.23"); // 输入 R 的版本 REXP x = c.eval("R.version.string"); System.out.println(x.asString()); // 获取10个随机数字 double[] arr = c.eval("rnorm(10)").asDoubles(); for (double a : arr) &#123; System.out.print(a + ","); &#125; System.out.println(); // 调用 R 源文件 c.eval("source('/home/R/add.R')"); int sum = c.eval("myAdd(1, 2)").asInteger(); System.out.println(sum); &#125;&#125; 在上述代码中，我们首先创建了与 Rserve 的连接。由于 Java 代码与 Rserve 不在同一台机器，所以我们指定了 Rserve 的机器 IP 地址。接下来，我们调用了 R 语言的一些方法，包括输入 R 语言的版本，获取10个随机数字。最后，我们演示了如何调用 R 语言源代码。在 Linux 平台我们先创建一个 add.R 的文件，然后编写 R 代码： 1234myAdd &lt;- function(x, y) &#123; sum &lt;- x + y return (sum)&#125; add.R 源代码放置在目录 /home/R 下。R 语言中使用source(&#39;/home/R/add.R&#39;)可以执行源代码，在 Java 代码中，我们先执行 add.R 源代码，接下来调用了myAdd()函数。 执行以上代码，输出： R version 3.5.0 (2018-04-23)-2.533623370009491,0.7961512738732901,0.7122860585280386,-0.16063583146722446,-0.598315148752494,0.09854836382399271,-1.0914493041810422,-1.5425930835313806,0.584390936738569,0.35687345246533786,3 参考资料 http://www.rforge.net/Rserve/index.html http://www.rforge.net/Rserve/doc.html http://www.rforge.net/Rserve/example.html http://blog.fens.me/r-rserve-java/ http://blog.fens.me/r-rserve-server/ https://blog.csdn.net/wzgl__wh/article/details/52793558 https://blog.csdn.net/u011955252/article/details/64904906]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Rserve</tag>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Spring MVC 入门例子]]></title>
     <url>%2FSpring-MVC-%E5%85%A5%E9%97%A8%E4%BE%8B%E5%AD%90%2F</url>
     <content type="text"><![CDATA[Spring Web MVC 是一个建立在 Servlet API 的 Web 框架，它属于 Spring Framework 的产品。Spring Web MVC 名称来源于模块 spring-webmvc ，但它更常用的叫法是 Spring MVC。本文讲述如何使用 IntelliJ IDEA 来编写一个 Spring MVC Demo。 使用 IntelliJ IDEA 创建一个 Maven 项目，选择 webapp 类型。 创建好 Maven 项目后，我们在 pom.xml 文件中添加依赖。 12345678910111213&lt;dependencies&gt; &lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt; &lt;version&gt;5.0.7.RELEASE&lt;/version&gt; &lt;/dependency&gt; &lt;dependency&gt; &lt;groupId&gt;javax.servlet&lt;/groupId&gt; &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt; &lt;version&gt;3.0.1&lt;/version&gt; &lt;scope&gt;provided&lt;/scope&gt; &lt;/dependency&gt;&lt;/dependencies&gt; 为编写代码，我们在 main 目录下创建 java 目录，并标记为 Source 目录。接下来在 main 目录下添加 resources 目录，并标记为 Resource 目录。如下图所示： 为运行 Spring MVC 项目，我们还需要配置 tomcat 服务器。 先在官网下载 tomcat，然后在 IntelliJ IDEA 添加 tomcat ，如下图所示： 配置完 tomcat 服务器后，还需要将项目部署到 tomcat 中运行。在 Deployment 选项窗口中将本项目配置进去。 Tomcat 服务器配置完毕，可以点击运行按钮进行测试。如果可以正常打开浏览器，并显示 Hello World 的字样，说明配置成功。 经过以上的配置，Spring MVC 项目的框架就搭建完毕了，接下来就可以编写代码了。 配置 web.xml我们将 web.xml 配置修改为： 12345678910111213141516171819202122232425262728&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5"&gt; &lt;display-name&gt;spring-web&lt;/display-name&gt; &lt;welcome-file-list&gt; &lt;welcome-file&gt;index.html&lt;/welcome-file&gt; &lt;/welcome-file-list&gt; &lt;context-param&gt; &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt; &lt;param-value&gt; classpath:application-context.xml &lt;/param-value&gt; &lt;/context-param&gt; &lt;listener&gt; &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt; &lt;/listener&gt; &lt;servlet&gt; &lt;servlet-name&gt;example&lt;/servlet-name&gt; &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt; &lt;/servlet&gt; &lt;servlet-mapping&gt; &lt;servlet-name&gt;example&lt;/servlet-name&gt; &lt;url-pattern&gt;/api/*&lt;/url-pattern&gt; &lt;/servlet-mapping&gt;&lt;/web-app&gt; 在 web.xml 文件，我们添加了一个名为example的 servlet，用于处理 /api/ 的请求；并指定application-context.xml作为 spring 的上下文配置文件。 配置 xxx-servlet.xml配置完 web.xml 后，我们添加 servlet 的 xml 配置。上面我们配置了名为example的 servlet，故我们创建一个example-servlet.xml的文件，其内容如下： 12345678910111213&lt;beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"&gt; &lt;context:component-scan base-package="com.test.controller" /&gt;&lt;/beans&gt; example-servlet.xml文件里面指定了 controller 的包为com.test.controller。 添加 controller上述 servlet 配置文件中指定了 servlet 的包为com.test.controller，因此，我们在 java 目录下创建com.test.controller包，并添加类HelloController。 12345678910111213141516package com.test.controller;import java.io.IOException;import javax.servlet.http.HttpServletResponse;import org.springframework.stereotype.Controller;import org.springframework.web.bind.annotation.RequestMapping;@Controller@RequestMapping(value = "/hello")public class HelloController &#123; @RequestMapping(value = "/spring") public void spring(HttpServletResponse response) throws IOException &#123; response.getWriter().write("Hello, Spring Web!!"); &#125;&#125; 注解 @Controller的含义是指类HelloController为一个处理请求的 Controller。注解@RequestMapping用于定义请求 url 的映射，上述代码表明我们将 /hello/spring 的请求映射到方法spring()中处理。 完成以上步骤后，我们就完成了一个完整 spring mvc 的示例。项目源代码和配置如下图所示： 运行运行项目，在浏览器中输入http://localhost:8081/，显示结果如下： 在浏览器中输入http://localhost:8081/api/hello/spring，显示结果如下： 这表明 Spring MVC 框架将 /api/hello/spring 的请求由类HelloController中的spring()方法进行了处理。 参考资料 https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-introduction https://my.oschina.net/gaussik/blog/385697 https://my.oschina.net/gaussik/blog/513353 https://blog.csdn.net/Mr_Sk/article/details/68947018]]></content>
@@ -162,8 +174,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>json</tag>
         <tag>日志</tag>
+        <tag>json</tag>
       </tags>
   </entry>
   <entry>
@@ -635,9 +647,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
         <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -797,8 +809,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>MongoDB</tag>
         <tag>Java</tag>
+        <tag>MongoDB</tag>
       </tags>
   </entry>
   <entry>

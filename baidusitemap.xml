@@ -4,6 +4,28 @@
 
     
   <url>
+    <loc>https://leehao.me/Java-%E4%BD%BF%E7%94%A8-Rserve-%E5%AE%9E%E7%8E%B0%E4%B8%8E-R-%E7%9A%84%E9%80%9A%E4%BF%A1/</loc>
+    <lastmod>2018-06-20T14:31:08.170Z</lastmod>
+    <data>
+        <display>
+        <title>Java 使用 Rserve 实现与 R 的通信</title>
+        <pubTime>2018-06-20T14:30:12.000Z</pubTime>
+        
+        <tag>Rserve</tag>
+         
+        <tag>Java</tag>
+         
+         
+           
+             
+              <breadCrumb title="Java" url="https://leehao.me/categories/Java/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://leehao.me/%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5MySQL/</loc>
     <lastmod>2018-06-18T13:59:24.739Z</lastmod>
     <data>
@@ -295,9 +317,9 @@
         
         <tag>Nginx</tag>
          
-        <tag>json</tag>
-         
         <tag>日志</tag>
+         
+        <tag>json</tag>
          
          
            
@@ -1260,11 +1282,11 @@
         <title>图解UNIX的I/O模型</title>
         <pubTime>2017-03-12T00:42:27.000Z</pubTime>
         
-        <tag>epoll</tag>
-         
         <tag>select</tag>
          
         <tag>IO多路复用</tag>
+         
+        <tag>epoll</tag>
          
         <tag>IO模型</tag>
          
@@ -1449,41 +1471,19 @@
 
     
   <url>
-    <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
+    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     <data>
         <display>
-        <title>细说 C++ Traits Classes</title>
-        <pubTime>2017-02-14T13:01:58.000Z</pubTime>
+        <title>Python Requests库简明使用教程</title>
+        <pubTime>2017-01-24T12:11:39.000Z</pubTime>
         
-        <tag>traits classes</tag>
+        <tag>Python</tag>
          
          
            
              
-              <breadCrumb title="C++" url="https://leehao.me/categories/C/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    <data>
-        <display>
-        <title>MongoDB Java使用指南</title>
-        <pubTime>2017-01-25T23:26:24.000Z</pubTime>
-        
-        <tag>MongoDB</tag>
-         
-        <tag>Java</tag>
-         
-         
-           
-             
-              <breadCrumb title="MongoDB" url="https://leehao.me/categories/MongoDB/"/>
+              <breadCrumb title="Python" url="https://leehao.me/categories/Python/"/>
           
         </display>
     </data>
@@ -1506,6 +1506,28 @@
            
              
               <breadCrumb title="Redis" url="https://leehao.me/categories/Redis/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://leehao.me/MongoDB-Java%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</loc>
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    <data>
+        <display>
+        <title>MongoDB Java使用指南</title>
+        <pubTime>2017-01-25T23:26:24.000Z</pubTime>
+        
+        <tag>Java</tag>
+         
+        <tag>MongoDB</tag>
+         
+         
+           
+             
+              <breadCrumb title="MongoDB" url="https://leehao.me/categories/MongoDB/"/>
           
         </display>
     </data>
@@ -1576,6 +1598,7 @@
     </url>
 
     
+    
   <url>
     <loc>https://leehao.me/%E4%B8%80%E8%87%B4%E6%80%A7Hash-Consistent-Hashing-%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
@@ -1600,6 +1623,26 @@
     
     
   <url>
+    <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    <data>
+        <display>
+        <title>细说 C++ Traits Classes</title>
+        <pubTime>2017-02-14T13:01:58.000Z</pubTime>
+        
+        <tag>traits classes</tag>
+         
+         
+           
+             
+              <breadCrumb title="C++" url="https://leehao.me/categories/C/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     <data>
@@ -1613,27 +1656,6 @@
            
              
               <breadCrumb title="Git" url="https://leehao.me/categories/Git/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-    
-  <url>
-    <loc>https://leehao.me/Python-Requests%E5%BA%93%E7%AE%80%E6%98%8E%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</loc>
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    <data>
-        <display>
-        <title>Python Requests库简明使用教程</title>
-        <pubTime>2017-01-24T12:11:39.000Z</pubTime>
-        
-        <tag>Python</tag>
-         
-         
-           
-             
-              <breadCrumb title="Python" url="https://leehao.me/categories/Python/"/>
           
         </display>
     </data>
