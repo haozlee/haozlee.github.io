@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="CAP,一致性,可用性,分区容忍性," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个：
+
+一致性（Consistency）
+可用性（Availability）
+分区容忍性（Partition tolerance）
+
+CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。
+第一章：“记忆公司”面世一天晚上，正准备入睡时，你的妻子对你记住她生日并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CAP 理论 —— 最通俗的解释">
+<meta property="og:url" content="https://leehao.me/CAP-理论-——-最通俗的解释/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个：
+
+一致性（Consistency）
+可用性（Availability）
+分区容忍性（Partition tolerance）
+
+CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。
+第一章：“记忆公司”面世一天晚上，正准备入睡时，你的妻子对你记住她生日并">
+<meta property="og:updated_time" content="2018-07-15T03:59:11.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CAP 理论 —— 最通俗的解释">
+<meta name="twitter:description" content="CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个：
+
+一致性（Consistency）
+可用性（Availability）
+分区容忍性（Partition tolerance）
+
+CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。
+第一章：“记忆公司”面世一天晚上，正准备入睡时，你的妻子对你记住她生日并">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/CAP-理论-——-最通俗的解释/"/>
+
+
+
+
+
+  <title>CAP 理论 —— 最通俗的解释 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/CAP-理论-——-最通俗的解释/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">CAP 理论 —— 最通俗的解释</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-15T11:57:51+08:00">
+                2018-07-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式架构/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个：</p>
+<ul>
+<li>一致性（Consistency）</li>
+<li>可用性（Availability）</li>
+<li>分区容忍性（Partition tolerance）</li>
+</ul>
+<p>CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。</p>
+<h2 id="第一章：“记忆公司”面世"><a href="#第一章：“记忆公司”面世" class="headerlink" title="第一章：“记忆公司”面世"></a>第一章：“记忆公司”面世</h2><p>一天晚上，正准备入睡时，你的妻子对你记住她生日并送她礼物表示感谢。这时，一个商业想法从你的脑海中闪现：人们总是弱于记忆生活中的事情，而我却拥有超群的记忆力，因此，为何不成立一间公司可以充分运用自己的记忆天赋来赚钱。说干就干，接着你在当地一间报社刊登了记忆公司的宣传广告：</p>
+<blockquote>
+<p>记忆公司 —— 你的事情永不会忘记<br>还在为你老是忘记而苦恼？福音来了，只须一个电话。<br>当你需要记着某件事情时，请拨打 400 - 888 - 8888，告诉我们你需要记住的事情，下次你需要找回这件事情，请再次拨打电话，我们将会告诉你的所需。<br>收费： 每次只需要 10 元。</p>
+</blockquote>
+<p>以下是一次你和顾客的电话对话。</p>
+<ul>
+<li>顾客：Hey，麻烦帮我记住我邻居的生日。</li>
+<li>你：好。你邻居生日是什么时候？</li>
+<li>顾客：1月2日。</li>
+<li>你：（在一个本子，翻到这位顾客的一页，记录下他邻居的生日。）好的，已记录好。下次你找回邻居的生日，请再次拨打电话。</li>
+<li>顾客：谢谢。</li>
+<li>你：不客气，本次收费 10 元。</li>
+</ul>
+<h2 id="第二章：业务扩大了"><a href="#第二章：业务扩大了" class="headerlink" title="第二章：业务扩大了"></a>第二章：业务扩大了</h2><p>随着时间的推移，记忆公司的业务发展得越来越好，越来越多的顾客打电话进来需要服务。虽然赚到的钱越来越多，但也产生了一个新的问题。<br>顾客打电话进来时，需要等待的时间越来越多，另外，当你生病时，所有顾客都不能获得服务，这令人很是烦恼。<br>于是，你想出了一个新的计划：</p>
+<a id="more"></a>
+<ul>
+<li>你和你的妻子同时接收顾客的电话</li>
+<li>顾客仍然只需要记着一个公司的服务电话 400 - 888 - 8888</li>
+<li>一个路由器会将顾客的电话分发到你和妻子电话上</li>
+</ul>
+<h2 id="第三章：服务出错了"><a href="#第三章：服务出错了" class="headerlink" title="第三章：服务出错了"></a>第三章：服务出错了</h2><p>新计划实施两天后，你接到了一个名叫 John 的电话，John 是个老顾客了。</p>
+<ul>
+<li>John：Hey</li>
+<li>你：你好，欢迎拨打记忆公司电话，有什么可以帮到你吗</li>
+<li>John：可以告诉我去新泽西的航班是什么时候吗</li>
+<li>你：当然。（然后你翻开 John 的页面，发现并没有 John 航班的记录）</li>
+<li>你：你好，是不是搞错了，我们这里并没有关于你航班的信息</li>
+<li>John：什么？！昨天我才刚打电话过来说去新泽西航班的事情</li>
+</ul>
+<p>哪里出错了？难道 John 撒谎了。你继续思考导致出错的原因。会不会是妻子接到了电话？你走到妻子的桌子，发现妻子将 John 的航班记录在了本子上，这时你才意识到导致问题的原因，妻子接听到 John 的电话，但你的本子没有 John 的记录。</p>
+<p>如果将上面的实施计划称一个分布式的设计，那这个设计存在明显的问题——<strong>一致性</strong>（consistent）的问题。打进来的电话可能其中一人接听并记录下来，下次电话查询时却可能由另一人接听，这样就会出现不一致的问题，无法为顾客准确提供服务。</p>
+<h2 id="第四章：解决一致性问题"><a href="#第四章：解决一致性问题" class="headerlink" title="第四章：解决一致性问题"></a>第四章：解决一致性问题</h2><p>晚上你在床上翻来覆去，最后想到一个解决一致性问题的办法，你把新的计划告诉妻子：</p>
+<ul>
+<li>每次接收记录的电话（顾客要求帮忙记住他们的事情）时，我们同时告知另一个人</li>
+<li>这样，我们两个人都会在本子更新这位顾客的记录</li>
+<li>下次这位顾客再次打电话进来查询，这时我们不需要告知对方，因为两个本子都有这位顾客的记录了</li>
+</ul>
+<p>这个方法只有一个问题，你告诉妻子，当有顾客需要记录时，我们不能并行地工作。例如，你接收到记录的电话并这个信息告知我，这时我就不能再接听其他顾客的电话了。但这个问题基本上也是可以接受的，因为大部分顾客的电话都是查询的。</p>
+<p>老公你真聪明，妻子称赞你，但这个设计还有一个问题。如果某天我们其中一个人有事不能工作了怎么办？由于我们要求每次接到记录电话需要同时更新两个本子，这就导致我们不能为顾客提供记录的服务，这样就导致无法满足 <strong>可用性</strong>（availability）的要求。例如，当我接到一个记录的电话时，而你恰好不在，这样我就无法完成这个顾客的服务。这是由于我无法要求你更新你的本子。</p>
+<h2 id="第五章：更好的办法"><a href="#第五章：更好的办法" class="headerlink" title="第五章：更好的办法"></a>第五章：更好的办法</h2><p>这时你才意识到，设计一个分布式的系统是多么的不容易，难道就没有同时满足 <strong>一致性和可用性</strong> 的设计吗？<br>又经过一晚的思考，你想到一个两全其美的办法，新的办法跟之前的很相似。你把新的办法告诉妻子：</p>
+<ul>
+<li>当接到记录的电话（顾客要求为他们记录事情），如果我们两人当天都上班，那么我们同时记录下这位顾客的记录</li>
+<li>但如果另一人当天没上班，我们可以将记录通过 E-mail 的方式发送给不上班的人</li>
+<li>第二天，没上班的人上班后第一件事就是接收所有的 E-mail ，并在自己的本子上记录所有顾客的要求。记录好后，才开始接收第一个电话。</li>
+</ul>
+<p>真是天才，妻子说，这个办法我找不出任何问题了，而且可以同时满足 <strong>一致性和可用性</strong> 的要求。</p>
+<h2 id="第六章：妻子生气了"><a href="#第六章：妻子生气了" class="headerlink" title="第六章：妻子生气了"></a>第六章：妻子生气了</h2><p>公司所有业务继续正常运作了好一段时间，即使你和妻子其中一人不上班，服务仍然可以正常提供。<br>好景不长，新的问题又出现了。<br>一天，妻子由于某件小事对你很是生气，以至于她接到一位顾客需要记录的电话并没告知你。由于记录没能在两个本子更新，你的设计完全被打破了。你的设计建立在两人良好沟通的前提下，如果出现沟通无法进行的情况，系统就出现问题了。也就是说，你的设计没有达到 <strong>分区容忍性</strong>（partition tolerant）的要求。<br>当然，你也可以允许沟通无法进行的情况下继续提供服务。这样，当有顾客需要记录时，由于需要满足 <strong>一致性</strong> 要求，这位顾客的服务就无法完成，也就是 <strong>可用性</strong> 无法满足。。。</p>
+<h2 id="第七章：结论"><a href="#第七章：结论" class="headerlink" title="第七章：结论"></a>第七章：结论</h2><p>让我们再次回到 CAP 理论，CAP 理论告诉我们，当设计一个分布式系统时，我们无法同时满足 一致性，可用性，分区容忍性 的要求，我们最多满足其中的两个要求，形式化的证明，可以参考 <a href="https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/" target="_blank" rel="external">CAP 理论的证明</a> 。</p>
+<ul>
+<li>一致性：一旦顾客更新了记录，下次再打电话查询时，总能获取最新的记录</li>
+<li>可用性：只要你和妻子有人上班，记忆公司总能为顾客提供服务</li>
+<li>分区容忍性：即使你和妻子的沟通无法进行，记忆公司仍然可以提供服务</li>
+</ul>
+<h2 id="番外篇：背后的记录员"><a href="#番外篇：背后的记录员" class="headerlink" title="番外篇：背后的记录员"></a>番外篇：背后的记录员</h2><p>上面设计的系统仍然有优化的空间。记忆公司可以雇佣一个记录员，当你和妻子其中一人接到顾客的记录电话时，记录员在背后会将这个记录写在另一个人的本子上。这样一来，另一个人的服务就不会被这个记录的电话打断。许多 NoSQL 系统就使用了这个方法，一个节点更新了数据，背后会有一个进程将数据同步到其他节点。<br>这种设计存在的问题是可能在短时间内丢失一致性。例如，顾客打电话进来要求记录，妻子接听到这个电话。紧接着，这位顾客再次打电话进来要求查询，你接听到这个查询的电话。如果记录员还没将这位顾客的记录更新到你的本子，这时顾客就没法正常查询。虽然存在这种可能性，但你也不用过分担心，因为顾客很少会打完记录电话后马上又打查询电话，所以出现本子内容不一致的概率很低。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://ksat.me/a-plain-english-introduction-to-cap-theorem/" target="_blank" rel="external">http://ksat.me/a-plain-english-introduction-to-cap-theorem/</a></li>
+<li><a href="http://robertgreiner.com/2014/08/cap-theorem-revisited/" target="_blank" rel="external">http://robertgreiner.com/2014/08/cap-theorem-revisited/</a></li>
+<li><a href="https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/" target="_blank" rel="external">https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CAP/" rel="tag"># CAP</a>
+          
+            <a href="/tags/一致性/" rel="tag"># 一致性</a>
+          
+            <a href="/tags/可用性/" rel="tag"># 可用性</a>
+          
+            <a href="/tags/分区容忍性/" rel="tag"># 分区容忍性</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/深入理解-Spring-AOP/" rel="next" title="深入理解 Spring AOP">
+                <i class="fa fa-chevron-left"></i> 深入理解 Spring AOP
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">71</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">180</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#第一章：“记忆公司”面世"><span class="nav-number">1.</span> <span class="nav-text">第一章：“记忆公司”面世</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第二章：业务扩大了"><span class="nav-number">2.</span> <span class="nav-text">第二章：业务扩大了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第三章：服务出错了"><span class="nav-number">3.</span> <span class="nav-text">第三章：服务出错了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第四章：解决一致性问题"><span class="nav-number">4.</span> <span class="nav-text">第四章：解决一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第五章：更好的办法"><span class="nav-number">5.</span> <span class="nav-text">第五章：更好的办法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第六章：妻子生气了"><span class="nav-number">6.</span> <span class="nav-text">第六章：妻子生气了</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#第七章：结论"><span class="nav-number">7.</span> <span class="nav-text">第七章：结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#番外篇：背后的记录员"><span class="nav-number">8.</span> <span class="nav-text">番外篇：背后的记录员</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">9.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[CAP 理论 —— 最通俗的解释]]></title>
+    <url>%2FCAP-%E7%90%86%E8%AE%BA-%E2%80%94%E2%80%94-%E6%9C%80%E9%80%9A%E4%BF%97%E7%9A%84%E8%A7%A3%E9%87%8A%2F</url>
+    <content type="text"><![CDATA[CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个： 一致性（Consistency） 可用性（Availability） 分区容忍性（Partition tolerance） CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。 第一章：“记忆公司”面世一天晚上，正准备入睡时，你的妻子对你记住她生日并送她礼物表示感谢。这时，一个商业想法从你的脑海中闪现：人们总是弱于记忆生活中的事情，而我却拥有超群的记忆力，因此，为何不成立一间公司可以充分运用自己的记忆天赋来赚钱。说干就干，接着你在当地一间报社刊登了记忆公司的宣传广告： 记忆公司 —— 你的事情永不会忘记还在为你老是忘记而苦恼？福音来了，只须一个电话。当你需要记着某件事情时，请拨打 400 - 888 - 8888，告诉我们你需要记住的事情，下次你需要找回这件事情，请再次拨打电话，我们将会告诉你的所需。收费： 每次只需要 10 元。 以下是一次你和顾客的电话对话。 顾客：Hey，麻烦帮我记住我邻居的生日。 你：好。你邻居生日是什么时候？ 顾客：1月2日。 你：（在一个本子，翻到这位顾客的一页，记录下他邻居的生日。）好的，已记录好。下次你找回邻居的生日，请再次拨打电话。 顾客：谢谢。 你：不客气，本次收费 10 元。 第二章：业务扩大了随着时间的推移，记忆公司的业务发展得越来越好，越来越多的顾客打电话进来需要服务。虽然赚到的钱越来越多，但也产生了一个新的问题。顾客打电话进来时，需要等待的时间越来越多，另外，当你生病时，所有顾客都不能获得服务，这令人很是烦恼。于是，你想出了一个新的计划： 你和你的妻子同时接收顾客的电话 顾客仍然只需要记着一个公司的服务电话 400 - 888 - 8888 一个路由器会将顾客的电话分发到你和妻子电话上 第三章：服务出错了新计划实施两天后，你接到了一个名叫 John 的电话，John 是个老顾客了。 John：Hey 你：你好，欢迎拨打记忆公司电话，有什么可以帮到你吗 John：可以告诉我去新泽西的航班是什么时候吗 你：当然。（然后你翻开 John 的页面，发现并没有 John 航班的记录） 你：你好，是不是搞错了，我们这里并没有关于你航班的信息 John：什么？！昨天我才刚打电话过来说去新泽西航班的事情 哪里出错了？难道 John 撒谎了。你继续思考导致出错的原因。会不会是妻子接到了电话？你走到妻子的桌子，发现妻子将 John 的航班记录在了本子上，这时你才意识到导致问题的原因，妻子接听到 John 的电话，但你的本子没有 John 的记录。 如果将上面的实施计划称一个分布式的设计，那这个设计存在明显的问题——一致性（consistent）的问题。打进来的电话可能其中一人接听并记录下来，下次电话查询时却可能由另一人接听，这样就会出现不一致的问题，无法为顾客准确提供服务。 第四章：解决一致性问题晚上你在床上翻来覆去，最后想到一个解决一致性问题的办法，你把新的计划告诉妻子： 每次接收记录的电话（顾客要求帮忙记住他们的事情）时，我们同时告知另一个人 这样，我们两个人都会在本子更新这位顾客的记录 下次这位顾客再次打电话进来查询，这时我们不需要告知对方，因为两个本子都有这位顾客的记录了 这个方法只有一个问题，你告诉妻子，当有顾客需要记录时，我们不能并行地工作。例如，你接收到记录的电话并这个信息告知我，这时我就不能再接听其他顾客的电话了。但这个问题基本上也是可以接受的，因为大部分顾客的电话都是查询的。 老公你真聪明，妻子称赞你，但这个设计还有一个问题。如果某天我们其中一个人有事不能工作了怎么办？由于我们要求每次接到记录电话需要同时更新两个本子，这就导致我们不能为顾客提供记录的服务，这样就导致无法满足 可用性（availability）的要求。例如，当我接到一个记录的电话时，而你恰好不在，这样我就无法完成这个顾客的服务。这是由于我无法要求你更新你的本子。 第五章：更好的办法这时你才意识到，设计一个分布式的系统是多么的不容易，难道就没有同时满足 一致性和可用性 的设计吗？又经过一晚的思考，你想到一个两全其美的办法，新的办法跟之前的很相似。你把新的办法告诉妻子： 当接到记录的电话（顾客要求为他们记录事情），如果我们两人当天都上班，那么我们同时记录下这位顾客的记录 但如果另一人当天没上班，我们可以将记录通过 E-mail 的方式发送给不上班的人 第二天，没上班的人上班后第一件事就是接收所有的 E-mail ，并在自己的本子上记录所有顾客的要求。记录好后，才开始接收第一个电话。 真是天才，妻子说，这个办法我找不出任何问题了，而且可以同时满足 一致性和可用性 的要求。 第六章：妻子生气了公司所有业务继续正常运作了好一段时间，即使你和妻子其中一人不上班，服务仍然可以正常提供。好景不长，新的问题又出现了。一天，妻子由于某件小事对你很是生气，以至于她接到一位顾客需要记录的电话并没告知你。由于记录没能在两个本子更新，你的设计完全被打破了。你的设计建立在两人良好沟通的前提下，如果出现沟通无法进行的情况，系统就出现问题了。也就是说，你的设计没有达到 分区容忍性（partition tolerant）的要求。当然，你也可以允许沟通无法进行的情况下继续提供服务。这样，当有顾客需要记录时，由于需要满足 一致性 要求，这位顾客的服务就无法完成，也就是 可用性 无法满足。。。 第七章：结论让我们再次回到 CAP 理论，CAP 理论告诉我们，当设计一个分布式系统时，我们无法同时满足 一致性，可用性，分区容忍性 的要求，我们最多满足其中的两个要求，形式化的证明，可以参考 CAP 理论的证明 。 一致性：一旦顾客更新了记录，下次再打电话查询时，总能获取最新的记录 可用性：只要你和妻子有人上班，记忆公司总能为顾客提供服务 分区容忍性：即使你和妻子的沟通无法进行，记忆公司仍然可以提供服务 番外篇：背后的记录员上面设计的系统仍然有优化的空间。记忆公司可以雇佣一个记录员，当你和妻子其中一人接到顾客的记录电话时，记录员在背后会将这个记录写在另一个人的本子上。这样一来，另一个人的服务就不会被这个记录的电话打断。许多 NoSQL 系统就使用了这个方法，一个节点更新了数据，背后会有一个进程将数据同步到其他节点。这种设计存在的问题是可能在短时间内丢失一致性。例如，顾客打电话进来要求记录，妻子接听到这个电话。紧接着，这位顾客再次打电话进来要求查询，你接听到这个查询的电话。如果记录员还没将这位顾客的记录更新到你的本子，这时顾客就没法正常查询。虽然存在这种可能性，但你也不用过分担心，因为顾客很少会打完记录电话后马上又打查询电话，所以出现本子内容不一致的概率很低。 参考资料 http://ksat.me/a-plain-english-introduction-to-cap-theorem/ http://robertgreiner.com/2014/08/cap-theorem-revisited/ https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/]]></content>
+      <categories>
+        <category>分布式架构</category>
+      </categories>
+      <tags>
+        <tag>CAP</tag>
+        <tag>一致性</tag>
+        <tag>可用性</tag>
+        <tag>分区容忍性</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[深入理解 Spring AOP]]></title>
     <url>%2F%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3-Spring-AOP%2F</url>
     <content type="text"><![CDATA[AOP，Aspect Oriented Programming，面向切面编程，是指在运行时，动态地将代码切入到类的指定方法、指定位置上的一种编程技术。AOP 是 OOP 的延续，是软件开发中的一个热点，也是 Spring 框架中的一个重要内容。利用 AOP 可以对业务逻辑与横切关注点（cross-cutting concerns，例如日志记录，事务处理）进行隔离，从而使得业务逻辑与横切关注点的耦合度降低，提高程序的可重用性，同时提高了开发的效率。AOP 目的是为了解耦，它可以使一组类共享相同的行为。面向对象编程（OOP）目的也是为了提高代码的可重用性，那么 AOP 和 OOP 有什么不同之处呢？对于 OOP 来说，只能通过继承类和实现接口这种方式来实现，但这会使代码的耦合程度增强，不利于代码的维护。AOP 正是为了弥补了 OOP 的不足而出现。 Spring 框架提供了 AOP 的丰富支持，允许开发人员通过分离应用程序的业务逻辑与横切关注点从而进行内聚性的开发。举例来说，日志记录，性能统计，安全控制，事务处理，异常处理，这些称之为横切关注点的功能，对于应用程序来说是必须的。AOP 允许将这些横切关注点从业务逻辑代码中划分出来，从而改变这些横切关注点的代码不影响业务逻辑的代码。 AOP 的核心概念我们先来看一下 AOP 涉及的几个核心概念。 1. AspectAspect 是一个类，这个类实现上述横切关注点的功能，例如日志记录，事务处理，等。 2. Join PointJoin point 是程序中某个执行点，例如方法执行，属性访问等。对于 Spring AOP 来说，join point 通常是指方法执行。 3. AdviceAdvice 是指在某个特定 join point 执行的动作，当某个 join point 匹配 pointcut 时，advice 指定的方法会被执行。 4. PointcutPointcut 是一个表达式，当 join point 匹配 pointcut 的表达式时，advice 指定的方法就会被执行。 AOP Advice 类型以执行的时间点划分，可以将 advice 划分为以下几种类型。 1. Before AdviceBefore advice 是指 advice 在一个方法执行之前执行，可以使用@Before注解来将一个 advice 标记为 before advice。 2. After AdviceAfter advice 是指 advice 在一个方法执行之后执行（不管这个方法是正常执行还是抛出异常），可以使用@After注解来将一个 advice 标记为 after advice。 3. After Returning AdviceAfter returning advice 是指 advice 在一个方法在正常执行完毕后执行，可以使用@AfterReturing注解来标记一个方法为 after returning advice。 4. After Throwing AdviceAfter throwing advice 是指 advice 在一个方法抛出异常后执行，可以在 advice 中处理回滚等操作。可以使用@AfterThrowing注解来将一个方法标记为after throwing advice。 5. Around Advice最重要也是最强大的 advice， advice 包裹了方法，在方法调用之前和调用之后执行自定义的行为。 Spring AOP 例子为了深入理解 Spring AOP 的使用，我们以一个完整的例子来说明如何利用 AOP 来实现日志记录。Spring 支持 @AspectJ 注解式和基于 XML 配置的 AOP 实现，我们以基于 XML 配置的 AOP 作为例子。 使用 IntelliJ IDEA 创建一个 Maven quickstart 项目，并添加以下依赖。 12345678910&lt;dependency&gt; &lt;groupId&gt;org.springframework&lt;/groupId&gt; &lt;artifactId&gt;spring-context&lt;/artifactId&gt; &lt;version&gt;5.0.7.RELEASE&lt;/version&gt;&lt;/dependency&gt;&lt;dependency&gt; &lt;groupId&gt;org.aspectj&lt;/groupId&gt; &lt;artifactId&gt;aspectjweaver&lt;/artifactId&gt; &lt;version&gt;1.9.1&lt;/version&gt;&lt;/dependency&gt; 接下来添加 aspect，该 aspect 实现日志记录功能，代码如下Logging.java： 1234567891011121314151617181920212223242526272829303132package me.leehao;public class Logging &#123; /** * This is the method which I would like to execute * before a selected method execution. */ public void beforeAdvice()&#123; System.out.println("Going to setup student profile."); &#125; /** * This is the method which I would like to execute * after a selected method execution. */ public void afterAdvice()&#123; System.out.println("Student profile has been setup."); &#125; /** * This is the method which I would like to execute * when any method returns. */ public void afterReturningAdvice(Object retVal)&#123; System.out.println("Returning:" + retVal.toString() ); &#125; /** * This is the method which I would like to execute * if there is an exception raised. */ public void AfterThrowingAdvice(IllegalArgumentException ex)&#123; System.out.println("There has been an exception: " + ex.toString()); &#125;&#125; 下面是Student.java的代码： 123456789101112131415161718192021222324package me.leehao;public class Student &#123; private Integer age; private String name; public void setAge(Integer age) &#123; this.age = age; &#125; public Integer getAge() &#123; System.out.println("Age : " + age ); return age; &#125; public void setName(String name) &#123; this.name = name; &#125; public String getName() &#123; System.out.println("Name : " + name ); return name; &#125; public void printThrowException()&#123; System.out.println("Exception raised"); throw new IllegalArgumentException(); &#125;&#125; 程序入口MainApp.java的代码如下： 1234567891011121314151617package me.leehao;import org.springframework.context.ApplicationContext;import org.springframework.context.support.ClassPathXmlApplicationContext;public class MainApp &#123; public static void main(String[] args) &#123; ApplicationContext context = new ClassPathXmlApplicationContext("Beans.xml"); Student student = (Student) context.getBean("student"); student.getName(); System.out.println(); student.getAge(); System.out.println(); student.printThrowException(); &#125;&#125; 添加 resources 目录，并在 resources 目录添加Beans.xml： 123456789101112131415161718192021222324252627282930313233&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd "&gt; &lt;aop:config&gt; &lt;aop:aspect id="log" ref="logging"&gt; &lt;aop:pointcut id="selectAll" expression="execution(* me.leehao.*.*(..))"/&gt; &lt;aop:before pointcut-ref="selectAll" method="beforeAdvice"/&gt; &lt;aop:after pointcut-ref="selectAll" method="afterAdvice"/&gt; &lt;aop:after-returning pointcut-ref="selectAll" returning="retVal" method="afterReturningAdvice"/&gt; &lt;aop:after-throwing pointcut-ref="selectAll" throwing="ex" method="AfterThrowingAdvice"/&gt; &lt;/aop:aspect&gt; &lt;/aop:config&gt; &lt;!-- Definition for student bean --&gt; &lt;bean id="student" class="me.leehao.Student"&gt; &lt;property name="name" value="Zara" /&gt; &lt;property name="age" value="11"/&gt; &lt;/bean&gt; &lt;!-- Definition for logging aspect --&gt; &lt;bean id="logging" class="me.leehao.Logging"/&gt;&lt;/beans&gt; 我们重点说一下Beans.xml里面的内容。 aspect使用aop:aspect标签定义一个 aspect，该 aspect 亦即类Logging。 pointcut使用aop:pointcut标签定义一个 pointcut，该 pointcut 的表达式为execution(* me.leehao.*.*(..))，表明me.leehao包下的所有方法都匹配。 advice可以使用aop:before，aop:after，aop:after-returning，aop:after-throwing等标签定义 advice。通过method属性指定 advice 执行的方法，这些方法在匹配的方法执行前或后会被自动调用。 完整代码构成如下图所示： 运行程序，输出： 1234567891011121314Going to setup student profile.Name : ZaraStudent profile has been setup.Returning:ZaraGoing to setup student profile.Age : 11Student profile has been setup.Returning:11Going to setup student profile.Exception raisedStudent profile has been setup.There has been an exception: java.lang.IllegalArgumentException 可以看到，Student类的方法在调用时，advice方法被自动执行，输出了对应的日志。 小结本文介绍了 AOP 的含义以及其涉及的基本概念，并以一个完整的代码例子说明了如何在 Spring 实现 AOP 的编程。 参考资料 https://www.journaldev.com/2583/spring-aop-example-tutorial-aspect-advice-pointcut-joinpoint-annotations https://www.zhihu.com/question/24863332 https://baike.baidu.com/item/AOP/1332219 https://www.javatpoint.com/spring-aop-tutorial]]></content>
@@ -587,10 +601,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -604,8 +618,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -630,8 +644,8 @@
       </categories>
       <tags>
         <tag>TCP</tag>
-        <tag>socket</tag>
         <tag>套接字</tag>
+        <tag>socket</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -647,9 +661,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
+        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>

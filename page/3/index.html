@@ -312,6 +312,161 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/GDB-调试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/GDB-调试/" itemprop="url">GDB 调试</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-20T22:11:12+08:00">
+                2017-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工具/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>GDB 是一个功能强大的调试器，也是 Linux 系统中默认的调试器。GDB 主要提供以下四种功能，这些功能可以方便我们定位程序的 BUG。</p>
+<ul>
+<li>启动程序</li>
+<li>设置断点</li>
+<li>检查程序运行状态，例如查看变量的值</li>
+<li>修改程序运行状态，例如修改变量的值</li>
+</ul>
+<p>本文简单讲述 GDB 的调试方法。</p>
+<p>我们需要调试的程序如下所示，该程序只是为了演示 GDB 的用法，并没有实际的意义。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">double</span> <span class="title">f1</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">double</span> d)</span></div><div class="line"></span>&#123;</div><div class="line">    <span class="keyword">int</span> b = (a + <span class="number">5</span>) * <span class="number">2</span>;</div><div class="line">    <span class="keyword">double</span> ret = d * b;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">double</span> <span class="title">f2</span><span class="params">(<span class="keyword">float</span> f)</span></div><div class="line"></span>&#123;</div><div class="line">    <span class="keyword">int</span> a = <span class="number">10</span>;</div><div class="line">    <span class="keyword">double</span> d = <span class="number">3.14</span>;</div><div class="line">    <span class="keyword">double</span> ret = f * f1(a, d);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> ret;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"begin to gdb test"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="keyword">float</span> f = <span class="number">1.1</span>;</div><div class="line">    <span class="keyword">double</span> ret = f2(f);</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; ret &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/GDB-调试/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/记一次程序优化记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1681,167 +1836,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-事务学习笔记/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Redis-事务学习笔记/" itemprop="url">Redis 事务学习笔记</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-17T22:06:20+08:00">
-                2017-05-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Redis/" itemprop="url" rel="index">
-                    <span itemprop="name">Redis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Redis 为了支持事务，提供了 5 个相关的命令，他们分别是 MULTI，EXEC， WATCH，UNWATCH 和 DISCARD。我们先介绍 MULTI 和 EXEC 的用法，MULTI 和 EXEC 支持了 Redis 的基本事务的用法。接下来介绍 WATCH，UNWATCH 和 DISCARD，这3个命令则支持更高级的 Redis 事务的用法。</p>
-<p>事务允许一次执行多个命令，并且带有以下两个重要的保证：</p>
-<ul>
-<li>事务是一个单独的隔离的操作：事务中的所有命令会按顺序执行，事务在执行过程中，不会被其他客户端发来的命令请求所打断</li>
-<li>事务是一个原子的操作：事务中的命令要么全部被执行，要么全部都不执行</li>
-</ul>
-<h2 id="Redis-的基本事务"><a href="#Redis-的基本事务" class="headerlink" title="Redis 的基本事务"></a>Redis 的基本事务</h2><p>Redis 的基本事务需要用到 MULTI 和 EXEC 命令，这种事务可以让一个客户端在不被其他客户端打断的情况下执行多个命令。被 MULTI 和 EXEC 命令包裹的所有命令会一个接一个执行，直到所有命令都执行完毕，当一个事务执行完毕之后，Redis 才会处理其他客户端的命令。</p>
-<p>MULTI 命令用于开启一个事务，它总是返回 OK。<br>MULTI 执行之后，客户端可以继续向服务器发送任意多条命令，这些命令不会立即被执行，而是被放到一个队列中，当 EXEC 命令被调用时，队列中的所有命令才会被执行。<br>以下是一个基本事务的例子，它原子地增加了 foo 和 bar 两个健的值：</p>
-<blockquote>
-<p>redis 127.0.0.1:6379&gt; MULTI<br>OK<br>redis 127.0.0.1:6379&gt; INCR foo<br>QUEUED<br>redis 127.0.0.1:6379&gt; INCR bar<br>QUEUED<br>redis 127.0.0.1:6379&gt; EXEC<br>1) (integer) 1<br>2) (integer) 1</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Redis-事务学习笔记/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1887,7 +1886,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">70</span>
+                <span class="site-state-item-count">71</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1909,7 +1908,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">176</span>
+                <span class="site-state-item-count">180</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
