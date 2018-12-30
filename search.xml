@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[米筐开源量化框架 RQalpha 安装使用]]></title>
+    <url>%2F%E7%B1%B3%E7%AD%90%E5%BC%80%E6%BA%90%E9%87%8F%E5%8C%96%E6%A1%86%E6%9E%B6-RQalpha-%E5%AE%89%E8%A3%85%E4%BD%BF%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[RQalpha 是 Ricequant 开源的量化框架，提供数据获取，算法交易，策略回测，实盘模拟，实盘交易，数据分析等功能。RQalpha 的安装过程并不十分友好，本文讲述如何安装 RQalpha。安装环境是 Mac OS 操作系统。 安装步骤1. 创建虚拟环境RQalpha 推荐使用虚拟环境来安装，以避免由于各种环境问题导致安装失败。可以使用 conda 来创建虚拟环境，为使用 conda 命令，用户可以先下载安装 anaconda。由于 anaconda 并不是本文的讲述重点，anaconda 的安装可以参考 https://www.anaconda.com/，本文不再赘述。 使用以下命令创建虚拟环境： 1conda create -n rqalpha python=3.6 这样就基于 Python 3.6 创建了虚拟环境rqalpha。创建虚拟环境后，激活环境。 1source activate rqalpha 2. 安装 cython使用命令 conda 来安装 cython。 1conda install cython 3. 安装 bcolzbcolz 是 RQalpha 的依赖库，RQalpha 使用 bcolz 来进行数据的存储。使用 conda 来安装 bcolz。 1conda install bcolz 值得指出的是，安装 cython 和 bcolz 都需要使用 conda 命令来执行，使用 pip 命令来安装会出现安装失败的情况。 4. 安装 TA-LibMac OS 下使用 brew 命令来安装 TA-Lib 。 1brew install ta-lib 再使用 pip 命令来安装 Python 库，使用 pip 命令来安装 TA-Lib，是由于 conda 命令不存在 TA-Lib。 1pip install TA-Lib 5. 安装 rqalpha完成前面的安装工作，就可以正式安装 rqalpha 了，我们使用 pip 命令来安装 rqalpha。 1pip install rqalpha 6. 测试可以运行 rqalpha 命令来测试安装过程是否成功。 1rqalpha version 输出： 1Current Version: (3, 2, 0) 策略回测成功安装 rqalpha 后，就可以进行策略的回测了。我们采用 rqalpha 提供的样例策略来测试一下回测过程。 1. 获取回测数据RQalpha 免费提供股票和期货日级别的回测数据，使用 rqalpha 命令来更新回测数据。 1rqalpha update-bundle 回测数据目录 bundle 默认存放在~/.rqalpha目录下。进入 bundle 目录，可以看到都是一些.bcolz后缀的文件。 2. 生成样例策略使用 rqalpha 命令来生成策略样例，例如我们进入~/code/rqalpha目录后，执行 1rqalpha examples -d ./ 这样，在~/code/rqalpha目录下就生成了examples目录，里面包括 RQalpha 提供策略样例文件。 3. 运行回测我们以buy_and_hold.py文件为例，说明如果执行策略的回测过程。 12cd examplesrqalpha run -f ./buy_and_hold.py -d ~/.rqalpha/bundle/ -s 2016-06-01 -e 2018-12-01 --account stock 100000 --benchmark 000300.XSHG --plot -f 参数指定策略文件 -d 指定回测数据 bundle 目录位置 -s 回测时间起点 -e 回测时间结束 --account 起始资金 --benchmark 业绩比较基准 --plot 以图形方式查看回测结果 执行命令后，可以看到回测结果以图形方式展示出来。 参考资料 https://rqalpha.readthedocs.io/zh_CN/latest/intro/overview.html https://rqalpha.readthedocs.io/zh_CN/latest/intro/detail_install.html https://rqalpha.readthedocs.io/zh_CN/latest/intro/install.html https://mrjbq7.github.io/ta-lib/install.html https://rqalpha.readthedocs.io/zh_CN/latest/intro/tutorial.html https://geosmart.github.io/2018/01/26/RiceQuant%E5%BC%80%E6%BA%90%E6%A1%86%E6%9E%B6RQAlpha%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/]]></content>
+      <categories>
+        <category>量化投资</category>
+      </categories>
+      <tags>
+        <tag>ricequant</tag>
+        <tag>rqalpha</tag>
+        <tag>量化投资</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[CAP 理论 —— 最通俗的解释]]></title>
     <url>%2FCAP-%E7%90%86%E8%AE%BA-%E2%80%94%E2%80%94-%E6%9C%80%E9%80%9A%E4%BF%97%E7%9A%84%E8%A7%A3%E9%87%8A%2F</url>
     <content type="text"><![CDATA[CAP 理论是分布式系统的一个基础理论，它描述了任何一个分布式系统最多只能满足以下三个特性中的两个： 一致性（Consistency） 可用性（Availability） 分区容忍性（Partition tolerance） CAP 理论听起来十分抽象，本文尝试以生活中的例子并用通俗易懂的语言来解释 CAP 理论的含义。 第一章：“记忆公司”面世一天晚上，正准备入睡时，你的妻子对你记住她生日并送她礼物表示感谢。这时，一个商业想法从你的脑海中闪现：人们总是弱于记忆生活中的事情，而我却拥有超群的记忆力，因此，为何不成立一间公司可以充分运用自己的记忆天赋来赚钱。说干就干，接着你在当地一间报社刊登了记忆公司的宣传广告： 记忆公司 —— 你的事情永不会忘记还在为你老是忘记而苦恼？福音来了，只须一个电话。当你需要记着某件事情时，请拨打 400 - 888 - 8888，告诉我们你需要记住的事情，下次你需要找回这件事情，请再次拨打电话，我们将会告诉你的所需。收费： 每次只需要 10 元。 以下是一次你和顾客的电话对话。 顾客：Hey，麻烦帮我记住我邻居的生日。 你：好。你邻居生日是什么时候？ 顾客：1月2日。 你：（在一个本子，翻到这位顾客的一页，记录下他邻居的生日。）好的，已记录好。下次你找回邻居的生日，请再次拨打电话。 顾客：谢谢。 你：不客气，本次收费 10 元。 第二章：业务扩大了随着时间的推移，记忆公司的业务发展得越来越好，越来越多的顾客打电话进来需要服务。虽然赚到的钱越来越多，但也产生了一个新的问题。顾客打电话进来时，需要等待的时间越来越多，另外，当你生病时，所有顾客都不能获得服务，这令人很是烦恼。于是，你想出了一个新的计划： 你和你的妻子同时接收顾客的电话 顾客仍然只需要记着一个公司的服务电话 400 - 888 - 8888 一个路由器会将顾客的电话分发到你和妻子电话上 第三章：服务出错了新计划实施两天后，你接到了一个名叫 John 的电话，John 是个老顾客了。 John：Hey 你：你好，欢迎拨打记忆公司电话，有什么可以帮到你吗 John：可以告诉我去新泽西的航班是什么时候吗 你：当然。（然后你翻开 John 的页面，发现并没有 John 航班的记录） 你：你好，是不是搞错了，我们这里并没有关于你航班的信息 John：什么？！昨天我才刚打电话过来说去新泽西航班的事情 哪里出错了？难道 John 撒谎了。你继续思考导致出错的原因。会不会是妻子接到了电话？你走到妻子的桌子，发现妻子将 John 的航班记录在了本子上，这时你才意识到导致问题的原因，妻子接听到 John 的电话，但你的本子没有 John 的记录。 如果将上面的实施计划称一个分布式的设计，那这个设计存在明显的问题——一致性（consistent）的问题。打进来的电话可能其中一人接听并记录下来，下次电话查询时却可能由另一人接听，这样就会出现不一致的问题，无法为顾客准确提供服务。 第四章：解决一致性问题晚上你在床上翻来覆去，最后想到一个解决一致性问题的办法，你把新的计划告诉妻子： 每次接收记录的电话（顾客要求帮忙记住他们的事情）时，我们同时告知另一个人 这样，我们两个人都会在本子更新这位顾客的记录 下次这位顾客再次打电话进来查询，这时我们不需要告知对方，因为两个本子都有这位顾客的记录了 这个方法只有一个问题，你告诉妻子，当有顾客需要记录时，我们不能并行地工作。例如，你接收到记录的电话并这个信息告知我，这时我就不能再接听其他顾客的电话了。但这个问题基本上也是可以接受的，因为大部分顾客的电话都是查询的。 老公你真聪明，妻子称赞你，但这个设计还有一个问题。如果某天我们其中一个人有事不能工作了怎么办？由于我们要求每次接到记录电话需要同时更新两个本子，这就导致我们不能为顾客提供记录的服务，这样就导致无法满足 可用性（availability）的要求。例如，当我接到一个记录的电话时，而你恰好不在，这样我就无法完成这个顾客的服务。这是由于我无法要求你更新你的本子。 第五章：更好的办法这时你才意识到，设计一个分布式的系统是多么的不容易，难道就没有同时满足 一致性和可用性 的设计吗？又经过一晚的思考，你想到一个两全其美的办法，新的办法跟之前的很相似。你把新的办法告诉妻子： 当接到记录的电话（顾客要求为他们记录事情），如果我们两人当天都上班，那么我们同时记录下这位顾客的记录 但如果另一人当天没上班，我们可以将记录通过 E-mail 的方式发送给不上班的人 第二天，没上班的人上班后第一件事就是接收所有的 E-mail ，并在自己的本子上记录所有顾客的要求。记录好后，才开始接收第一个电话。 真是天才，妻子说，这个办法我找不出任何问题了，而且可以同时满足 一致性和可用性 的要求。 第六章：妻子生气了公司所有业务继续正常运作了好一段时间，即使你和妻子其中一人不上班，服务仍然可以正常提供。好景不长，新的问题又出现了。一天，妻子由于某件小事对你很是生气，以至于她接到一位顾客需要记录的电话并没告知你。由于记录没能在两个本子更新，你的设计完全被打破了。你的设计建立在两人良好沟通的前提下，如果出现沟通无法进行的情况，系统就出现问题了。也就是说，你的设计没有达到 分区容忍性（partition tolerant）的要求。当然，你也可以允许沟通无法进行的情况下继续提供服务。这样，当有顾客需要记录时，由于需要满足 一致性 要求，这位顾客的服务就无法完成，也就是 可用性 无法满足。。。 第七章：结论让我们再次回到 CAP 理论，CAP 理论告诉我们，当设计一个分布式系统时，我们无法同时满足 一致性，可用性，分区容忍性 的要求，我们最多满足其中的两个要求，形式化的证明，可以参考 CAP 理论的证明 。 一致性：一旦顾客更新了记录，下次再打电话查询时，总能获取最新的记录 可用性：只要你和妻子有人上班，记忆公司总能为顾客提供服务 分区容忍性：即使你和妻子的沟通无法进行，记忆公司仍然可以提供服务 番外篇：背后的记录员上面设计的系统仍然有优化的空间。记忆公司可以雇佣一个记录员，当你和妻子其中一人接到顾客的记录电话时，记录员在背后会将这个记录写在另一个人的本子上。这样一来，另一个人的服务就不会被这个记录的电话打断。许多 NoSQL 系统就使用了这个方法，一个节点更新了数据，背后会有一个进程将数据同步到其他节点。这种设计存在的问题是可能在短时间内丢失一致性。例如，顾客打电话进来要求记录，妻子接听到这个电话。紧接着，这位顾客再次打电话进来要求查询，你接听到这个查询的电话。如果记录员还没将这位顾客的记录更新到你的本子，这时顾客就没法正常查询。虽然存在这种可能性，但你也不用过分担心，因为顾客很少会打完记录电话后马上又打查询电话，所以出现本子内容不一致的概率很低。 参考资料 http://ksat.me/a-plain-english-introduction-to-cap-theorem/ http://robertgreiner.com/2014/08/cap-theorem-revisited/ https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/]]></content>
@@ -52,8 +65,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>Rserve</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -601,10 +614,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -618,8 +631,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -644,8 +657,8 @@
       </categories>
       <tags>
         <tag>TCP</tag>
-        <tag>套接字</tag>
         <tag>socket</tag>
+        <tag>套接字</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -661,9 +674,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
-        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>
@@ -691,9 +704,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>epoll</tag>
         <tag>select</tag>
         <tag>IO多路复用</tag>
-        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -853,8 +866,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>MongoDB</tag>
         <tag>Java</tag>
+        <tag>MongoDB</tag>
       </tags>
   </entry>
   <entry>
