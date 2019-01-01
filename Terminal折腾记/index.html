@@ -467,7 +467,7 @@ Oh My Zsh
 </blockquote>
 <p>可以使用<code>curl</code>安装oh my zsh：</p>
 <blockquote>
-<p>sh -c “$(curl -fsSL <a href="https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh" target="_blank" rel="external">https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh</a>)”</p>
+<p>sh -c “$(curl -fsSL <a href="https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;" target="_blank" rel="external">https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;</a></p>
 </blockquote>
 <p>为避免乱码的问题，需要额外安装<a href="https://github.com/powerline/fonts" target="_blank" rel="external">powerline</a>字体：</p>
 <blockquote>
@@ -896,6 +896,26 @@ Oh My Zsh
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 

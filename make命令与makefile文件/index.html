@@ -437,8 +437,8 @@
 <p>如果改变<code>b.h</code>头文件，makefile能够正确处理这一变化，只有<code>2.c</code>和<code>3.c</code>发生重新编译：</p>
 <blockquote>
 <p>$ touch b.h </p>
-<p>$ make -f Makefile1<br>gcc -c 2.c<br>gcc -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
 </blockquote>
+<p>$ make -f Makefile1<br>gcc -c 2.c<br>gcc -c 3.c<br>gcc -o myapp main.o 2.o 3.o</p>
 <h3 id="3-3-注释"><a href="#3-3-注释" class="headerlink" title="3.3 注释"></a>3.3 注释</h3><p>makefile文件使用<code>#</code>来表示注释，一直延续到这一行的结束。</p>
 <h3 id="3-4-宏"><a href="#3-4-宏" class="headerlink" title="3.4 宏"></a>3.4 宏</h3><p>不同的平台下可能使用不同的编译器，不同的环境（例如开发与线上环境）也可能使用不同的编译器选项，为了便于修改makefile这些可变的参数，我们可以使用宏来实现makefile。<br>makefile引用宏定义的方法为<code>$(MACRONAME)</code>。我们来看如何使用宏来改写上面的makefile文件。</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">all: myapp</div><div class="line"></div><div class="line"><span class="comment"># 编译器</span></div><div class="line">CC = gcc</div><div class="line"></div><div class="line"><span class="comment"># include的搜索路径</span></div><div class="line">INCLUDE = .</div><div class="line"></div><div class="line"><span class="comment"># 编译器参数</span></div><div class="line">CFLAGS = -g -Wall -ansi</div><div class="line"></div><div class="line">myapp: main.o 2.o 3.o</div><div class="line">	<span class="variable">$(CC)</span> -o myapp main.o 2.o 3.o</div><div class="line">main.o: main.c a.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c main.c</div><div class="line"></div><div class="line">2.o: 2.c a.h b.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 2.c</div><div class="line"></div><div class="line">3.o: 3.c b.h c.h</div><div class="line">	<span class="variable">$(CC)</span> -I<span class="variable">$(INCLUDE)</span> <span class="variable">$(CFLAGS)</span> -c 3.c</div></pre></td></tr></table></figure>
@@ -867,6 +867,26 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 

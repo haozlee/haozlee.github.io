@@ -415,7 +415,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">subprocess_cmd</span><span class="params">(command)</span>:</span></div><div class="line">    process = subprocess.Popen(command,stdout=subprocess.PIPE, shell=<span class="keyword">True</span>)</div><div class="line">    proc_stdout = process.communicate()[<span class="number">0</span>].strip()</div><div class="line">    <span class="keyword">print</span> proc_stdout</div><div class="line"></div><div class="line">subprocess_cmd(<span class="string">'echo leehao.me; echo www.leehao.me'</span>)</div></pre></td></tr></table></figure>
 <p>输出：</p>
 <blockquote>
-<p>leehao.me<br>www.leehao.me</p>
+<p>leehao.me<br><a href="http://www.leehao.me" target="_blank" rel="external">www.leehao.me</a></p>
 </blockquote>
 <p><code>process.communicate()</code>方法可以实现主进程与子进程的通信。主进程可以通过它向子进程发送数据，也可以读取子进程的输出的数据。上面的例子中，我们在创建<code>Popen</code>对象时指定<code>stdout=subprocess.PIPE</code>，这样主进程便可以读取子进程的输出。<br><code>communicate()</code>方法返回一个元组：<code>(stdoutdata, stderrdata)</code>，<code>process.communicate()[0]</code>即获取子进程的标准输出。<br>需要指出的是，调用<code>communicate()</code>方法后，主进程也会等待子进程执行完毕。<br>上面的例子中，子进程向标准输出打印两个字符串，主进程接收到了这些输出，并打印出来。</p>
 <p>有了上面的基础，实现我们的监控脚本就易如反掌了，下面是我们的脚本代码。为了免受骚扰，将手机号码替换了:)</p>
@@ -822,6 +822,26 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 

@@ -412,8 +412,8 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
 <p>测试结果在这里就不贴不出来，有兴趣的读者也可以运行一下这个 Python 脚本，就可以得到测试结果了。从测试结果来看，Redis 的性能还是很优秀的。</p>
 <p>这里重点提一下测试过程中 Redis 服务会报错的问题。<br>在写入大量的数据（100个10MB，即1GB）后，Redis 进程开始出现以下日志：</p>
 <blockquote>
-<p>[2418] 21 Apr 09:38:24.041 * 10 changes in 300 seconds. Saving…<br>[2418] 21 Apr 09:38:24.042 # Can’t save in background: fork: Cannot allocate memory</p>
 </blockquote>
+<p>[2418] 21 Apr 09:38:24.041 * 10 changes in 300 seconds. Saving…<br>[2418] 21 Apr 09:38:24.042 # Can’t save in background: fork: Cannot allocate memory</p>
 <p>客户端执行写入命令会报错：</p>
 <blockquote>
 <p>127.0.0.1:6380&gt; set key value<br>(error) MISCONF Redis is configured to save RDB snapshots, but is currently not able to persist on disk. Commands that may modify the data set are disabled. Please check Redis logs for details about the error.</p>
@@ -827,6 +827,26 @@ Redis 的官方文档也提到了，简单的起一个循环，然后在循环�
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 

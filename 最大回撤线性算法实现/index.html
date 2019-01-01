@@ -104,7 +104,7 @@ $$最大回撤 = \left( 波峰值 - 波谷值  \right) / 波峰值$$
 $$最大回撤 = \left( 波峰值 - 波谷值  \right) / 波峰值$$
 注意这里的$波峰值$与$波谷值$并不一定是最高值与最低值，这里的$波峰值$与$波谷值$要与时间">
 <meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-01-01-024141.png">
-<meta property="og:updated_time" content="2019-01-01T08:08:24.361Z">
+<meta property="og:updated_time" content="2019-01-01T08:15:38.765Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="最大回撤线性算法实现">
 <meta name="twitter:description" content="最大回撤是指投资组合在选定的周期内，任一时间点往后推，可能出现资产净值下降的最大幅度。回撤的意思是指在某一段时期内净值从最高点开始回落到最低点的幅度。最大回撤常用百分率来表示，是一个重要的风险指标。最大回撤的计算公式为
@@ -827,6 +827,26 @@ $$最大回撤 = \left( 波峰值 - 波谷值  \right) / 波峰值$$
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
