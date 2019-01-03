@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java,samba," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="最近需要将原来使用阿里云 OSS 的程序模块改成使用公司内部搭建的文件服务器，由于目前使用的文件不多，且都是一些小文件，经过对比后，决定采用 Samba 来实现文件服务器。
+Samba 是一个程序的集合，包括服务器与客户端程序，它允许在 Linux 与 Windows 实现共享文件的功能。本文先讲述如何在 CentOS 7 下安装与配置 Samba，然后讲述如何使用 Java 来实现 Samba">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Samba 服务器搭建与 Java 客户端实现">
+<meta property="og:url" content="https://leehao.me/Samba-服务器搭建与-Java-客户端实现/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="最近需要将原来使用阿里云 OSS 的程序模块改成使用公司内部搭建的文件服务器，由于目前使用的文件不多，且都是一些小文件，经过对比后，决定采用 Samba 来实现文件服务器。
+Samba 是一个程序的集合，包括服务器与客户端程序，它允许在 Linux 与 Windows 实现共享文件的功能。本文先讲述如何在 CentOS 7 下安装与配置 Samba，然后讲述如何使用 Java 来实现 Samba">
+<meta property="og:image" content="http://leehao.oss-cn-shenzhen.aliyuncs.com/blog/samba1.png">
+<meta property="og:image" content="http://leehao.oss-cn-shenzhen.aliyuncs.com/blog/samba2.png">
+<meta property="og:updated_time" content="2019-01-03T14:15:34.679Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Samba 服务器搭建与 Java 客户端实现">
+<meta name="twitter:description" content="最近需要将原来使用阿里云 OSS 的程序模块改成使用公司内部搭建的文件服务器，由于目前使用的文件不多，且都是一些小文件，经过对比后，决定采用 Samba 来实现文件服务器。
+Samba 是一个程序的集合，包括服务器与客户端程序，它允许在 Linux 与 Windows 实现共享文件的功能。本文先讲述如何在 CentOS 7 下安装与配置 Samba，然后讲述如何使用 Java 来实现 Samba">
+<meta name="twitter:image" content="http://leehao.oss-cn-shenzhen.aliyuncs.com/blog/samba1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Samba-服务器搭建与-Java-客户端实现/"/>
+
+
+
+
+
+  <title>Samba 服务器搭建与 Java 客户端实现 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Samba-服务器搭建与-Java-客户端实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Samba 服务器搭建与 Java 客户端实现</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-03T22:14:08+08:00">
+                2019-01-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近需要将原来使用阿里云 OSS 的程序模块改成使用公司内部搭建的文件服务器，由于目前使用的文件不多，且都是一些小文件，经过对比后，决定采用 Samba 来实现文件服务器。</p>
+<p>Samba 是一个程序的集合，包括服务器与客户端程序，它允许在 Linux 与 Windows 实现共享文件的功能。本文先讲述如何在 CentOS 7 下安装与配置 Samba，然后讲述如何使用 Java 来实现 Samba 客户端以上传与读取文件。</p>
+<h2 id="Samba-安装"><a href="#Samba-安装" class="headerlink" title="Samba 安装"></a>Samba 安装</h2><p>CentOS 平台下可以直接使用 yum 来安装 Samba 服务器以及客户端。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># yum install samba samba-client</span></div></pre></td></tr></table></figure>
+<p>Samba 安装好后，就可以启动操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb start</span></div></pre></td></tr></table></figure>
+<p>如果需要关闭，则使用命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb stop</span></div></pre></td></tr></table></figure>
+<p>如果需要查看 smb 运行状态，可以使用命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb status</span></div></pre></td></tr></table></figure>
+<h2 id="Samba-配置"><a href="#Samba-配置" class="headerlink" title="Samba 配置"></a>Samba 配置</h2><p>安装好 Samba 后，就可以对 Samba 进行配置了。</p>
+<p>我们先使用以下命令添加 Linux 组 leehao 和用户 leehao。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># groupadd leehao</span></div><div class="line"><span class="comment"># useradd -g leehao leehao</span></div></pre></td></tr></table></figure>
+<p>接下来使用<code>smbpasswd</code>命令来创建 Samba 的用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># smbpasswd -a leehao</span></div></pre></td></tr></table></figure>
+<p>输入 Samba 用户 leehao 的密码。</p>
+<p>Samba 的默认配置文件是<code>/etc/samba/smb.conf</code>。打开 smb.conf 文件，添加以下配置：</p>
+<a id="more"></a>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[portrait]</div><div class="line">        comment = leehao portrait</div><div class="line">        path = /home/leehao/upload/portrait</div><div class="line">        valid users = @leehao</div><div class="line">        public = no</div><div class="line">        admin users = leehao</div><div class="line">        writable = yes</div><div class="line">        create mask = 0640</div><div class="line">        directory mask = 0750</div></pre></td></tr></table></figure>
+<p>配置的含义是增加一个新的 Samba 共享目录，目录位置是<code>/home/leehao/upload/portrait</code>，且使用需要使用指定用户密码来访问。<br>在<code>/home/leehao/</code>目录下创建目录<code>upload/portrai</code>。</p>
+<p>完成配置后，可以使用<code>testparm</code>命令来测试 Samba 配置是否正常。</p>
+<h2 id="Windows-访问-Samba"><a href="#Windows-访问-Samba" class="headerlink" title="Windows 访问 Samba"></a>Windows 访问 Samba</h2><p>Samba 配置完成后，就可以访问了，可以在 Windows 打开文件资源窗口来访问 Samba。</p>
+<p>Windows 窗口地址栏中输入<code>\\10.88.x.x\portrait</code>（改成实际 IP），按下回车，输入用户 leehao 和上面设置的密码，就可以访问 Linux 的 Samba 目录了。</p>
+<p><img src="http://leehao.oss-cn-shenzhen.aliyuncs.com/blog/samba1.png" alt="image"></p>
+<p>如果弹出“不允许一个用户使用一个以上用户名与服务器…”提示，可以打开 cmd，输入<code>net use * /del /y</code>命令，断开所有 Windows 与 Samba 的连接，再重新连接 Samba 即可。</p>
+<p><img src="http://leehao.oss-cn-shenzhen.aliyuncs.com/blog/samba2.png" alt="image"></p>
+<h2 id="Java-实现-Samba-客户端"><a href="#Java-实现-Samba-客户端" class="headerlink" title="Java 实现 Samba 客户端"></a>Java 实现 Samba 客户端</h2><p>我们使用 <a href="https://www.jcifs.org/" target="_blank" rel="external">jcifs</a> 来实现 Java 读取以及下载 Samba 文件的功能。</p>
+<p>pom.xml 文件引入 jcifs：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>jcifs<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jcifs<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3.17<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>完整的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.FileInputStream;</div><div class="line"><span class="keyword">import</span> java.io.FileOutputStream;</div><div class="line"></div><div class="line"><span class="keyword">import</span> jcifs.UniAddress;</div><div class="line"><span class="keyword">import</span> jcifs.smb.NtlmPasswordAuthentication;</div><div class="line"><span class="keyword">import</span> jcifs.smb.SmbFile;</div><div class="line"><span class="keyword">import</span> jcifs.smb.SmbSession;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.commons.io.IOUtils;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String ip = <span class="string">"x.x.x.x"</span>;  <span class="comment">// 替换成真实的 ip</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port = <span class="number">139</span>;</div><div class="line">    <span class="keyword">private</span> String user = <span class="string">"leehao"</span>;</div><div class="line">    <span class="keyword">private</span> String passwd = <span class="string">"xxxxxx"</span>;  <span class="comment">// 替换成密码</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testPut</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            UniAddress ua = UniAddress.getByName(ip);</div><div class="line">            NtlmPasswordAuthentication auth = <span class="keyword">new</span> NtlmPasswordAuthentication(ip, user, passwd);</div><div class="line">            SmbSession.logon(ua, port, auth);</div><div class="line">            SmbFile sf = <span class="keyword">new</span> SmbFile(<span class="string">"smb://"</span> + ip + <span class="string">"/portrait/upload.txt"</span>, auth);</div><div class="line">            IOUtils.copyLarge(<span class="keyword">new</span> FileInputStream(<span class="string">"f:/upload.txt"</span>), sf.getOutputStream());</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGet</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            UniAddress ua = UniAddress.getByName(ip);</div><div class="line">            NtlmPasswordAuthentication auth = <span class="keyword">new</span> NtlmPasswordAuthentication(ip, user, passwd);</div><div class="line">            SmbSession.logon(ua, port, auth);</div><div class="line">            SmbFile sf = <span class="keyword">new</span> SmbFile(<span class="string">"smb://"</span> + ip + <span class="string">"/portrait/upload.txt"</span>, auth);</div><div class="line">            IOUtils.copyLarge(sf.getInputStream(), <span class="keyword">new</span> FileOutputStream(<span class="string">"f:/download.txt"</span>));</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        App app = <span class="keyword">new</span> App();</div><div class="line"><span class="comment">//        app.testPut();</span></div><div class="line">        app.testGet();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码提供上传以下下载 Samba 文件的功能。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://www.samba.org/" target="_blank" rel="external">https://www.samba.org/</a></li>
+<li><a href="https://www.samba.org/samba/docs/SambaIntro.html" target="_blank" rel="external">https://www.samba.org/samba/docs/SambaIntro.html</a></li>
+<li><a href="http://www.cnblogs.com/mchina/archive/2012/12/18/2816717.html" target="_blank" rel="external">http://www.cnblogs.com/mchina/archive/2012/12/18/2816717.html</a></li>
+<li><a href="https://www.cnblogs.com/fangfan/p/4000094.html" target="_blank" rel="external">https://www.cnblogs.com/fangfan/p/4000094.html</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/samba/" rel="tag"># samba</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/最大回撤线性算法实现/" rel="next" title="最大回撤线性算法实现">
+                <i class="fa fa-chevron-left"></i> 最大回撤线性算法实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">186</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Samba-安装"><span class="nav-number">1.</span> <span class="nav-text">Samba 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Samba-配置"><span class="nav-number">2.</span> <span class="nav-text">Samba 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows-访问-Samba"><span class="nav-number">3.</span> <span class="nav-text">Windows 访问 Samba</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-实现-Samba-客户端"><span class="nav-number">4.</span> <span class="nav-text">Java 实现 Samba 客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
