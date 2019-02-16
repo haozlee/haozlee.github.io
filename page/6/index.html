@@ -312,6 +312,329 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/多线程并发服务器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/多线程并发服务器/" itemprop="url">多线程并发服务器</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-25T16:02:14+08:00">
+                2017-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/多线程并发服务器/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/多线程并发服务器/" class="cy_cmt_count" data-xid="多线程并发服务器/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在多进程并发服务器的应用程序中，父进程<code>accept</code>一个连接，<code>fork</code>一个子进程，该子进程负责处理与该连接对端的客户之间的通信。<br>尽管多进程的编程模型中，各进程拥有独立的地址空间，减少了出错的概率，然而，<code>fork</code>调用却存在一些问题：</p>
+<ul>
+<li><code>fork</code>是昂贵的，<code>fork</code>要把父进程的内存映像复制到子进程，并在子进程中复制所有描述符，这个操作是较重量级的。</li>
+<li><code>fork</code>返回之后父子进程之间信息的传递需要进程间通信（IPC）机制。</li>
+</ul>
+<p>线程则可以解决上述两个问题。线程有时也称为轻量级的进程，线程的创建可能比进程的创建快10-100倍。同一个进程内所有线程共享相同的全局内存，这使得线程之间易于共享信息，但伴随这种简易性而来的是线程安全问题。</p>
+<h2 id="线程函数"><a href="#线程函数" class="headerlink" title="线程函数"></a>线程函数</h2><h3 id="1-pthread-create-函数"><a href="#1-pthread-create-函数" class="headerlink" title="1. pthread_create 函数"></a>1. pthread_create 函数</h3><p>我们介绍的第一个线程的函数是<code>pthread_create</code>，它的作用是创建一个新线程。它的定义如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#include &lt;pthread.h&gt;</div><div class="line">int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);</div></pre></td></tr></table></figure>
+<p>这个函数的定义看起来很复杂，其实用起来很简单。<br>第一个参数是指向<code>pthread_t</code>类型的指针。线程被创建时，这个指针指向的变量将被写入一个标识符（线程ID）我们用该标识符来引用新线程。<br>第二个参数用于设置线程的属性，一般不需要特殊的属性，所以只需要设置该参数为NULL。<br>最后两个参数，分别告诉新线程将要启动执行的函数和传递给该函数的参数。<br><code>pthread_create</code>函数在成功调用时返回0，如果失败则返回失败码。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/多线程并发服务器/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/多进程并发服务器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/多进程并发服务器/" itemprop="url">多进程并发服务器</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-23T16:45:37+08:00">
+                2017-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网络基础/" itemprop="url" rel="index">
+                    <span itemprop="name">网络基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/多进程并发服务器/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/多进程并发服务器/" class="cy_cmt_count" data-xid="多进程并发服务器/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>我们来考虑有多个客户同时连接一个服务器的情况。在前面的TCP套接字编程的例子中，我们已经看到，服务器程序在接受来自客户端的一个新连接时，会创建出一个新的套接字（已连接套接字），而原先的监听套接字则继续监听后面的连接请求。如果服务器不能立刻接受后来的连接，它们将被放到队列中以等待处理。<br>原先的套接字仍然可用并且套接字的行为就像文件描述符，这一事实给我们提供了一种同时服务多个客户的方法。如果服务器调用<code>fork</code>为自己创建第二份副本，打开的套接字就将被新的子进程所继承。新的子进程可以和连接的客户进行通信，而主服务器进程可以继续接受以后的客户连接。</p>
+<p>为了了解这是如何工作的，假设我们有两个客户端和一个服务器，服务器正在监听一个监听套接字（比如描述符3）上的连接请求。<br>现在假设服务器接受了客户端1的连接请求，并返回一个已连接套接字（比如描述符4），如图1所示。<br><img src="https://ww3.sinaimg.cn/large/006tKfTcgy1fdwv7cxb9bj30h40aeaah.jpg" alt=""><br>图1：第一步：服务器接受客户端的连接请求</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/多进程并发服务器/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/监听套接字与已连接套接字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1595,325 +1918,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper的Znode剖析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/ZooKeeper的Znode剖析/" itemprop="url">ZooKeeper的Znode剖析</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T08:22:26+08:00">
-                2017-02-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ZooKeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">ZooKeeper</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/ZooKeeper的Znode剖析/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/ZooKeeper的Znode剖析/" class="cy_cmt_count" data-xid="ZooKeeper的Znode剖析/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在ZooKeeper中，节点也称为znode。由于对于程序员来说，对zk的操作主要是对znode的操作，因此，有必要对znode进行深入的了解。<br>ZooKeeper采用了类似文件系统的的数据模型，其节点构成了一个具有层级关系的树状结构。例如，图1展示了zk节点的层级树状结构。</p>
-<p><img src="https://ww4.sinaimg.cn/large/006tNc79gy1fcyxsxwf4dj30i30a8jrq.jpg" alt="ZooKeeper的层级树状结构"><br>图1：ZooKeeper的层级树状结构</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/ZooKeeper的Znode剖析/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/ZooKeeper命令简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/ZooKeeper命令简介/" itemprop="url">ZooKeeper命令简介</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-22T08:12:10+08:00">
-                2017-02-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ZooKeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">ZooKeeper</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/ZooKeeper命令简介/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/ZooKeeper命令简介/" class="cy_cmt_count" data-xid="ZooKeeper命令简介/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>ZooKeeper的客户端包括Java版本和C语言版本。使用Java版本连接zk的命令以下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/zkCli.sh -server ip:port</div></pre></td></tr></table></figure>
-<p>执行此命令，客户端成功连接上zk，会有类似以下的输出，其中，包括“Welcome to ZooKeeper!”的欢迎语，以及其他一些连接的信息等。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">lihaodeMacBook-Pro:bin lihao$ ./zkCli.sh -server 127.0.0.1:2182</div><div class="line">Connecting to 127.0.0.1:2182</div><div class="line">2016-06-29 07:51:39,679 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.8--1, built on 02/06/2016 03:18 GMT</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=192.168.31.107</div><div class="line">2016-06-29 07:51:39,682 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.8.0_77</div><div class="line">2016-06-29 07:51:39,684 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">……</div><div class="line">2016-06-29 07:51:39,686 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=127.0.0.1:2182 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@531d72ca</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-29 07:51:39,715 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1032] - Opening socket connection to server 127.0.0.1/127.0.0.1:2182. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-29 07:51:39,797 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@876] - Socket connection established to 127.0.0.1/127.0.0.1:2182, initiating session</div><div class="line">[zk: 127.0.0.1:2182(CONNECTING) 0] 2016-06-29 07:51:39,830 [myid:] - INFO  [main-SendThread(127.0.0.1:2182):ClientCnxn$SendThread@1299] - Session establishment complete on server 127.0.0.1/127.0.0.1:2182, sessionid = 0x155996605050000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div></pre></td></tr></table></figure>
-<p>连接成功后，便可以使用命令与zk服务进行交互。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/ZooKeeper命令简介/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1964,7 +1968,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">75</span>
+                <span class="site-state-item-count">77</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1986,7 +1990,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">189</span>
+                <span class="site-state-item-count">199</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

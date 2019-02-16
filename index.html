@@ -312,6 +312,344 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/CLion-实现远程调试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/CLion-实现远程调试/" itemprop="url">CLion 实现远程调试</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T08:41:16+08:00">
+                2019-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/CLion-实现远程调试/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/CLion-实现远程调试/" class="cy_cmt_count" data-xid="CLion-实现远程调试/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>CLion 是 JetBrains IDE 全家桶产品之一，可以用来开发 C/C++ 项目，而 GDB 则可以用来对 C/C++ 程序进行调试。<br>作为一款调试器，GDB 为程序开发人员提供了强大的调试功能，但却需要使用命令来执行调试操作，操作起来不是很方便。（有关 GDB 的使用，可以参考文章<a href="https://blog.csdn.net/lihao21/article/details/78294587">《GDB 调试》</a>。）为此，CLion 为程序开发人员提供了图形化的调试界面以方便调试。另外，CLion 还提供了远程调试的功能。因为在实际项目中，我们常会碰到在本地开发环境编写代码，程序却在远程机器运行的情况。远程调试功能对我们来说是十分必要的。</p>
+<p>本文讲述如何使用 CLion 来实现远程调试。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>假设本地开发环境是 Windows 操作系统，程序远程执行环境是 CentOS 操作系统。为满足远程调试，需要在 CentOS 上安装必要的软件，安装的软件包括：</p>
+<ul>
+<li>cmake</li>
+<li>gcc</li>
+<li>gdb</li>
+<li>gdbserver</li>
+</ul>
+<p>安装命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">yum install cmake -y</div><div class="line">yum install gcc-c++ -y</div><div class="line">yum install gdb -y</div><div class="line">yum install gdb-gdbserver -y</div></pre></td></tr></table></figure>
+<p>cmake 用于管理编译过程，生成 Makefile 文件；gcc-c++ 是编译器；gdb 是个调试工具，程序调试功能实际上就是由 gdb 提供的；gdbserver 用于监听某个 TCP 端口，允许远程主机连接，以实现远程调试功能。</p>
+<p>至于本地开发环境，Windows 操作系统上安装好最新版本的 CLion ，以笔者为例，当前 CLion 最新版本为 2018.3。</p>
+<h2 id="代码同步"><a href="#代码同步" class="headerlink" title="代码同步"></a>代码同步</h2><p>使用 CLion 创建一个 C++ 项目 helloworld。然后，打开菜单 Tools - Deployment - Configuration，配置远程主机以及本地目录与远程目录的映射关系：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-02-16-001953.jpg" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/CLion-实现远程调试/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/债券的价格/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/债券的价格/" itemprop="url">债券的价格</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T08:36:32+08:00">
+                2019-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/量化投资/" itemprop="url" rel="index">
+                    <span itemprop="name">量化投资</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/债券的价格/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/债券的价格/" class="cy_cmt_count" data-xid="债券的价格/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>之前一直好奇债券的价格是如何确定的，最近查阅了一些资料，对债券的价格有了初步的了解。这篇文章记录对于债券价格的学习笔记。</p>
+<h2 id="一、背景知识"><a href="#一、背景知识" class="headerlink" title="一、背景知识"></a>一、背景知识</h2><h3 id="1-1-货币时间价值"><a href="#1-1-货币时间价值" class="headerlink" title="1.1 货币时间价值"></a>1.1 货币时间价值</h3><p>货币时间价值是指货币随着时间的推移而发生的增值。衡量货币时间价值大小的指标即是利率。</p>
+<h3 id="1-2-终值"><a href="#1-2-终值" class="headerlink" title="1.2 终值"></a>1.2 终值</h3><p>终值用来表示货币时间价值的概念。已知期初投入的现值为 $PV$，求将来第 $n$ 期期末的终值 $FV$，也就是求第 $n$ 期期末的本利和，年利率 $i$。资金的时间价值一般都是按复利方式进行计算。<br>第 $n$ 期期末终值的一般计算公式：</p>
+<p>$$<br>FV = PV \times (1+i)^n<br>$$</p>
+<p>其中，$FV$ 表示终值，即在第 $n$ 年年末的货币终值，$n$ 表示年限，$i$ 表示年利率，$PV$ 表示本金或现值。</p>
+<h3 id="1-3-现值"><a href="#1-3-现值" class="headerlink" title="1.3 现值"></a>1.3 现值</h3><p>现值即现在值，是指将来货币金额的现在价值。由终值的一般计算公式 $FV=PV \times (1+i)^n$ 转换成求 $PV$，可以得到现值的计算公式：</p>
+<p>$$<br>PV = \frac{FV}{(1+i)^n}<br>$$</p>
+<p>将未来某时点的价值折算为现在时点的价值称为<strong>贴现</strong>，上式中利率 $i$ 也被称之为<strong>贴现率</strong>。</p>
+<h3 id="二、债券估值"><a href="#二、债券估值" class="headerlink" title="二、债券估值"></a>二、债券估值</h3><p>债券估值用于计算债券的内在价值，债券的价值或内在价值是指债券未来现金流入量的现值，即债券各期利息收入的现值加上债券到期偿还本金的现值之和。只有债券的内在价值大于购买价格时，才值得购买。<br>债券估值遵循以下原则：</p>
+<blockquote>
+<p>金融证券的价值 = 预期未来现金流量的现值</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/债券的价格/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-LaTeX-制作幻灯片/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1643,326 +1981,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Spring-MVC-入门例子/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Spring-MVC-入门例子/" itemprop="url">Spring MVC 入门例子</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-18T21:48:06+08:00">
-                2018-06-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/Spring-MVC-入门例子/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/Spring-MVC-入门例子/" class="cy_cmt_count" data-xid="Spring-MVC-入门例子/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Spring Web MVC 是一个建立在 Servlet API 的 Web 框架，它属于 Spring Framework 的产品。Spring Web MVC 名称来源于模块 spring-webmvc ，但它更常用的叫法是 Spring MVC。<br>本文讲述如何使用 IntelliJ IDEA 来编写一个 Spring MVC Demo。</p>
-<p>使用 IntelliJ IDEA 创建一个 Maven 项目，选择 webapp 类型。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-134926.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Spring-MVC-入门例子/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Hibernate-实现增删查改/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Hibernate-实现增删查改/" itemprop="url">Hibernate 实现增删查改</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-18T21:40:42+08:00">
-                2018-06-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/Hibernate-实现增删查改/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/Hibernate-实现增删查改/" class="cy_cmt_count" data-xid="Hibernate-实现增删查改/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Hibernate 是一种 Java 语言下的对象关系映射的解决方案，它为面向对象的领域模型到传统的关系型数据库的映射提供了一个使用方便的框架。<br>本文讲述如何使用 Hibernate 来实现数据库中基本的增删查改操作。</p>
-<h2 id="创建数据库表"><a href="#创建数据库表" class="headerlink" title="创建数据库表"></a>创建数据库表</h2><p>为实现我们的例子，我们先创建一个表<code>EMPLOYEES</code>并插入一些数据。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> EMPLOYEES (</div><div class="line">    EMP_ID <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</div><div class="line">    <span class="keyword">NAME</span> <span class="built_in">VARCHAR</span>(<span class="number">252</span>),</div><div class="line">    DEPARTMENT <span class="built_in">VARCHAR</span>(<span class="number">128</span>),</div><div class="line">    SALARY <span class="built_in">BIGINT</span>,</div><div class="line">    JOINED_ON <span class="keyword">TIMESTAMP</span>,</div><div class="line">    PRIMARY <span class="keyword">KEY</span> (EMP_ID)</div><div class="line">);</div><div class="line"> </div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">'Nataraja G'</span>, <span class="string">'Documentation'</span>, <span class="number">10000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">'Amar M'</span>, <span class="string">'Entertainment'</span>, <span class="number">12000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">'Nagesh Y'</span>, <span class="string">'Admin'</span>, <span class="number">25000</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> EMPLOYEES (EMP_ID, <span class="keyword">NAME</span>, DEPARTMENT, SALARY, JOINED_ON) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">'Vasu V'</span>, <span class="string">'Security'</span>, <span class="number">2500</span>, <span class="keyword">CURRENT_TIMESTAMP</span>);</div></pre></td></tr></table></figure>
-<h2 id="创建-Maven-项目"><a href="#创建-Maven-项目" class="headerlink" title="创建 Maven 项目"></a>创建 Maven 项目</h2><p>使用 IntelliJ IDEA 创建一个 Maven 项目，选择 quickstart 类型。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-134224.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Hibernate-实现增删查改/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2013,7 +2031,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">75</span>
+                <span class="site-state-item-count">77</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2035,7 +2053,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">189</span>
+                <span class="site-state-item-count">199</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

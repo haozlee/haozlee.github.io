@@ -312,6 +312,330 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Web-服务架构类型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Web-服务架构类型/" itemprop="url">Web 服务架构类型</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-16T23:30:49+08:00">
+                2017-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/Web-服务架构类型/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/Web-服务架构类型/" class="cy_cmt_count" data-xid="Web-服务架构类型/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。</p>
+<h2 id="以功能为中心的服务"><a href="#以功能为中心的服务" class="headerlink" title="以功能为中心的服务"></a>以功能为中心的服务</h2><p>以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。<br>我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单对象访问协议）等技术都是关注于如何让客户端代码调用一个在远程机器上实现的功能。<br>本文我们重点讲述 SOAP 协议。</p>
+<h3 id="SOAP"><a href="#SOAP" class="headerlink" title="SOAP"></a>SOAP</h3><p>SOAP 基于 XML 和 HTTP，使用 XML 来实现消息描述，使用 HTTP 实现消息传输。SOAP 最重要的一个特性是允许 Web 服务基于自身的约定描述完成服务发现并生成集成代码。</p>
+<p>图1所示为 SOAP 的工作原理。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-151241.jpg" alt=""><br>图1：SOAP 的工作原理</p>
+<p>Web 服务提供者暴露一组 XML 资源，诸如 Web 服务定义语言（WSDL）文件，XML 模式定义（XSD）文件。WSDL 描述方法与可用的终端信息，XSD 描述请求与响应中用到的数据结构。这些资源文件就是 Web 服务的约定，客户端代码如何生成，Web 服务如何调用，这些必要的信息全部都在这些资源文件中。</p>
+<p>举个例子，如果我们使用 Java 开发客户端，那么我们可以使用专门的工具和库，下载这些 Web 服务定义资源文件，然后生成 Java 本地客户端代码。这些代码就是一些 Java 类，可以被编译并用在应用程序中。在这些代码的背后，会依赖到 SOAP 相关的一些库，这些库封装了数据序列化，身份认证，路由，错误处理等各种实现细节。客户端无须知道自己调用的是远程 Web 服务，只需要简单地依赖基于 Web 服务约定（WSDL 和 XSD文件）生成的 Java 代码就可以使用这些远程服务器提供的功能了。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Web-服务架构类型/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/在阿里云部署-Hexo-网站/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/在阿里云部署-Hexo-网站/" itemprop="url">在阿里云部署 Hexo 网站</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-16T00:06:50+08:00">
+                2017-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/建站/" itemprop="url" rel="index">
+                    <span itemprop="name">建站</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/在阿里云部署-Hexo-网站/#SOHUCS" itemprop="discussionUrl">
+                  <span id="url::https://leehao.me/在阿里云部署-Hexo-网站/" class="cy_cmt_count" data-xid="在阿里云部署-Hexo-网站/" itemprop="commentsCount" ></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>一开始自己的网站 <a href="https://leehao.me">leehao.me</a> 托管在 GitHub 上面，考虑到 GitHub 的访问可能不稳定，另外，也是抱着学习的目的，就将网站迁移到阿里云上面来了。</p>
+<p>网站的总体结构如下图所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152418.jpg" alt=""></p>
+<p>域名 leehao.me 指向负载均衡 SLB（Server Load Balancer）的 IP，在 SLB 后面部署两台后端服务器 ECS（Elastic Compute Service），ECS 上部署 Hexo 的静态资源。</p>
+<p>SLB 的监听配置如下：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-152738.jpg" alt=""><br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/在阿里云部署-Hexo-网站/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/gSOAP-初体验/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1595,329 +1919,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/多线程并发服务器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/多线程并发服务器/" itemprop="url">多线程并发服务器</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-25T16:02:14+08:00">
-                2017-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网络基础/" itemprop="url" rel="index">
-                    <span itemprop="name">网络基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/多线程并发服务器/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/多线程并发服务器/" class="cy_cmt_count" data-xid="多线程并发服务器/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在多进程并发服务器的应用程序中，父进程<code>accept</code>一个连接，<code>fork</code>一个子进程，该子进程负责处理与该连接对端的客户之间的通信。<br>尽管多进程的编程模型中，各进程拥有独立的地址空间，减少了出错的概率，然而，<code>fork</code>调用却存在一些问题：</p>
-<ul>
-<li><code>fork</code>是昂贵的，<code>fork</code>要把父进程的内存映像复制到子进程，并在子进程中复制所有描述符，这个操作是较重量级的。</li>
-<li><code>fork</code>返回之后父子进程之间信息的传递需要进程间通信（IPC）机制。</li>
-</ul>
-<p>线程则可以解决上述两个问题。线程有时也称为轻量级的进程，线程的创建可能比进程的创建快10-100倍。同一个进程内所有线程共享相同的全局内存，这使得线程之间易于共享信息，但伴随这种简易性而来的是线程安全问题。</p>
-<h2 id="线程函数"><a href="#线程函数" class="headerlink" title="线程函数"></a>线程函数</h2><h3 id="1-pthread-create-函数"><a href="#1-pthread-create-函数" class="headerlink" title="1. pthread_create 函数"></a>1. pthread_create 函数</h3><p>我们介绍的第一个线程的函数是<code>pthread_create</code>，它的作用是创建一个新线程。它的定义如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#include &lt;pthread.h&gt;</div><div class="line">int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routine)(void *), void *arg);</div></pre></td></tr></table></figure>
-<p>这个函数的定义看起来很复杂，其实用起来很简单。<br>第一个参数是指向<code>pthread_t</code>类型的指针。线程被创建时，这个指针指向的变量将被写入一个标识符（线程ID）我们用该标识符来引用新线程。<br>第二个参数用于设置线程的属性，一般不需要特殊的属性，所以只需要设置该参数为NULL。<br>最后两个参数，分别告诉新线程将要启动执行的函数和传递给该函数的参数。<br><code>pthread_create</code>函数在成功调用时返回0，如果失败则返回失败码。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/多线程并发服务器/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/多进程并发服务器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/多进程并发服务器/" itemprop="url">多进程并发服务器</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-23T16:45:37+08:00">
-                2017-03-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网络基础/" itemprop="url" rel="index">
-                    <span itemprop="name">网络基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/多进程并发服务器/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/多进程并发服务器/" class="cy_cmt_count" data-xid="多进程并发服务器/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>我们来考虑有多个客户同时连接一个服务器的情况。在前面的TCP套接字编程的例子中，我们已经看到，服务器程序在接受来自客户端的一个新连接时，会创建出一个新的套接字（已连接套接字），而原先的监听套接字则继续监听后面的连接请求。如果服务器不能立刻接受后来的连接，它们将被放到队列中以等待处理。<br>原先的套接字仍然可用并且套接字的行为就像文件描述符，这一事实给我们提供了一种同时服务多个客户的方法。如果服务器调用<code>fork</code>为自己创建第二份副本，打开的套接字就将被新的子进程所继承。新的子进程可以和连接的客户进行通信，而主服务器进程可以继续接受以后的客户连接。</p>
-<p>为了了解这是如何工作的，假设我们有两个客户端和一个服务器，服务器正在监听一个监听套接字（比如描述符3）上的连接请求。<br>现在假设服务器接受了客户端1的连接请求，并返回一个已连接套接字（比如描述符4），如图1所示。<br><img src="https://ww3.sinaimg.cn/large/006tKfTcgy1fdwv7cxb9bj30h40aeaah.jpg" alt=""><br>图1：第一步：服务器接受客户端的连接请求</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/多进程并发服务器/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1968,7 +1969,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">75</span>
+                <span class="site-state-item-count">77</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1990,7 +1991,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">189</span>
+                <span class="site-state-item-count">199</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
