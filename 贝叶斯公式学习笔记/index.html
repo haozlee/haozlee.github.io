@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="贝叶斯公式,全概率公式,先验概率,后验概率,条件概率," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="贝叶斯公式有着广泛的应用。最近重新拿起上学时的教科书——浙大《概率论与数理统计（第三版）》，复习了一遍全概率公式与贝叶斯公式，算是捡起了一些记忆。本文从条件概率出发，推导出全概率公式以及贝叶斯公式，并以例子说明贝叶斯公式的应用。
+条件概率条件概率研究如何计算事件 $A$ 已发生的条件下事件 $B$ 发生的概率。例如，将一枚硬币抛掷两次，观察其出现正反面的情况，设事件 $A$ 为“至少一次为正面”，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="贝叶斯公式学习笔记">
+<meta property="og:url" content="https://leehao.me/贝叶斯公式学习笔记/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="贝叶斯公式有着广泛的应用。最近重新拿起上学时的教科书——浙大《概率论与数理统计（第三版）》，复习了一遍全概率公式与贝叶斯公式，算是捡起了一些记忆。本文从条件概率出发，推导出全概率公式以及贝叶斯公式，并以例子说明贝叶斯公式的应用。
+条件概率条件概率研究如何计算事件 $A$ 已发生的条件下事件 $B$ 发生的概率。例如，将一枚硬币抛掷两次，观察其出现正反面的情况，设事件 $A$ 为“至少一次为正面”，">
+<meta property="og:updated_time" content="2019-04-07T14:37:41.781Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="贝叶斯公式学习笔记">
+<meta name="twitter:description" content="贝叶斯公式有着广泛的应用。最近重新拿起上学时的教科书——浙大《概率论与数理统计（第三版）》，复习了一遍全概率公式与贝叶斯公式，算是捡起了一些记忆。本文从条件概率出发，推导出全概率公式以及贝叶斯公式，并以例子说明贝叶斯公式的应用。
+条件概率条件概率研究如何计算事件 $A$ 已发生的条件下事件 $B$ 发生的概率。例如，将一枚硬币抛掷两次，观察其出现正反面的情况，设事件 $A$ 为“至少一次为正面”，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/贝叶斯公式学习笔记/"/>
+
+
+
+
+
+  <title>贝叶斯公式学习笔记 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/贝叶斯公式学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">贝叶斯公式学习笔记</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-07T22:28:40+08:00">
+                2019-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+              <span class="post-meta-divider">|</span>
+              <span class="post-meta-item-icon">
+                <i class="fa fa-comment-o"></i>
+              </span>
+              
+                <a href="/贝叶斯公式学习笔记/#SOHUCS" itemprop="discussionUrl">
+                  <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="贝叶斯公式学习笔记/" itemprop="commentsCount"></span>
+                </a>
+              
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>贝叶斯公式有着广泛的应用。最近重新拿起上学时的教科书——浙大《概率论与数理统计（第三版）》，复习了一遍全概率公式与贝叶斯公式，算是捡起了一些记忆。<br>本文从条件概率出发，推导出全概率公式以及贝叶斯公式，并以例子说明贝叶斯公式的应用。</p>
+<h2 id="条件概率"><a href="#条件概率" class="headerlink" title="条件概率"></a>条件概率</h2><p>条件概率研究如何计算事件 $A$ 已发生的条件下事件 $B$ 发生的概率。<br>例如，将一枚硬币抛掷两次，观察其出现正反面的情况，设事件 $A$ 为“至少一次为正面”，事件 $B$ 为“两次掷出同一面”。求已知事件 $A$ 已经发生的条件下事件 $B$ 发生的概率。<br>我们以 $H$ 表示硬币掷出正面， $T$ 表示硬币掷出反面，则上述随机试验的样本空间为 $S={HH, HT, TH, TT}$，$A={HH,HT, TH}$，$B={HH,TT}$。由于已知事件 $A$ 已经发生，即已知试验所有可能结果所组成的集合就是 $A$，$A$ 中共有 3 个元素，其中只有 $HH \in B$。因此，在 $A$ 发生的条件下 $B$ 发生的概率（记为 $P(B|A)$）为</p>
+<p>$$<br>P(B|A) = \frac{1}{3}<br>$$</p>
+<p>另外，我们易知</p>
+<p>$$<br>P(A)=\frac{3}{4}, P(AB)=\frac{1}{4}, P(B|A)=\frac{1}{3}=\frac{1/4}{3/4}<br>$$</p>
+<p>其中，$P(AB)$ 为事件 $A$ 与事件 $B$ 同时发生的概率。</p>
+<p>一般地，</p>
+<p>$$<br>P(B|A) = \frac{P(AB)}{P(A)}<br>$$</p>
+<h2 id="乘法定理"><a href="#乘法定理" class="headerlink" title="乘法定理"></a>乘法定理</h2><p>由条件概率的计算公式，可以得到</p>
+<p>$$<br>P(AB) = P(A)P(B|A)<br>$$</p>
+<p>上式可以推广到多个事件的积事件，即</p>
+<p>$$<br>P(ABC) = P(AB)P(C|AB)=P(A)P(B|A)P(C|AB)<br>$$</p>
+<a id="more"></a>
+<p>例如，设某光学仪器厂制造的透镜，第一次落下时打破的概率为 1/2，若第一次落下未打破，第二次落下打破的概率为 7/10，若前两次落下未打破，第三次落下打破的概率为 9/10，试求透镜落下三次而未打破的概率。<br>以 $A_i(i=1,2,3)$ 表示事件“透镜第 $i$ 次落下打破”，以 $B$ 表示事件“透镜落下三次而未打破”。因为 $B=\overline{A_1} \ \overline{A_2} \ \overline{A_3}$，故有</p>
+<p>$$<br>P(B)=P(\overline{A_1} \ \overline{A_2} \ \overline{A_3})=P(\overline{A_1})P(\overline{A_2}|\overline{A_1})P(\overline{A_3}|\overline{A_1} \ \overline{A_2})\ = (1- \frac{1}{2})(1- \frac{7}{10})(1- \frac{9}{10}) = \frac{3}{200}<br>$$</p>
+<h2 id="全概率公式"><a href="#全概率公式" class="headerlink" title="全概率公式"></a>全概率公式</h2><p><strong>定义</strong> 设 $S$ 为试验 $E$ 的样本空间，$B_1, B_2, …, B_n$ 为 $E$ 的一组事件，若<br>（i）$B_iB_j=\varnothing,i \neq j,i,j=1,2,…,n;$<br>（ii）$B_1 \cup B_2 \cup … \cup B_n=S$<br>则称 $B_1, B_2, …, B_n$ 为样本空间 $S$ 的一个<strong>划分</strong>。</p>
+<p>即如果 $B_1,B_2,…,B_n$ 是样本空间的一个划分，那么，对每次试验，事件 $B_1,B_2,…,B_n$ 中必有一个且仅有一个发生。<br>例如，设试验 $E$ 为“掷一颗骰子观察其点数”。它的样本空间为 $S={1,2,3,4,5,6}$。$E$ 的一组事件 $B_1 = {1,2,3 },B_2={4,5},B_3={6}$ 是 $S$ 的一个划分，而事件组 $C_1={1,2,3},C_2={3,4}, C_3={5,6}$ 不是 $S$ 的划分。</p>
+<p><strong>定理</strong> 设试验 $E$ 的样本空间为 $S$，$A$ 为 $E$ 的事件，$B_1, B_2,…,B_n$ 为 $S$ 的一个划分，且 $P(B_i) &gt; 0(i=1,2,…,n)$，则</p>
+<p>$$<br>P(A)=P(A|B_1)P(B_1) + P(A|B_2)P(B_2) + … + P(A|B_n)P(B_n)<br>$$</p>
+<p>该式子称为 <strong>全概率公式</strong>。</p>
+<p><strong>证明</strong> 因为</p>
+<p>$A=AS=A(B_1 \cup B_2 \cup … \cup B_n) = AB_1 \cup AB_2 \cup … \cup AB_n$，由假设 $P(B_i)&gt;0$，且 $(AB_i)(AB_j)=\varnothing$，得到</p>
+<p>$$<br>P(A)=P(AB_1) + P(AB_2) + … + P(AB_n)\<br>=P(A|B_1)P(B_1) + P(A|B_2)P(B_2)+…+P(A|B_n)P(B_n)<br>$$ </p>
+<h2 id="贝叶斯公式"><a href="#贝叶斯公式" class="headerlink" title="贝叶斯公式"></a>贝叶斯公式</h2><p>设试验 $E$ 的样本空间为 $S$，$A$ 为 $E$ 的事件，$B_1,B_2,…,B_n$ 为 $S$ 的一个划分，且 $P(A) &gt; 0,P(B_i)&gt;0 (i=1,2,…,n)$，则</p>
+<p>$$<br>P(B_i|A)= \frac{P(A|B_i)P(B_i)}{\sum\limits_{j=1}^{n}{P(A|B_j)P(B_j)}},i=1,2,…,n<br>$$</p>
+<p>该式称为 <strong>贝叶斯公式</strong>。</p>
+<p><strong>证明</strong> 由条件概率的定义和全概率公式，有<br>$$<br>P(B_i|A)=\frac{P(B_iA)}{P(A)} = \frac{P(A|B_i)P(B_i)}{\sum\limits_{j=1}^{n}{P(A|B_j)P(B_j)}},i=1,2,…,n<br>$$</p>
+<p>特别地，当 $n=2$ 时，将 $B_1$ 记为 $B$，则 $B_2$ 就是 $\overline B$，全概率公式为</p>
+<p>$$<br>P(A) = P(A|B)P(B) + P(A|\overline B)P(\overline B)<br>$$</p>
+<p>贝叶斯公式为<br>$$<br>P(B|A)=\frac{P(AB)}{P(A)}=\frac{P(A|B)P(B)}{P(A|B)P(B) + P(A|\overline B)P(\overline B)}<br>$$</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p><strong>例1</strong> 某电子设备厂所用的元件由三家元件制造厂提供，根据以往的记录有以下数据：</p>
+<table>
+<thead>
+<tr>
+<th>元件制造厂</th>
+<th>次品率</th>
+<th>提供元件的份额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.02</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.01</td>
+<td>0.80</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.03</td>
+<td>0.05</td>
+</tr>
+</tbody>
+</table>
+<p>设这三家工厂的产品在仓库中是均匀混合的，且无区别的标志。<br>（1）在仓库中随机取一只元件，求它是次品的概率；<br>（2）在仓库中随机地取一只元件，若已知取到的是次品，为分析次品出自何厂，需求出此次品由三家工厂生产的概率分别是多少。</p>
+<p><strong>解</strong> 设 $A$ 表示“取到的是一只次品”，$B_i(i=1,2,3)$ 表示“所取到的产品是由第 $i$ 家工厂提供的”。$B_1,B_2,B_3$ 是样本空间 $S$ 的一个划分，且有 $P(B_1)=0.15,P(B_2)=0.80,P(B_3)=0.05$，$P(A|B_1)=0.02,P(A|B_2)=0.01,P(A|B_3)=0.03$。</p>
+<p>（1）由全概率公式<br>$$<br>P(A)=P(A|B_1)P(B_1)+P(A|B_2)P(B_2)+P(A|B_3)P(B_3) = 0.0125<br>$$</p>
+<p>（2）由贝叶斯公式</p>
+<p>$$<br>P(B_1|A)= \frac{P(A|B_1)P(B_1)}{P(A)}=\frac{0.02 \times 0.15}{0.125}=0.24<br>$$</p>
+<p>$$<br>P(B_2|A)=0.64, \quad P(B_3|A)=0.12<br>$$</p>
+<p>即这只次品来自第 2 家工厂可能性最大。</p>
+<p><strong>例2</strong> 对以往数据分析结果表明，当机器调整得良好时，产品的合格率为 98%，而当机器发生某种故障时，其合格率为 55%。每天早上机器开动时，机器调整良好的概率为 95%。试求已知某日早上第一件产品是合格品时，机器调整良好的概率是多少？</p>
+<p><strong>解</strong> 设 $A$ 为事件 “产品合格”，$B$ 为事件 “机器调整良好”，已知 $P(A|B)=0.98,P(A|\overline B)=0.55$,$P(B)=0.95,P(\overline B)=0.05$，所求概率为 $P(B|A)$，由贝叶斯公式</p>
+<p>$$<br>P(B|A)=\frac{P(A|B)P(B)}{P(A|B)P(B)+P(A|\overline B)P(\overline B)}<br>=\frac{0.98 \times 0.95}{0.98 \times 0.95 + 0.55 \times 0.05} = 0.97<br>$$</p>
+<p>这就是说，当第一件产品是合格品时，机器调整良好的概率为 0.97。这里，$P(B)=0.95$ 是由以往的数据分析得到的，叫做 <strong>先验概率</strong>，而得到信息之后再重新加以修正的概率（0.97）叫做 <strong>后验概率</strong>。有了后验概率，我们对机器情况有了进一步了解。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>概率论与数理统计，第三版，浙江大学，盛骤，谢式千，潘承毅 </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/贝叶斯公式/" rel="tag"># 贝叶斯公式</a>
+          
+            <a href="/tags/全概率公式/" rel="tag"># 全概率公式</a>
+          
+            <a href="/tags/先验概率/" rel="tag"># 先验概率</a>
+          
+            <a href="/tags/后验概率/" rel="tag"># 后验概率</a>
+          
+            <a href="/tags/条件概率/" rel="tag"># 条件概率</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/CLion-实现远程调试/" rel="next" title="CLion 实现远程调试">
+                <i class="fa fa-chevron-left"></i> CLion 实现远程调试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">204</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#条件概率"><span class="nav-number">1.</span> <span class="nav-text">条件概率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乘法定理"><span class="nav-number">2.</span> <span class="nav-text">乘法定理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全概率公式"><span class="nav-number">3.</span> <span class="nav-text">全概率公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#贝叶斯公式"><span class="nav-number">4.</span> <span class="nav-text">贝叶斯公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">5.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.miitbeian.gov.cn/" target="_blank">
+    粤ICP备17015212号-1
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+    <script type="text/javascript">
+    (function(){
+      var appid = 'cyu0EcOTj';
+      var conf = '039836245d91cd0db2b520409945a37e';
+      var width = window.innerWidth || document.documentElement.clientWidth;
+      if (width < 960) {
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){
+        window.changyan.api.config({appid:appid,conf:conf})});
+      }
+    })();
+    </script>
+    <script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+  
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
