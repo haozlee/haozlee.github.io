@@ -312,6 +312,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-性能测试记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Redis-性能测试记录/" itemprop="url">Redis 性能测试记录</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-23T13:01:44+08:00">
+                2017-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>虽然 Redis 本身也提供<code>redis-benchmark</code>工具来对 Redis 的性能进行测试，但为了对测试维度自由定制，我们还是通过自己编写脚本的方式来测试。</p>
+<p>Redis 的官方文档也提到了，简单的起一个循环，然后在循环中向 Redis 发送操作命令，其实不是对 Redis 进行性能测试，而是对网络延迟进行测试。为了真正测试 Redis 的并发性能，需要使用多个 Redis 连接，或者使用 pipelining 来聚合多个命令。当然也可以使用多线程或者多进程。<br>我们使用 Python 脚本来作为 Redis 的测试工具，并采用每个进程一个 Redis 连接的方案。</p>
+<p>测试脚本如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> time</div><div class="line"><span class="keyword">import</span> datetime</div><div class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</div><div class="line"><span class="keyword">import</span> redis</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in write worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    s = <span class="string">'a'</span> * <span class="number">1024</span> * <span class="number">1024</span> * <span class="number">10</span></div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % (n + <span class="number">100</span>)</div><div class="line">    r.set(bigkey, s)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'write time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_worker</span><span class="params">(n)</span>:</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'in read worker: %d, time: %s'</span> % (n, datetime.datetime.now())</div><div class="line">    r = redis.StrictRedis(host=<span class="string">'10.88.115.114'</span>, port=<span class="number">6380</span>)</div><div class="line">    t1 = time.time()</div><div class="line">    bigkey = <span class="string">'bigkey%d'</span> % n</div><div class="line">    r.get(bigkey)</div><div class="line">    t2 = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'read time: %f'</span> % (t2 - t1)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">()</span>:</span></div><div class="line">    read_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        read = Process(target=read_worker, args=(i,))</div><div class="line">        read.start()</div><div class="line">        read_processes.append(read)</div><div class="line"></div><div class="line">    write_processes = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>):</div><div class="line">        write = Process(target=write_worker, args=(i,))</div><div class="line">        write.start()</div><div class="line">        write_processes.append(write)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> write <span class="keyword">in</span> write_processes:</div><div class="line">        write.join()</div><div class="line">    <span class="keyword">for</span> read <span class="keyword">in</span> read_processes:</div><div class="line">        read.join()</div><div class="line">    <span class="keyword">print</span> <span class="string">'end press test'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    test()</div></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Redis-性能测试记录/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-C-语言客户端-hiredis-的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -378,17 +527,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/Redis-C-语言客户端-hiredis-的使用/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/Redis-C-语言客户端-hiredis-的使用/" class="cy_cmt_count" data-xid="Redis-C-语言客户端-hiredis-的使用/" itemprop="commentsCount" ></span>
-                </a>
-              
             
           
 
@@ -546,17 +684,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/Web-服务架构类型/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/Web-服务架构类型/" class="cy_cmt_count" data-xid="Web-服务架构类型/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -709,17 +836,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/在阿里云部署-Hexo-网站/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/在阿里云部署-Hexo-网站/" class="cy_cmt_count" data-xid="在阿里云部署-Hexo-网站/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -869,17 +985,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/gSOAP-初体验/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/gSOAP-初体验/" class="cy_cmt_count" data-xid="gSOAP-初体验/" itemprop="commentsCount" ></span>
-                </a>
-              
             
           
 
@@ -1032,17 +1137,6 @@
           
 
           
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/Terminal折腾记/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/Terminal折腾记/" class="cy_cmt_count" data-xid="Terminal折腾记/" itemprop="commentsCount" ></span>
-                </a>
-              
             
           
 
@@ -1199,17 +1293,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/tmux：终端复用利器/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/tmux：终端复用利器/" class="cy_cmt_count" data-xid="tmux：终端复用利器/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -1361,17 +1444,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/博客使用上了网易云跟贴/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/博客使用上了网易云跟贴/" class="cy_cmt_count" data-xid="博客使用上了网易云跟贴/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -1522,17 +1594,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/make命令与makefile文件/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/make命令与makefile文件/" class="cy_cmt_count" data-xid="make命令与makefile文件/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -1681,17 +1742,6 @@
 
           
             
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/epoll-水平触发与边缘触发/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/epoll-水平触发与边缘触发/" class="cy_cmt_count" data-xid="epoll-水平触发与边缘触发/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
           
 
           
@@ -1724,167 +1774,6 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/epoll-水平触发与边缘触发/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/I-O多路复用之POLL系统调用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/I-O多路复用之POLL系统调用/" itemprop="url">I/O多路复用之POLL系统调用</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-26T13:53:20+08:00">
-                2017-03-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网络基础/" itemprop="url" rel="index">
-                    <span itemprop="name">网络基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-              <span class="post-meta-divider">|</span>
-              <span class="post-meta-item-icon">
-                <i class="fa fa-comment-o"></i>
-              </span>
-              
-                <a href="/I-O多路复用之POLL系统调用/#SOHUCS" itemprop="discussionUrl">
-                  <span id="url::https://leehao.me/I-O多路复用之POLL系统调用/" class="cy_cmt_count" data-xid="I-O多路复用之POLL系统调用/" itemprop="commentsCount" ></span>
-                </a>
-              
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><code>poll</code>函数类似于<code>select</code>函数，也可以实现I/O多路复用。<code>poll</code>函数的声明如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;poll.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span><span class="params">(<span class="keyword">struct</span> pollfd *fdarray, <span class="keyword">unsigned</span> <span class="keyword">long</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</div></pre></td></tr></table></figure>
-<p>第一个参数是指向一个结构数组第一个元素的指针。每个数组元素都是一个<code>pollfd</code>结构，用于指定测试某个给定描述符<code>fd</code>的条件。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> pollfd &#123;</div><div class="line">    <span class="keyword">int</span>     fd;        <span class="comment">// 需要测试的描述符</span></div><div class="line">    <span class="keyword">short</span>   event;     <span class="comment">// 对fd感兴趣的事件</span></div><div class="line">    <span class="keyword">short</span>   revents;   <span class="comment">// 发生在fd的事件：期待的事件或者异常情况发生</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>要测试的条件由<code>events</code>成员指定，<code>poll</code>函数在相应的<code>revents</code>成员中返回该描述符的状态。<code>events</code>和<code>revents</code>都由某个特定条件的一位或多位构成。下面表格列出了用于指定<code>events</code>标志以及测试<code>revents</code>标志的一些常值。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/I-O多路复用之POLL系统调用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1972,7 +1861,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-count">79</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1994,7 +1883,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">204</span>
+                <span class="site-state-item-count">207</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2178,10 +2067,6 @@
 
 
 
-
-  
-    <script id="cy_cmt_num" src="https://changyan.sohu.com/upload/plugins/plugins.list.count.js?clientId=cyu0EcOTj"></script>
-  
 
 
 
