@@ -684,9 +684,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -697,8 +697,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -800,8 +800,8 @@
       </categories>
       <tags>
         <tag>epoll</tag>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
