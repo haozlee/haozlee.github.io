@@ -1636,13 +1636,15 @@
       
         
           <h1 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h1><p>在业务开发中，我们常把数据持久化到数据库中。如果需要读取这些数据，除了直接从数据库中读取外，为了减轻数据库的访问压力以及提高访问速度，我们更多地引入缓存来对数据进行存取。读取数据的过程一般为：</p>
-<p><img src="https://ww1.sinaimg.cn/large/006tNc79gy1fc7xciwel6j30gy0ii0tl.jpg" alt=""><br>图1：加入缓存的数据读取过程</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-03-141820.jpg" alt=""></p>
+<p>图1：加入缓存的数据读取过程</p>
 <p>对于分布式缓存，不同机器上存储不同对象的数据。为了实现这些缓存机器的负载均衡，可以使用式子1来定位对象缓存的存储机器：</p>
 <blockquote>
 <p>m = hash(o) mod n    ——式子1</p>
 </blockquote>
 <p>其中，<code>o</code>为对象的名称，<code>n</code>为机器的数量，<code>m</code>为机器的编号，<code>hash</code>为一hash函数。图2中的负载均衡器（load balancer）正是使用式子1来将客户端对不同对象的请求分派到不同的机器上执行，例如，对于对象o，经过式子1的计算，得到<code>m</code>的值为3，那么所有对对象o的读取和存储的请求都被发往机器3执行。</p>
-<p><img src="https://ww3.sinaimg.cn/large/006tNc79gy1fc7xdeaba0j30g00d2q3d.jpg" alt=""><br>图2：如何利用Hash取模实现负载均衡</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-03-141847.jpg" alt=""></p>
+<p>图2：如何利用Hash取模实现负载均衡</p>
 <p>式子1在大部分时候都可以工作得很好，然而，当机器需要扩容或者机器出现宕机的情况下，事情就比较棘手了。</p>
           <!--noindex-->
           <div class="post-button text-center">
