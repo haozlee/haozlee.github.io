@@ -101,17 +101,17 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 <meta property="og:site_name" content="Leo的博客">
 <meta property="og:description" content="概述文章负载均衡（Load Balancing）学习笔记(一)  讲述了负载均衡的一般性原理，本文继续介绍常见的实现负载均衡的方法。
 HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请求先到达重定向服务器，这台服务器会挑选一台后端服务器的地址（例如使用轮询的方式），并将该地址写入HTTP重定向响应结果中（以响应状态码302返回）返回给用户。用户将根据这个新的地址重新发送请求到选中">
-<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tKfTcgy1fc7x6vec2ej30pk0maq4x.jpg">
-<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNc79gy1fc7x8apfnyj30pk0ma765.jpg">
-<meta property="og:image" content="https://ww3.sinaimg.cn/large/006tNc79gy1fc7x8sf9phj30pe0maabs.jpg">
-<meta property="og:image" content="https://ww2.sinaimg.cn/large/006tNc79gy1fc7x961a99j30rk0ma76k.jpg">
-<meta property="og:image" content="https://ww1.sinaimg.cn/large/006tNc79gy1fc7x9kf9inj30s00mamzg.jpg">
-<meta property="og:updated_time" content="2017-02-18T04:02:15.000Z">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084141.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084206.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084311.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084341.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084405.jpg">
+<meta property="og:updated_time" content="2019-06-08T08:44:25.637Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="负载均衡（Load Balancing）学习笔记(二)">
 <meta name="twitter:description" content="概述文章负载均衡（Load Balancing）学习笔记(一)  讲述了负载均衡的一般性原理，本文继续介绍常见的实现负载均衡的方法。
 HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请求先到达重定向服务器，这台服务器会挑选一台后端服务器的地址（例如使用轮询的方式），并将该地址写入HTTP重定向响应结果中（以响应状态码302返回）返回给用户。用户将根据这个新的地址重新发送请求到选中">
-<meta name="twitter:image" content="https://ww3.sinaimg.cn/large/006tKfTcgy1fc7x6vec2ej30pk0maq4x.jpg">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084141.jpg">
 
 
 
@@ -410,7 +410,9 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 
       
         <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>文章<a href="http://blog.csdn.net/lihao21/article/details/53900447" target="_blank" rel="external">负载均衡（Load Balancing）学习笔记(一)</a>  讲述了负载均衡的一般性原理，本文继续介绍常见的实现负载均衡的方法。</p>
-<h1 id="HTTP重定向"><a href="#HTTP重定向" class="headerlink" title="HTTP重定向"></a>HTTP重定向</h1><p>HTTP重定向服务器是一台普通的Web服务器，用户的请求先到达重定向服务器，这台服务器会挑选一台后端服务器的地址（例如使用轮询的方式），并将该地址写入HTTP重定向响应结果中（以响应状态码302返回）返回给用户。用户将根据这个新的地址重新发送请求到选中的服务器上。选中的服务器会处理用户请求，并将结果返回给用户。<br>HTTP重定向的处理流程如图1所示。<br><img src="https://ww3.sinaimg.cn/large/006tKfTcgy1fc7x6vec2ej30pk0maq4x.jpg" alt=""><br>图1：HTTP重定向实现负载均衡</p>
+<h1 id="HTTP重定向"><a href="#HTTP重定向" class="headerlink" title="HTTP重定向"></a>HTTP重定向</h1><p>HTTP重定向服务器是一台普通的Web服务器，用户的请求先到达重定向服务器，这台服务器会挑选一台后端服务器的地址（例如使用轮询的方式），并将该地址写入HTTP重定向响应结果中（以响应状态码302返回）返回给用户。用户将根据这个新的地址重新发送请求到选中的服务器上。选中的服务器会处理用户请求，并将结果返回给用户。<br>HTTP重定向的处理流程如图1所示。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084141.jpg" alt=""></p>
+<p>图1：HTTP重定向实现负载均衡</p>
 <p>﻿通过重定向服务器的处理，用户请求被分配到不同的后端服务器上进行处理，实现了负载均衡的目的。</p>
 <h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>HTTP重定向负载均衡的方法实现上比较简单。</p>
 <h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ol>
@@ -421,7 +423,8 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 </ol>
 <p>由于存在这些缺点，HTTP重定向通常都会与其他一种或多种负载均衡技术结合使用。<br><a id="more"></a></p>
 <h1 id="DNS负载均衡"><a href="#DNS负载均衡" class="headerlink" title="DNS负载均衡"></a>DNS负载均衡</h1><p>DNS负载均衡的实现原理是在DNS服务器中为同一个主机名配置多个IP地址，在应答DNS查询时，DNS服务器对于每个查询将以DNS记录的IP地址按顺序返回不同的解析结果，将客户端的访问引导到不同的机器上去，使得不同客户端访问不同的服务器，从而达到负载均衡的目的。</p>
-<p><img src="https://ww3.sinaimg.cn/large/006tNc79gy1fc7x8apfnyj30pk0ma765.jpg" alt=""><br>图2：DNS实现负载均衡</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084206.jpg" alt=""></p>
+<p>图2：DNS实现负载均衡</p>
 <h2 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h2><ol>
 <li>由于DNS系统本身是一个分布式系统，相对来说它不存在性能和吞吐能力的限制，故使用DNS来做负载均衡并不需要担心负载均衡服务器的处理能力</li>
 <li>可以根据用户IP进行智能解析，DNS服务器可以在所有可用的A记录中寻找离用户最近的一台服务器为用户提供服务</li>
@@ -433,7 +436,8 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 <li>DNS服务器存在缓存，当需要更新请求的分配时，新增一个IP或者删除一个IP并不能立即生效</li>
 </ol>
 <h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理服务器的工作主要是转发HTTP请求，因此它工作在HTTP层，也就是OSI七层结构中的应用层（第七层），所以基于反向代理的负载均衡也称为七层负载均衡。利用反向代理服务器进行负载均衡，如图3所示。</p>
-<p><img src="https://ww3.sinaimg.cn/large/006tNc79gy1fc7x8sf9phj30pe0maabs.jpg" alt=""><br>图3：反向代理实现负载均衡</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084311.jpg" alt=""></p>
+<p>图3：反向代理实现负载均衡</p>
 <p>反向代理服务处于后端服务器的前面，由于需要直接受用户的请求，故反向代理服务器需要一个外网IP。而后端服务器并不直接对外提供访问，因此后端服务器并不需要外网IP。反向代理服务器通过内网IP与后端服务器进行通信。图3中，浏览器的请求到达反向代理服务器114.113.200.84，反向代理服务器收到请求后，根据负载均衡算法计算得到一台真实的后端服务器地址10.0.0.1，并将请求转发到这台后端服务器。10.0.0.1处理请求后将响应返回给反向代理服务器，再由反向代理服务器将该响应返回给用户。<br>常见的反向代理服务器包括Nginx，Apache，Haproxy等。</p>
 <h2 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h2><ol>
 <li>部署比较简单，使用常见的反向代理服务器软件即可部署反向代理服务器</li>
@@ -442,12 +446,14 @@ HTTP重定向HTTP重定向服务器是一台普通的Web服务器，用户的请
 </ol>
 <h2 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h2><p>由于反向代理工作在HTTP层，所有请求都需要经过反向代理服务器的处理，后端服务器的响应结果也必须经过反向代理服务器传送给用户，故这种负载均衡方式要求反向代理的并发处理能力较高。</p>
 <h1 id="IP负载均衡"><a href="#IP负载均衡" class="headerlink" title="IP负载均衡"></a>IP负载均衡</h1><p>我们已了解前面几种负载均衡的方法，这些负载均衡都是工作在HTTP层，那么，能否在HTTP层以下来实现负载均衡呢？答案是肯定的。事实上，在数据链路层（第二层），网络层（第三层），以及传输层（第四层）都可以实现不同机制的负载均衡。但与HTTP层机制不同，这些负载均衡调度的工作必须由Linux内核来完成，即网络数据包在从内核缓冲区进入用户进程空间前，已完成转发的工作。<br>在网络层通过修改请求目的地址进行负载均衡的流程如图4所示。</p>
-<p><img src="https://ww2.sinaimg.cn/large/006tNc79gy1fc7x961a99j30rk0ma76k.jpg" alt=""><br>图4：IP负载均衡</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084341.jpg" alt=""></p>
+<p>图4：IP负载均衡</p>
 <p>用户请求到达负载均衡服务器114.113.200.84，负载均衡服务器在操作系统内核获取网络数据包，根据负载均衡算法计算得到一台真实的后端服务器10.0.0.1，然后将数据包的目地址改为10.0.0.1，不需要用户进程处理。后端服务器10.0.0.1处理完成后，响应数据包返回到负载均衡服务器，负载均衡服务器再将数据包源地址修改为自身的IP地址（114.113.200.84）发送给用户。</p>
 <h2 id="优点-3"><a href="#优点-3" class="headerlink" title="优点"></a>优点</h2><p>IP负载均衡在内核进程完成数据分发，处理性能得到了很大的提高。</p>
 <h2 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h2><p>由于所有请求和响应都要经过负载均衡服务器，系统的最大吞吐量仍然受到负载均衡服务器网卡带宽的限制。对于提供下载服务或者视频服务等需要传输大量数据站点，IP负载均衡的方式是难以满足需求的。</p>
 <h1 id="数据链路层负载均衡"><a href="#数据链路层负载均衡" class="headerlink" title="数据链路层负载均衡"></a>数据链路层负载均衡</h1><p>数据链路层负载均衡通过修改数据帧的MAC地址来实现负载均衡的目的。数据链路层是OSI网络模型的第二层，由于数据链路层负载均衡的方法走的是MAC层的协议，因此需要负载均衡服务器和后端服务器处在同一个二层（同一个广播域）之中。<br>数据链路层负载均衡的工作流程如图所示：</p>
-<p><img src="https://ww1.sinaimg.cn/large/006tNc79gy1fc7x9kf9inj30s00mamzg.jpg" alt=""><br>图5：数据链路层实现负载均衡</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-06-08-084405.jpg" alt=""></p>
+<p>图5：数据链路层实现负载均衡</p>
 <p>图5所示的数据传输方式又称作三角传输模式，负载均衡数据分发过程中不修改IP址，只修改MAC地址，通过配置后端服务器与负载均衡服务器具有相同的IP地址，从而达到不修改数据包的源IP地址和目的IP地址就可以进行数据分发的目的。由于后端服务器的IP和数据请求目的IP一致，不需要通过负载均衡服务器进行地址转换，可以将响应数据包直接返回给用户浏览器，避免负载均衡服务器网卡带宽成为瓶颈。<br>图5中，用户请求到达负载均衡服务器114.113.200.84，负载均衡服务器将请求数据的目的MAC地址必为00.0c.29.d2，并不修改数据包目的IP地址，由于后端服务器与负载均衡服务器并有相同的IP地址，因此数据可以正常传输到达00.0c.29.d2对应的服务器，该服务器处理完成后将响应数据直接返回给用户，不需要经过负载均衡服务器。</p>
 <p>在Linux平台上最好的数据链路层负载均衡的开源产品是LVS（Linux Virtual Server）。LVS有三种运行模式，分别为NAT模式，TUN模式，DR模式。DR模式正是运行在数据链路层，通过修改数据帧的MAC地址来实现负载均衡的。</p>
 <h2 id="优点-4"><a href="#优点-4" class="headerlink" title="优点"></a>优点</h2><ol>
