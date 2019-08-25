@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Oracle / PL SQL: CURSOR FOR LOOP 使用]]></title>
+    <url>%2FOracle-PL-SQL-CURSOR-FOR-LOOP-%E4%BD%BF%E7%94%A8%2F</url>
+    <content type="text"><![CDATA[FOR LOOP 介绍为了对游标进行遍历，可以使用 FOR LOOP 语句实现，语法如下： 1234FOR record IN cursor_nameLOOP process_record_statements;END LOOP; 对游标进行 FOR LOOP 遍历时，省去了 %ROWTYPE 的声明，循环每次从查询结果中取出一行结果，当取完后，跳出循环。 1) recordrecord 是 FOR LOOP 语句隐式创建的 %ROWTYPE 类型变量，用于表示对游标遍历中的每一行记录。record 变量只可以用于 FOR LOOP 语句内部。 2) cursor_namecursor_name 是显式创建的游标名称。FOR LOOP 语法除了使用显式创建的游标外，还可以直接使用 SELECT 语句来实现对游标进行遍历。 1234FOR record IN (select_statement)LOOP process_record_statements;END LOOP; 在此用法下，FOR LOOP 将进行隐式的创建游标，打开游标，获取记录，关闭游标等操作。 FOR LOOP 例子假设我们需要对 STUDENT 表所有记录进行遍历，STUDENT 表结构和内容如下： STUDENT_ID STUDENT_NAME 1 Leo 2 Lee 3 Hao 1）使用显式创建的游标12345678910DECLARE CURSOR c_student IS SELECT STUDENT_ID, STUDENT_NAME FROM STUDENT;BEGIN FOR stu IN c_student LOOP dbms_output.put_line(stu.STUDENT_ID || ' ' || stu.STUDENT_NAME); END LOOP;END; 在上面的代码中，创建了游标 c_student，该游标从 STUDENT 表获取所有的记录。FOR LOOP 打开游标，获取记录，输出记录字段，最后关闭游标。 2）使用 SELECT 语句的游标以下代码与上面代码中使用显式游标的效果一样，对 STUDENT 表进行了遍历操作。 123456789BEGIN FOR stu IN ( SELECT STUDENT_ID, STUDENT_NAME FROM STUDENT ) LOOP dbms_output.put_line(stu.STUDENT_ID || ' ' || stu.STUDENT_NAME); END LOOP;END; 参考资料 https://www.techonthenet.com/oracle/loops/cursor_for.php https://www.oracletutorial.com/plsql-tutorial/plsql-cursor-for-loop/ https://www.jianshu.com/p/dcb96394c28e]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>cursor</tag>
+        <tag>遍历</tag>
+        <tag>Oracle</tag>
+        <tag>PL SQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[SQL JOIN 的使用]]></title>
     <url>%2FSQL-JOIN-%E7%9A%84%E4%BD%BF%E7%94%A8%2F</url>
     <content type="text"><![CDATA[由于工作需要，现在也开始写一些复杂一点的 sql 了。由于之前对于 join 与 where 关键字的使用一直有疑惑，故写一篇文章整理一下，算是对 sql 中各种表联结使用的一个总结。 SQL JOIN 的作用sql 关键字 union 与 intersect 属于以行方向为单位的集合运算，进行这些集合运算时，会导致记录行数的增加或减少。关键字 join 则是属于列方向的运算，将其他表中的列添加过来。我们称这种操作为联结。sql 联结根据其用途可以分为多种，这里主要讲述内联结与外联结。 INNER JOIN内联结，inner join，是使用最广泛的联结运算。我们以例子来说明内联结的含义。 student 表结构与记录以下： student_id student_name 1 Leo 2 Lee 3 Hao score 表结构与记录以下： student_id student_score 1 89 2 95 可以看到 student_id 列存在于 student 表和 score 表，其他列则只存在于一张表。可以将 student_id 列作为桥梁，将两表满足同样条件的列汇集到同一结果之中，这就是联结运算。 可以看到，学生 Leo 的 id 为 1，分数在 score 表，Leo 的分数为 89 分。学生 Lee 的 id 为 2，分数为 95。学生 Hao 的 id 为 3，但 score 表中没有 Hao 的分数。 使用 inner join 对 student 表和 score 表进行联结，sql 以下所示： 123select st.student_id, st.student_name, sc.student_scorefrom student st inner join score sc on st.student_id = sc.student_id; 执行 sql 结果如下所示。 student_id student_name student_score 1 Leo 89 2 Lee 95 关于 inner join 的使用，有几点需要注意的。 from 子句 from 子句使用 inner join ，将两张表联结起来。 on 子句 on 子句是联结的条件，例如我们使用 student_id 作为联结条件： on st.student_id = sc.student_id select 子句 select 子句用于指定提取哪些列。 与 where 子句结合 如果我们只想看查 student_id 为 1 的情况，可以继续使用 where 子句。 1234select st.student_id, st.student_name, sc.student_scorefrom student st inner join score sc on st.student_id = SC.student_idwhere st.student_id = 1; 执行结果以下： student_id student_name student_score 1 Leo 89 OUTER JOIN外联结，outer join，与内联结一样，也是通过 on 子句将两张表联结起来，只是结果有所不同。 为了说明外联结与内联结的不同，我们将上面内联结的例子转换成外联结，看下执行结果。 123select st.student_id, st.student_name, sc.student_scorefrom student st left outer join score sc on st.student_id = sc.student_id; 执行结果如下表所示： student_id student_name student_score 1 Leo 89 2 Lee 95 3 Hao 外联结选取出单张表全部记录 与内联结相比，外联结的不同点在于结果的行数不一样。内联结执行结果有 2 条记录，外联结却有 3 条记录，增加的 1 条记录是 student_id 为 3 的学生 Hao。虽然 score 表并没 student_id 为 3 的成绩，但执行结果仍然把这条记录提取出来了。在实际应用中，如果我们想生成固定行数的数据时，就需要使用外联结。 内联结只会提取同时存在于两张表中的数据，因此 Hao 学生记录并不会出现。对于外联结来说，只要数据存在于某一张表中，就能够提取出来。 同时我们也看到，由于 score 表中并没有 Hao 学生的成绩，所以执行结果该字段为 null。 外联结可以指定主表 外联结可以指定哪张表为主表，查询结果会包含主表的所有记录。使用 left 时 from 子句中写在左侧的表是主表，使用 right 时右侧的表是主表。上述外联结代码使用 left ，因此左侧的 student 表是主表。 我们也可以使用 right 对代码进行改写，效果完全一样。 123select st.student_id, st.student_name, sc.student_scorefrom score sc right outer join student st on st.student_id = sc.student_id; 至于使用 left 或者 right，使用哪一个都可以，通常来说，使用 left 的情况多一些。 CROSS JOIN交叉联结，cross join，是指对联结的表进行笛卡尔积运算。 我们对 student 表和 score 表进行交叉联结： 123select st.student_id, st.student_name, sc.student_id, sc.student_scorefrom student st cross join score sc; 查询结果如下： student_id student_name student_id student_score 1 Leo 1 89 2 Lee 1 89 3 Hao 1 89 1 Leo 2 95 2 Lee 2 95 3 Hao 2 95 进行交叉联结时，无法使用内联结和外联结中所使用的 on 子句，这是因为交叉联结是对两张表中的全部记录进行交叉组合，结果记录数是两张表中行数的乘积。student 表包含 3 条记录，score 表包含 2 条记录，故交叉联结结果包含 3 * 2 = 6 条记录。 内联结是交叉联结的一部分，“内”可以理解为“包含在交叉联结结果中的部分”。相反，外联结的“外”可以理解为“交叉联结结果之外的部分”。 在实际应用中，交叉联结使用较少。一是其结果没有实用价值，二是由于结果太多，需要花费大量的运算时间。 过时的语法上述 sql 代码中，我们使用 inner join，outer join 等联结关键字符合 sql 标准，但实际开发中，却经常会碰到使用 where 关键字来实现联结。 将上面我们实现内联结的 sql 代码替换成使用 where 来实现： 123select st.student_id, st.student_name, sc.student_scorefrom student st， score scwhere st.student_id = sc.student_id and st.student_id = 1; 执行结果以下： student_id student_name student_score 1 Leo 89 这样的书写方式的查询结果与标准语法的查询结果相同，但这种语法不仅已过时，还存在其他问题： 难以判断是内联结还是外联结 难以判断哪部分是联结条件，哪部分是用来选取记录的限制条件 可能在将来不能使用 虽然不建议使用过时的语法，但我们仍然需要具备阅读这些过时语法代码的能力 :) 参考资料 SQL 基础教程，第 2 版，MICK 著，孙淼，罗勇译]]></content>
@@ -160,8 +174,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>Rserve</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -184,8 +198,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>MySQL</tag>
         <tag>Hibernate</tag>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -220,8 +234,8 @@
         <category>MySQL</category>
       </categories>
       <tags>
-        <tag>CentOS</tag>
         <tag>MySQL</tag>
+        <tag>CentOS</tag>
       </tags>
   </entry>
   <entry>
@@ -684,9 +698,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>poll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>poll</tag>
       </tags>
   </entry>
   <entry>
@@ -697,8 +711,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
       </tags>
   </entry>
   <entry>
@@ -709,10 +723,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -726,8 +740,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -800,8 +814,8 @@
       </categories>
       <tags>
         <tag>epoll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -961,8 +975,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>MongoDB</tag>
         <tag>Java</tag>
+        <tag>MongoDB</tag>
       </tags>
   </entry>
   <entry>

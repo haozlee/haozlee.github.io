@@ -312,6 +312,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/" itemprop="url">Oracle / PL SQL: CURSOR FOR LOOP 使用</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T21:12:08+08:00">
+                2019-08-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="FOR-LOOP-介绍"><a href="#FOR-LOOP-介绍" class="headerlink" title="FOR LOOP 介绍"></a>FOR LOOP 介绍</h2><p>为了对游标进行遍历，可以使用 <code>FOR LOOP</code> 语句实现，语法如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FOR record IN cursor_name</div><div class="line">LOOP</div><div class="line">  process_record_statements;</div><div class="line"><span class="keyword">END</span> <span class="keyword">LOOP</span>;</div></pre></td></tr></table></figure>
+<p>对游标进行 <code>FOR LOOP</code> 遍历时，省去了 <code>%ROWTYPE</code> 的声明，循环每次从查询结果中取出一行结果，当取完后，跳出循环。</p>
+<h3 id="1-record"><a href="#1-record" class="headerlink" title="1) record"></a>1) record</h3><p><code>record</code> 是 <code>FOR LOOP</code> 语句隐式创建的 <code>%ROWTYPE</code> 类型变量，用于表示对游标遍历中的每一行记录。<code>record</code>  变量只可以用于 <code>FOR LOOP</code> 语句内部。</p>
+<h3 id="2-cursor-name"><a href="#2-cursor-name" class="headerlink" title="2) cursor_name"></a>2) cursor_name</h3><p><code>cursor_name</code> 是显式创建的游标名称。<code>FOR LOOP</code> 语法除了使用显式创建的游标外，还可以直接使用 <code>SELECT</code> 语句来实现对游标进行遍历。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FOR record IN (select_statement)</div><div class="line">LOOP</div><div class="line">    process_record_statements;</div><div class="line"><span class="keyword">END</span> <span class="keyword">LOOP</span>;</div></pre></td></tr></table></figure>
+<p>在此用法下，<code>FOR LOOP</code> 将进行隐式的创建游标，打开游标，获取记录，关闭游标等操作。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/SQL-JOIN-的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1758,158 +1910,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/深入理解-Spring-AOP/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/深入理解-Spring-AOP/" itemprop="url">深入理解 Spring AOP</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-28T22:53:57+08:00">
-                2018-06-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>AOP，Aspect Oriented Programming，面向切面编程，是指在运行时，动态地将代码切入到类的指定方法、指定位置上的一种编程技术。AOP 是 OOP 的延续，是软件开发中的一个热点，也是 Spring 框架中的一个重要内容。利用 AOP 可以对业务逻辑与横切关注点（cross-cutting concerns，例如日志记录，事务处理）进行隔离，从而使得业务逻辑与横切关注点的耦合度降低，提高程序的可重用性，同时提高了开发的效率。<br>AOP 目的是为了解耦，它可以使一组类共享相同的行为。面向对象编程（OOP）目的也是为了提高代码的可重用性，那么 AOP 和 OOP 有什么不同之处呢？对于 OOP 来说，只能通过继承类和实现接口这种方式来实现，但这会使代码的耦合程度增强，不利于代码的维护。AOP 正是为了弥补了 OOP 的不足而出现。</p>
-<p> Spring 框架提供了 AOP 的丰富支持，允许开发人员通过分离应用程序的业务逻辑与横切关注点从而进行内聚性的开发。举例来说，日志记录，性能统计，安全控制，事务处理，异常处理，这些称之为横切关注点的功能，对于应用程序来说是必须的。AOP 允许将这些横切关注点从业务逻辑代码中划分出来，从而改变这些横切关注点的代码不影响业务逻辑的代码。</p>
-<h2 id="AOP-的核心概念"><a href="#AOP-的核心概念" class="headerlink" title="AOP 的核心概念"></a>AOP 的核心概念</h2><p>我们先来看一下 AOP 涉及的几个核心概念。</p>
-<h3 id="1-Aspect"><a href="#1-Aspect" class="headerlink" title="1. Aspect"></a>1. Aspect</h3><p>Aspect 是一个类，这个类实现上述横切关注点的功能，例如日志记录，事务处理，等。</p>
-<h3 id="2-Join-Point"><a href="#2-Join-Point" class="headerlink" title="2. Join Point"></a>2. Join Point</h3><p>Join point 是程序中某个执行点，例如方法执行，属性访问等。对于 Spring AOP 来说，join point 通常是指方法执行。</p>
-<h3 id="3-Advice"><a href="#3-Advice" class="headerlink" title="3. Advice"></a>3. Advice</h3><p>Advice 是指在某个特定 join point 执行的动作，当某个 join point 匹配 pointcut 时，advice 指定的方法会被执行。</p>
-<h3 id="4-Pointcut"><a href="#4-Pointcut" class="headerlink" title="4. Pointcut"></a>4. Pointcut</h3><p>Pointcut 是一个表达式，当 join point 匹配 pointcut 的表达式时，advice 指定的方法就会被执行。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/深入理解-Spring-AOP/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1960,7 +1960,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1982,7 +1982,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">207</span>
+                <span class="site-state-item-count">211</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

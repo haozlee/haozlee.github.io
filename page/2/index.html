@@ -312,6 +312,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/深入理解-Spring-AOP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/深入理解-Spring-AOP/" itemprop="url">深入理解 Spring AOP</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-28T22:53:57+08:00">
+                2018-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>AOP，Aspect Oriented Programming，面向切面编程，是指在运行时，动态地将代码切入到类的指定方法、指定位置上的一种编程技术。AOP 是 OOP 的延续，是软件开发中的一个热点，也是 Spring 框架中的一个重要内容。利用 AOP 可以对业务逻辑与横切关注点（cross-cutting concerns，例如日志记录，事务处理）进行隔离，从而使得业务逻辑与横切关注点的耦合度降低，提高程序的可重用性，同时提高了开发的效率。<br>AOP 目的是为了解耦，它可以使一组类共享相同的行为。面向对象编程（OOP）目的也是为了提高代码的可重用性，那么 AOP 和 OOP 有什么不同之处呢？对于 OOP 来说，只能通过继承类和实现接口这种方式来实现，但这会使代码的耦合程度增强，不利于代码的维护。AOP 正是为了弥补了 OOP 的不足而出现。</p>
+<p> Spring 框架提供了 AOP 的丰富支持，允许开发人员通过分离应用程序的业务逻辑与横切关注点从而进行内聚性的开发。举例来说，日志记录，性能统计，安全控制，事务处理，异常处理，这些称之为横切关注点的功能，对于应用程序来说是必须的。AOP 允许将这些横切关注点从业务逻辑代码中划分出来，从而改变这些横切关注点的代码不影响业务逻辑的代码。</p>
+<h2 id="AOP-的核心概念"><a href="#AOP-的核心概念" class="headerlink" title="AOP 的核心概念"></a>AOP 的核心概念</h2><p>我们先来看一下 AOP 涉及的几个核心概念。</p>
+<h3 id="1-Aspect"><a href="#1-Aspect" class="headerlink" title="1. Aspect"></a>1. Aspect</h3><p>Aspect 是一个类，这个类实现上述横切关注点的功能，例如日志记录，事务处理，等。</p>
+<h3 id="2-Join-Point"><a href="#2-Join-Point" class="headerlink" title="2. Join Point"></a>2. Join Point</h3><p>Join point 是程序中某个执行点，例如方法执行，属性访问等。对于 Spring AOP 来说，join point 通常是指方法执行。</p>
+<h3 id="3-Advice"><a href="#3-Advice" class="headerlink" title="3. Advice"></a>3. Advice</h3><p>Advice 是指在某个特定 join point 执行的动作，当某个 join point 匹配 pointcut 时，advice 指定的方法会被执行。</p>
+<h3 id="4-Pointcut"><a href="#4-Pointcut" class="headerlink" title="4. Pointcut"></a>4. Pointcut</h3><p>Pointcut 是一个表达式，当 join point 匹配 pointcut 的表达式时，advice 指定的方法就会被执行。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/深入理解-Spring-AOP/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/深入理解-Spring-控制反转与依赖注入/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1670,155 +1822,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Hexo-网站配置免费阿里云证书/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Hexo-网站配置免费阿里云证书/" itemprop="url">Hexo 网站配置免费阿里云证书</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T21:30:53+08:00">
-                2018-03-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/建站/" itemprop="url" rel="index">
-                    <span itemprop="name">建站</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>原来的个人网站 <a href="https://leehao.me">leehao.me</a> 使用了阿里云的负载均衡服务，因此 HTTPS 证书也是部署在负载均衡服务器上。文章<a href="https://leehao.me/%E5%9C%A8%E9%98%BF%E9%87%8C%E4%BA%91%E9%83%A8%E7%BD%B2-Hexo-%E7%BD%91%E7%AB%99/">《在阿里云部署 Hexo 网站》</a>介绍了采用负载均衡方式来部署网站的方法。<br>考虑到网站访问流量不高且为了减少费用，决定不再使用负载均衡服务，而是直接采用单个 ECS 服务器的方式来部署网站。采用新的方式部署网站后，为了同样让网站支持 https，需要重新对 https 证书进行配置。</p>
-<h2 id="购买免费的阿里云证书"><a href="#购买免费的阿里云证书" class="headerlink" title="购买免费的阿里云证书"></a>购买免费的阿里云证书</h2><p>阿里云提供免费的证书服务，购买路径为，首页- 产品 - 安全 - CA 证书服务，选择免费型 DV SSL 证书类型，如下图所示：</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-03-04-095841.jpg" alt=""></p>
-<p>图：在阿里云购买免费的证书服务</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Hexo-网站配置免费阿里云证书/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1869,7 +1872,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1891,7 +1894,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">207</span>
+                <span class="site-state-item-count">211</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
