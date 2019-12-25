@@ -198,8 +198,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Hibernate</tag>
         <tag>MySQL</tag>
+        <tag>Hibernate</tag>
       </tags>
   </entry>
   <entry>
@@ -234,8 +234,8 @@
         <category>MySQL</category>
       </categories>
       <tags>
-        <tag>MySQL</tag>
         <tag>CentOS</tag>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -766,8 +766,8 @@
       </categories>
       <tags>
         <tag>TCP</tag>
-        <tag>socket</tag>
         <tag>套接字</tag>
+        <tag>socket</tag>
         <tag>bind</tag>
         <tag>connect</tag>
         <tag>close</tag>
@@ -783,9 +783,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>套接字</tag>
         <tag>Socket</tag>
         <tag>UDP</tag>
+        <tag>套接字</tag>
         <tag>sendto</tag>
         <tag>recvfrom</tag>
       </tags>
