@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="RTO,RPO," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="RTO 和 RPO 都是企业灾难恢复（Disaster Recovery, DR）需要考虑的关键指标，这两个指标可以用来指导企业来制定合适的业务系统服务或数据的恢复方案。
+本文介绍 RTO 和 RPO 的概念以及区别。
+图：RPO（Recovery point object） 和 RTO（Recovery time object）是提供业务连续性的关键指标">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文带你了解 RTO 和 RPO">
+<meta property="og:url" content="https://leehao.me/一文带你了解-RTO-和-RPO/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="RTO 和 RPO 都是企业灾难恢复（Disaster Recovery, DR）需要考虑的关键指标，这两个指标可以用来指导企业来制定合适的业务系统服务或数据的恢复方案。
+本文介绍 RTO 和 RPO 的概念以及区别。
+图：RPO（Recovery point object） 和 RTO（Recovery time object）是提供业务连续性的关键指标">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTEyLTEwMzQ1Ny5qcGc?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2020-01-12T13:54:26.663Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一文带你了解 RTO 和 RPO">
+<meta name="twitter:description" content="RTO 和 RPO 都是企业灾难恢复（Disaster Recovery, DR）需要考虑的关键指标，这两个指标可以用来指导企业来制定合适的业务系统服务或数据的恢复方案。
+本文介绍 RTO 和 RPO 的概念以及区别。
+图：RPO（Recovery point object） 和 RTO（Recovery time object）是提供业务连续性的关键指标">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTEyLTEwMzQ1Ny5qcGc?x-oss-process=image/format,png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/一文带你了解-RTO-和-RPO/"/>
+
+
+
+
+
+  <title>一文带你了解 RTO 和 RPO | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/一文带你了解-RTO-和-RPO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">一文带你了解 RTO 和 RPO</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-12T21:53:24+08:00">
+                2020-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>RTO 和 RPO 都是企业灾难恢复（Disaster Recovery, DR）需要考虑的关键指标，这两个指标可以用来指导企业来制定合适的业务系统服务或数据的恢复方案。</p>
+<p>本文介绍 RTO 和 RPO 的概念以及区别。<br><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTEyLTEwMzQ1Ny5qcGc?x-oss-process=image/format,png" alt=""></p>
+<p>图：RPO（Recovery point object） 和 RTO（Recovery time object）是提供业务连续性的关键指标</p>
+<a id="more"></a>
+<h2 id="RTO"><a href="#RTO" class="headerlink" title="RTO"></a>RTO</h2><p>RTO，Recovery time object，恢复时间目标，是指所能容忍的业务系统停止服务的最长时间，也就是灾难发生到业务系统恢复服务功能所需要的最短时间，即如上图所示，How long to recover? 所标示灾难发生到系统服务恢复的时间。</p>
+<p>例如，如果 RTO 为 1 小时，这意味着能容忍业务系统停止服务的时间为 1 小时，即虽然业务系统在这 1 小时内不能提供服务，但业务可以正常维持进行。如果业务系统在 1 小时后仍不能恢复，则业务可能会遭受无法弥补的损失。</p>
+<h2 id="RPO"><a href="#RPO" class="headerlink" title="RPO"></a>RPO</h2><p>RPO，Recovery point object，恢复点目标，是指业务系统所能容忍的数据丢失量，即如上图所示，How far back? 所标示的灾难发生到最近一次备份的时间。</p>
+<p>例如，业务系统数据在每天零点进行备份，在某天上午 8 点发生事故，导致有 8 个小时间数据丢失。如果原先设置的业务系统 RPO 为 24 小时，则并无大碍，但如果 RPO 为 4 小时，则会导致业务受到影响以致造成损失。</p>
+<h2 id="相同点与不同点"><a href="#相同点与不同点" class="headerlink" title="相同点与不同点"></a>相同点与不同点</h2><p>RTO 和 RPO 都是使用时间来度量。对于 RTO 时间，是指灾难发生到服务恢复的时间，这个时间也包含了数据恢复的时间。对于 RPO 时间，是指灾难发生到数据上一次备份的时间。</p>
+<p>虽然 RTO 和 RPO 都使用时间来度量，但是使用它们的目的却不相同。RTO 关注于应用或系统的可用性，RTO 虽然包含数据恢复的时间，但更多地是描述应用停机的时间限制。<br>RPO 关注于数据的完整性，描述所能容忍的最大数据丢失限制。业务系统服务不可用会带来经济损失，但如果丢失的是客户交易数据则导致的损失更是灾难性的。</p>
+<p>在制定企业的容灾计划时，需要考虑 RTO 和 RPO 目标，然而 RTO 和 RPO 目标的成本存在差异。维护一个高要求的 RTO 目标的成本可能比 RPO 目标的成本要高，这是因为 RTO 涉及到整个业务基础架构，而不仅仅是数据。<br>要实现 RPO 目标，只需要以正确的时间间隔执行数据备份，数据备份可以很容易地自动化实现，因此自动化的 RPO 策略很容易实现。另一方面，由于 RTO 涉及恢复所有 IT 操作，因此完全自动化的 RTO 策略实现更复杂。</p>
+<p>RTO 和 RPO 对于制定容灾计划时都很重要，各个企业业务场景不同，这需要我们根据实际情况来选择合适的 RTO 和 RPO 目标，以达到经济效益的最大化。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://support.huaweicloud.com/sdrs_faq/sdrs_06_0440.html" target="_blank" rel="external">https://support.huaweicloud.com/sdrs_faq/sdrs_06_0440.html</a></li>
+<li><a href="https://docs.oracle.com/cd/E65198_01/ELSDR/drintro.htm" target="_blank" rel="external">https://docs.oracle.com/cd/E65198_01/ELSDR/drintro.htm</a></li>
+<li><a href="https://www.msp360.com/resources/blog/rto-vs-rpo-difference/" target="_blank" rel="external">https://www.msp360.com/resources/blog/rto-vs-rpo-difference/</a></li>
+<li><a href="https://www.enterprisestorageforum.com/storage-management/rpo-and-rto-understanding-the-differences.html" target="_blank" rel="external">https://www.enterprisestorageforum.com/storage-management/rpo-and-rto-understanding-the-differences.html</a></li>
+<li><a href="https://www.veeam.com/blog/rto-rpo-definitions-values-common-practice.html" target="_blank" rel="external">https://www.veeam.com/blog/rto-rpo-definitions-values-common-practice.html</a></li>
+<li><a href="https://entechus.com/the-difference-between-rto-and-rpo/" target="_blank" rel="external">https://entechus.com/the-difference-between-rto-and-rpo/</a></li>
+<li><a href="http://www.chinastor.com/baike/dr/12231U142015.html" target="_blank" rel="external">http://www.chinastor.com/baike/dr/12231U142015.html</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/RTO/" rel="tag"># RTO</a>
+          
+            <a href="/tags/RPO/" rel="tag"># RPO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/" rel="next" title="Oracle / PL SQL: CURSOR FOR LOOP 使用">
+                <i class="fa fa-chevron-left"></i> Oracle / PL SQL: CURSOR FOR LOOP 使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">81</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">213</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#RTO"><span class="nav-number">1.</span> <span class="nav-text">RTO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RPO"><span class="nav-number">2.</span> <span class="nav-text">RPO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相同点与不同点"><span class="nav-number">3.</span> <span class="nav-text">相同点与不同点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
