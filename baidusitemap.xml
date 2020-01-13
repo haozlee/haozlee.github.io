@@ -4,8 +4,32 @@
 
     
   <url>
+    <loc>https://leehao.me/%E8%AE%B0%E4%B8%80%E6%AC%A1-socket-%E9%80%9A%E4%BF%A1%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/</loc>
+    <lastmod>2020-01-13T01:40:54.562Z</lastmod>
+    <data>
+        <display>
+        <title>记一次 socket 通信性能优化过程</title>
+        <pubTime>2020-01-13T01:39:31.000Z</pubTime>
+        
+        <tag>socker</tag>
+         
+        <tag>FD_SETSIZE</tag>
+         
+        <tag>wireshark</tag>
+         
+         
+           
+             
+              <breadCrumb title="后台" url="https://leehao.me/categories/%E5%90%8E%E5%8F%B0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://leehao.me/%E4%B8%80%E6%96%87%E5%B8%A6%E4%BD%A0%E4%BA%86%E8%A7%A3-RTO-%E5%92%8C-RPO/</loc>
-    <lastmod>2020-01-12T14:02:08.303Z</lastmod>
+    <lastmod>2020-01-13T01:38:32.092Z</lastmod>
     <data>
         <display>
         <title>一文带你了解 RTO 和 RPO</title>
@@ -527,9 +551,9 @@
         <title>Java 使用 Rserve 实现与 R 的通信</title>
         <pubTime>2018-06-20T14:30:12.000Z</pubTime>
         
-        <tag>Java</tag>
-         
         <tag>Rserve</tag>
+         
+        <tag>Java</tag>
          
          
            
@@ -1488,11 +1512,11 @@
         <title>I/O多路复用之POLL系统调用</title>
         <pubTime>2017-03-26T05:53:20.000Z</pubTime>
         
-        <tag>poll</tag>
+        <tag>IO多路复用</tag>
          
         <tag>select</tag>
          
-        <tag>IO多路复用</tag>
+        <tag>poll</tag>
          
          
            
@@ -1512,9 +1536,9 @@
         <title>I/O多路复用之select系统调用</title>
         <pubTime>2017-03-25T15:57:24.000Z</pubTime>
         
-        <tag>select</tag>
-         
         <tag>IO多路复用</tag>
+         
+        <tag>select</tag>
          
          
            
@@ -1534,13 +1558,13 @@
         <title>多线程并发服务器</title>
         <pubTime>2017-03-25T08:02:14.000Z</pubTime>
         
+        <tag>多线程</tag>
+         
         <tag>多进程</tag>
          
         <tag>并发服务器</tag>
          
         <tag>并发</tag>
-         
-        <tag>多线程</tag>
          
         <tag>pthread</tag>
          
@@ -1600,9 +1624,9 @@
          
         <tag>并发服务器</tag>
          
-        <tag>多客户</tag>
-         
         <tag>并发</tag>
+         
+        <tag>多客户</tag>
          
          
            
@@ -1678,11 +1702,11 @@
         <title>图解UNIX的I/O模型</title>
         <pubTime>2017-03-12T00:42:27.000Z</pubTime>
         
-        <tag>select</tag>
+        <tag>epoll</tag>
          
         <tag>IO多路复用</tag>
          
-        <tag>epoll</tag>
+        <tag>select</tag>
          
         <tag>IO模型</tag>
          
@@ -1887,41 +1911,19 @@
 
     
   <url>
-    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8Redis-SETNX-%E5%91%BD%E4%BB%A4%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
+    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89%E2%80%94%E2%80%94%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     <data>
         <display>
-        <title>使用Redis SETNX 命令实现分布式锁</title>
-        <pubTime>2017-01-24T08:21:01.000Z</pubTime>
+        <title>负载均衡（Load Balancing）学习笔记三——负载均衡算法</title>
+        <pubTime>2017-01-24T08:47:43.000Z</pubTime>
         
-        <tag>Redis</tag>
-         
-        <tag>分布式锁</tag>
+        <tag>负载均衡</tag>
          
          
            
              
-              <breadCrumb title="Redis" url="https://leehao.me/categories/Redis/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
-    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
-    <data>
-        <display>
-        <title>Git远程仓库</title>
-        <pubTime>2017-01-31T00:42:06.000Z</pubTime>
-        
-        <tag>Git</tag>
-         
-         
-           
-             
-              <breadCrumb title="Git" url="https://leehao.me/categories/Git/"/>
+              <breadCrumb title="分布式架构" url="https://leehao.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/"/>
           
         </display>
     </data>
@@ -1936,9 +1938,9 @@
         <title>MongoDB Java使用指南</title>
         <pubTime>2017-01-25T23:26:24.000Z</pubTime>
         
-        <tag>MongoDB</tag>
-         
         <tag>Java</tag>
+         
+        <tag>MongoDB</tag>
          
          
            
@@ -1949,8 +1951,6 @@
     </data>
     </url>
 
-    
-    
     
   <url>
     <loc>https://leehao.me/%E7%BB%86%E8%AF%B4-C-Traits-Classes/</loc>
@@ -1974,22 +1974,46 @@
     
     
   <url>
-    <loc>https://leehao.me/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%EF%BC%88Load-Balancing%EF%BC%89%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%89%E2%80%94%E2%80%94%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://leehao.me/Git%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93/</loc>
     <lastmod>2017-02-18T04:02:15.000Z</lastmod>
     <data>
         <display>
-        <title>负载均衡（Load Balancing）学习笔记三——负载均衡算法</title>
-        <pubTime>2017-01-24T08:47:43.000Z</pubTime>
+        <title>Git远程仓库</title>
+        <pubTime>2017-01-31T00:42:06.000Z</pubTime>
         
-        <tag>负载均衡</tag>
+        <tag>Git</tag>
          
          
            
              
-              <breadCrumb title="分布式架构" url="https://leehao.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/"/>
+              <breadCrumb title="Git" url="https://leehao.me/categories/Git/"/>
           
         </display>
     </data>
     </url>
 
+    
+    
+  <url>
+    <loc>https://leehao.me/%E4%BD%BF%E7%94%A8Redis-SETNX-%E5%91%BD%E4%BB%A4%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</loc>
+    <lastmod>2017-02-18T04:02:15.000Z</lastmod>
+    <data>
+        <display>
+        <title>使用Redis SETNX 命令实现分布式锁</title>
+        <pubTime>2017-01-24T08:21:01.000Z</pubTime>
+        
+        <tag>Redis</tag>
+         
+        <tag>分布式锁</tag>
+         
+         
+           
+             
+              <breadCrumb title="Redis" url="https://leehao.me/categories/Redis/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
 </urlset>

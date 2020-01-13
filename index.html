@@ -312,6 +312,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/记一次-socket-通信性能优化过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/记一次-socket-通信性能优化过程/" itemprop="url">记一次 socket 通信性能优化过程</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-13T09:39:31+08:00">
+                2020-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。</p>
+<h2 id="利用-Wireshark-和-Python-构造请求报文"><a href="#利用-Wireshark-和-Python-构造请求报文" class="headerlink" title="利用 Wireshark 和 Python 构造请求报文"></a>利用 Wireshark 和 Python 构造请求报文</h2><p>客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了 Wireshark 对请求报文进行抓包，然后直接将抓取的报文由 Python 程序发送。</p>
+<p>我们先在 Wireshark 对过滤条件进行配置，服务端程序的监听端口为 5111，故配置<code>tcp.dstport==5111</code> 的过滤条件。<br>然后使用客户端向服务端程序发送请求，可以看到 Wireshark 显示出相应的请求报文：<br><img src="https://img-blog.csdnimg.cn/20190920180644307.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>右键报文，选择<strong>显示分组字节</strong>，显示为<strong>C数组</strong>：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190920180708398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>由于 JMeter 使用不多，并不太熟悉 JMeter 的使用，故这里使用 Python 来模拟客户端向服务端程序发送请求。<br>将相应的报文数据拷贝到 Python 程序，即可模拟客户端向服务端程序发送请求。为节省篇幅，Python 代码只截取了部分 <code>msg</code> 请求数据。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/记一次-socket-通信性能优化过程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/一文带你了解-RTO-和-RPO/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -407,7 +558,7 @@
           <p>RTO 和 RPO 都是企业灾难恢复（Disaster Recovery, DR）需要考虑的关键指标，这两个指标可以用来指导企业来制定合适的业务系统服务或数据的恢复方案。</p>
 <p>本文介绍 RTO 和 RPO 的概念以及区别。</p>
 <p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTEyLTE0MDA0My5qcGc?x-oss-process=image/format,png" alt=""></p>
-<p>图：RPO（Recovery point object） 和 RTO（Recovery time object）是提供业务连续性的关键指标</p>
+<p>图：RPO（Recovery point objective） 和 RTO（Recovery time objective）是提供业务连续性的关键指标</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/一文带你了解-RTO-和-RPO/#more" rel="contents">
@@ -1737,162 +1888,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/米筐开源量化框架-RQalpha-安装使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/米筐开源量化框架-RQalpha-安装使用/" itemprop="url">米筐开源量化框架 RQalpha 安装使用</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-30T14:27:49+08:00">
-                2018-12-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/量化投资/" itemprop="url" rel="index">
-                    <span itemprop="name">量化投资</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>RQalpha 是 <a href="https://www.ricequant.com">Ricequant</a> 开源的量化框架，提供数据获取，算法交易，策略回测，实盘模拟，实盘交易，数据分析等功能。RQalpha 的安装过程并不十分友好，本文讲述如何安装 RQalpha。安装环境是 Mac OS 操作系统。</p>
-<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="1-创建虚拟环境"><a href="#1-创建虚拟环境" class="headerlink" title="1. 创建虚拟环境"></a>1. 创建虚拟环境</h3><p>RQalpha 推荐使用虚拟环境来安装，以避免由于各种环境问题导致安装失败。可以使用 conda 来创建虚拟环境，为使用 conda 命令，用户可以先下载安装 anaconda。由于 anaconda 并不是本文的讲述重点，anaconda 的安装可以参考 <a href="https://www.anaconda.com/">https://www.anaconda.com/</a>，本文不再赘述。</p>
-<p>使用以下命令创建虚拟环境：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda create -n rqalpha python=3.6</div></pre></td></tr></table></figure>
-<p>这样就基于 Python 3.6 创建了虚拟环境<code>rqalpha</code>。创建虚拟环境后，激活环境。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">source activate rqalpha</div></pre></td></tr></table></figure>
-<h3 id="2-安装-cython"><a href="#2-安装-cython" class="headerlink" title="2. 安装 cython"></a>2. 安装 cython</h3><p>使用命令 conda 来安装 cython。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install cython</div></pre></td></tr></table></figure>
-<h3 id="3-安装-bcolz"><a href="#3-安装-bcolz" class="headerlink" title="3. 安装 bcolz"></a>3. 安装 bcolz</h3><p>bcolz 是 RQalpha 的依赖库，RQalpha 使用 bcolz 来进行数据的存储。使用 conda 来安装 bcolz。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">conda install bcolz</div></pre></td></tr></table></figure>
-<p>值得指出的是，安装 cython 和 bcolz 都需要使用 conda 命令来执行，使用 pip 命令来安装会出现安装失败的情况。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/米筐开源量化框架-RQalpha-安装使用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1943,7 +1938,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">81</span>
+                <span class="site-state-item-count">82</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1965,7 +1960,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">213</span>
+                <span class="site-state-item-count">216</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

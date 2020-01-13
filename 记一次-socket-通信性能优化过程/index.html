@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="socker,FD_SETSIZE,wireshark," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。
+利用 Wireshark 和 Python 构造请求报文客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次 socket 通信性能优化过程">
+<meta property="og:url" content="https://leehao.me/记一次-socket-通信性能优化过程/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。
+利用 Wireshark 和 Python 构造请求报文客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190920180644307.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190920180708398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2020-01-13T01:40:54.562Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记一次 socket 通信性能优化过程">
+<meta name="twitter:description" content="上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。
+利用 Wireshark 和 Python 构造请求报文客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190920180644307.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/记一次-socket-通信性能优化过程/"/>
+
+
+
+
+
+  <title>记一次 socket 通信性能优化过程 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/记一次-socket-通信性能优化过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">记一次 socket 通信性能优化过程</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-13T09:39:31+08:00">
+                2020-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。</p>
+<h2 id="利用-Wireshark-和-Python-构造请求报文"><a href="#利用-Wireshark-和-Python-构造请求报文" class="headerlink" title="利用 Wireshark 和 Python 构造请求报文"></a>利用 Wireshark 和 Python 构造请求报文</h2><p>客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了 Wireshark 对请求报文进行抓包，然后直接将抓取的报文由 Python 程序发送。</p>
+<p>我们先在 Wireshark 对过滤条件进行配置，服务端程序的监听端口为 5111，故配置<code>tcp.dstport==5111</code> 的过滤条件。<br>然后使用客户端向服务端程序发送请求，可以看到 Wireshark 显示出相应的请求报文：<br><img src="https://img-blog.csdnimg.cn/20190920180644307.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>右键报文，选择<strong>显示分组字节</strong>，显示为<strong>C数组</strong>：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190920180708398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpaGFvMjE=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>由于 JMeter 使用不多，并不太熟悉 JMeter 的使用，故这里使用 Python 来模拟客户端向服务端程序发送请求。<br>将相应的报文数据拷贝到 Python 程序，即可模拟客户端向服务端程序发送请求。为节省篇幅，Python 代码只截取了部分 <code>msg</code> 请求数据。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> struct</div><div class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> socket, AF_INET, SOCK_STREAM</div><div class="line"></div><div class="line">host = <span class="string">'10.88.115.114'</span></div><div class="line">port = <span class="number">5111</span></div><div class="line"></div><div class="line">msg = [</div><div class="line">    <span class="number">0x02</span>, <span class="number">0x93</span>, <span class="number">0x72</span>, <span class="number">0x36</span>, <span class="number">0x3a</span>, <span class="number">0x03</span>, <span class="number">0x00</span>, <span class="number">0x00</span>,</div><div class="line">    <span class="number">0x74</span>, <span class="number">0x61</span>, <span class="number">0x73</span>, <span class="number">0x6b</span>, <span class="number">0x3d</span>, <span class="number">0x79</span>, <span class="number">0x73</span>, <span class="number">0x73</span>,</div><div class="line">    <span class="number">0x54</span>, <span class="number">0x72</span></div><div class="line">]</div><div class="line"></div><div class="line">n = len(msg)</div><div class="line">fmt = <span class="string">'%dB'</span> % n</div><div class="line">bt = struct.pack(fmt, *msg)</div><div class="line"></div><div class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">    client = socket(AF_INET, SOCK_STREAM)</div><div class="line">    client.connect((host, port))</div><div class="line">    client.send(bt)</div><div class="line">    data = client.recv(<span class="number">1024</span>)</div><div class="line">    print(data)</div><div class="line">    <span class="keyword">break</span></div></pre></td></tr></table></figure>
+<h2 id="修复-FD-SETSIZE-的问题"><a href="#修复-FD-SETSIZE-的问题" class="headerlink" title="修复 FD_SETSIZE 的问题"></a>修复 FD_SETSIZE 的问题</h2><p>Python 程序模拟同时有大量的客户端请求与服务端程序建立连接并发送请求。运行 Python 程序后，发现服务端对于前面的请求还是可以正常响应的，但运行一段时间后，服务端程序就无法响应了。使用<code>top -c</code> 命令查看服务器 CPU ，可以看到服务端程序基本占满 100% 的 CPU。使用 <code>tail -f</code> 命令查看程序日志，可以看到主线程不再打印日志，说明已卡住了。<br>为进一步确认主线程阻塞的地方，使用 <code>pstack</code>  命令来查看程序运行堆栈：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Thread 1 (Thread 0x7f73bfbee720 (LWP 14182)):</div><div class="line">#0  0x00007f73bd39c623 in select () from /lib64/libc.so.6</div><div class="line">#1  0x0000000000419c7c in ReadNetworkData(_SOCKET_INFORMATION*) ()</div><div class="line">#2  0x000000000041d731 in ServerMain() ()</div><div class="line">#3  0x000000000043dc89 in main ()</div></pre></td></tr></table></figure>
+<p>可以看到，程序阻塞在函数 <code>ReadNetworkData</code> 的 <code>select</code> 系统调用上了。</p>
+<p>而服务端程序正常情况下运行堆栈如下，程序阻塞在<code>epoll_wait</code> 等待测试的文件描述符是否就绪。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Thread 1 (Thread 0x7feaf652c720 (LWP 7815)):</div><div class="line">#0  0x00007feaf3ce21c3 in epoll_wait () from /lib64/libc.so.6</div><div class="line">#1  0x000000000041d313 in ServerMain() ()</div><div class="line">#2  0x000000000043dc05 in main ()</div></pre></td></tr></table></figure>
+<p>再观察服务端日志，可以看到当文件描述符的值小于 1024 时，是可以正常响应客户端请求的，但当文件描述符大于等于 1024 时，则会导致主线程阻塞在 <code>select</code> 调用上。<br>网上搜索关键词 <code>select 1024</code> ，果然看到由于 <code>FD_SETSIZE</code> 参数上限为 1024 导致的惨案，例如，<a href="https://blog.codingnow.com/2014/02/select_bug.html" target="_blank" rel="external">云风的 BLOG：一起 select 引起的崩溃</a>。</p>
+<p>原程序读取客户端请求数据的代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span>(<span class="number">1</span>)</div><div class="line">&#123;</div><div class="line">    nRet = select( FD_SETSIZE, &amp;fds, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;tmOut );</div><div class="line">    <span class="keyword">if</span>(nRet== <span class="number">0</span>)</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    nRead = recv(si-&gt;nSock, si-&gt;pRecvBuffer + si-&gt;nRecvLen, si-&gt;nBufferLen - si-&gt;nRecvLen, <span class="number">0</span>);</div><div class="line">    ...</div></pre></td></tr></table></figure></p>
+<p><code>select</code> 中 <code>FD_SETSIZE</code> 参数上限为 1024，当需要测试的文件描述符大于等于 1024 时，则会出现越界的现象。由于程序中通过轮询来测试文件描述是否就绪，而测试的文件描述符又大于 1024，则会出现一直轮询下去的问题，导致程序一直阻塞在 <code>select</code> 调用上。</p>
+<p>参考 <a href="https://stackoverflow.com/questions/7976388/increasing-limit-of-fd-setsize-and-select" target="_blank" rel="external">stackoverflow</a> 的例子，使用 <code>poll</code> 代替 <code>select</code> ，对程序进行改写，改写后程序代码如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">    <span class="comment">// 非阻塞 poll，轮询</span></div><div class="line">    nready = poll(&amp;client, <span class="number">1</span>, <span class="number">0</span>);</div><div class="line">    <span class="keyword">if</span> (nready == <span class="number">0</span>) &#123;</div><div class="line">        LogMessage(<span class="string">"poll not ready, socket: %d"</span>, si-&gt;nSock);</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nready == <span class="number">-1</span>) &#123;</div><div class="line">        LogMessage(<span class="string">"poll error, socket: %d"</span>, si-&gt;nSock);</div><div class="line">		<span class="keyword">break</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        LogMessage(<span class="string">"poll read ready, socket: %d"</span>, si-&gt;nSock);</div><div class="line">    &#125;</div><div class="line">    nRead = recv(si-&gt;nSock, si-&gt;pRecvBuffer + si-&gt;nRecvLen, si-&gt;nBufferLen - si-&gt;nRecvLen, <span class="number">0</span>);</div></pre></td></tr></table></figure></p>
+<p>使用 <code>poll</code> 改写 <code>select</code> 后，即使客户端连接数大于 1024，也没出现程序卡死的问题。</p>
+<h2 id="修复-accept-接受用户连接的问题"><a href="#修复-accept-接受用户连接的问题" class="headerlink" title="修复 accept 接受用户连接的问题"></a>修复 accept 接受用户连接的问题</h2><p>修复 <code>FS_SETSIZE</code> 的问题后，再提交给测试人员进行压力测试，发现仍然存在问题。向服务端程序并发发送 100 个请求后，再发送请求，仍然会出现无法响应的现象。</p>
+<p>查看程序日志，发现当使用 Python 向服务端程序发送请求时，日志会出现上一个连接的 IP 和端口，也就是说，程序将上一个连接当成是新建立的连接来使用了。<br>这时，如果再从旧的连接读取或写入数据，会出现 “Connection reset by peer” 或者 “Broken pipe”的错误，这是由于旧的连接可能已经断开了。<br>于是怀疑 <code>accept</code> 调用是否存在问题。考虑到调用 <code>accept</code> 前使用 <code>epoll_wait</code> 来测试监听套接字是否就绪，且使用了 ET 模式，故监听套接字就绪时，可能已经有一个或者多个客户端连接进来，故只调用一次 <code>accept</code> 就可能会出现连接错误的问题。</p>
+<p>程序原来的 <code>accept</code> 处理逻辑如下：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (fd==g_TcpSock)</div><div class="line">&#123;</div><div class="line">	<span class="comment">//A new tcp connection come in.</span></div><div class="line">	nAddrLen = <span class="keyword">sizeof</span>(addrPeer);</div><div class="line">	<span class="keyword">if</span>( (sockNew = accept(g_TcpSock, (<span class="keyword">struct</span> sockaddr*)&amp;addrPeer, (<span class="keyword">socklen_t</span> *)&amp;nAddrLen)) !=  <span class="number">-1</span>)</div><div class="line">	&#123;</div><div class="line">		LogMessage(<span class="string">"accept tcp connection %s:%d."</span>, inet_ntoa(addrPeer.sin_addr),(<span class="keyword">int</span>)(ntohs(addrPeer.sin_port)));</div><div class="line">		<span class="comment">//set keep-alive.</span></div><div class="line">		nKA = TRUE;</div><div class="line">		setsockopt(sockNew,IPPROTO_TCP,SO_KEEPALIVE,(<span class="keyword">const</span> <span class="keyword">char</span>*)&amp;nKA,<span class="keyword">sizeof</span>(nKA));</div><div class="line">		<span class="comment">//将该客户端加到列表</span></div><div class="line">		AddConnection(sockNew,&amp;addrPeer, NET_SOURCE_TYPE_IN_TCP, IN_TCP_HEAD_MAGIC);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">else</span></div><div class="line">	&#123;</div><div class="line">		nRet = errno;</div><div class="line">		LogMessage(<span class="string">"accept() tcp error: %d,%d"</span>,sockNew,nRet);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">continue</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>参考文章 <a href="https://blog.csdn.net/lihao21/article/details/71307115" target="_blank" rel="external">《I/O多路复用之 epoll 系统调用》</a> 的说明，改写了 <code>accept</code> 调用的逻辑：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (fd==g_TcpSock)</div><div class="line">&#123;</div><div class="line">	<span class="comment">// 监听套接字就绪，表明有一个或者多个连接进来</span></div><div class="line">	<span class="keyword">while</span> (<span class="literal">true</span>) &#123;</div><div class="line">		nAddrLen = <span class="keyword">sizeof</span>(addrPeer);</div><div class="line">		sockNew = accept(g_TcpSock, (<span class="keyword">struct</span> sockaddr*)&amp;addrPeer, (<span class="keyword">socklen_t</span> *)&amp;nAddrLen);</div><div class="line">		<span class="keyword">if</span> (sockNew == <span class="number">-1</span>) &#123;</div><div class="line">			<span class="keyword">if</span> (errno == EAGAIN || errno == EWOULDBLOCK) &#123;</div><div class="line">				<span class="comment">// 处理完所有的连接</span></div><div class="line">				LogMessage(<span class="string">"finish accept all connection, errno: %d"</span>, errno);</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125; <span class="keyword">else</span> &#123;</div><div class="line">				LogMessage(<span class="string">"accept() tcp errno: %d, error message: %s"</span>, errno, strerror(errno));</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		LogMessage(<span class="string">"accept tcp connection %s:%d, socket: %d"</span>,</div><div class="line">				   inet_ntoa(addrPeer.sin_addr),(<span class="keyword">int</span>)(ntohs(addrPeer.sin_port)), sockNew);</div><div class="line">		<span class="comment">//set keep-alive.</span></div><div class="line">		nKA = TRUE;</div><div class="line">		setsockopt(sockNew,IPPROTO_TCP,SO_KEEPALIVE,(<span class="keyword">const</span> <span class="keyword">char</span>*)&amp;nKA,<span class="keyword">sizeof</span>(nKA));</div><div class="line">		<span class="comment">//将该客户端加到列表</span></div><div class="line">		AddConnection(sockNew,&amp;addrPeer, NET_SOURCE_TYPE_IN_TCP, IN_TCP_HEAD_MAGIC);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">continue</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>改写后，不再出现连接错乱的现象，原来压力测试发现的问题也不再出现。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>这次对服务端程序 socket 通信性能进行优化，挑战还是不小，几次没有头绪差点想要放弃。通过分散自己的思维，翻看自己以前写的文章，最后还是顺利修复了问题。看来平时的积累非常重要，要加强平时的学习。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://blog.csdn.net/lihao21/article/details/66475051" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/66475051</a></li>
+<li><a href="https://blog.csdn.net/lihao21/article/details/67631516" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/67631516</a></li>
+<li><a href="https://blog.csdn.net/lihao21/article/details/64951446" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/64951446</a></li>
+<li><a href="https://blog.csdn.net/lihao21/article/details/71307115" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/71307115</a></li>
+<li><a href="https://blog.csdn.net/lihao21/article/details/66097377" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/66097377</a></li>
+<li><a href="https://blog.csdn.net/lihao21/article/details/64624796#commentBox" target="_blank" rel="external">https://blog.csdn.net/lihao21/article/details/64624796#commentBox</a></li>
+<li><a href="https://bbs.csdn.net/topics/60361248" target="_blank" rel="external">https://bbs.csdn.net/topics/60361248</a></li>
+<li><a href="https://blog.csdn.net/a3192048/article/details/84671340" target="_blank" rel="external">https://blog.csdn.net/a3192048/article/details/84671340</a></li>
+<li><a href="https://stackoverflow.com/questions/7976388/increasing-limit-of-fd-setsize-and-select" target="_blank" rel="external">https://stackoverflow.com/questions/7976388/increasing-limit-of-fd-setsize-and-select</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/socker/" rel="tag"># socker</a>
+          
+            <a href="/tags/FD-SETSIZE/" rel="tag"># FD_SETSIZE</a>
+          
+            <a href="/tags/wireshark/" rel="tag"># wireshark</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/一文带你了解-RTO-和-RPO/" rel="next" title="一文带你了解 RTO 和 RPO">
+                <i class="fa fa-chevron-left"></i> 一文带你了解 RTO 和 RPO
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">82</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">216</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#利用-Wireshark-和-Python-构造请求报文"><span class="nav-number">1.</span> <span class="nav-text">利用 Wireshark 和 Python 构造请求报文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修复-FD-SETSIZE-的问题"><span class="nav-number">2.</span> <span class="nav-text">修复 FD_SETSIZE 的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修复-accept-接受用户连接的问题"><span class="nav-number">3.</span> <span class="nav-text">修复 accept 接受用户连接的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
