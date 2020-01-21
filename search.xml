@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[携程 Apollo 配置中心初探]]></title>
+    <url>%2F%E6%90%BA%E7%A8%8B-Apollo-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%88%9D%E6%8E%A2%2F</url>
+    <content type="text"><![CDATA[最近在对开源配置中心进行调研。当前流行的开源配置中心包括 Apollo，Nacos，以及 Disconf。Apollo 应该是当前最流行，所以写篇文章来记录 Apollo 的安装与使用。 Apollo 是携程开源的分布式配置中心，能够集中化管理不同环境，不同集群的配置，配置修改后能够实时推送到应用，并且具备权限治理功能。 本文讲述如何快速搭建开发或者测试使用 Apollo 配置中心。如果需要在生产环境正式使用，可以参考链接 Apollo 分布式部署指南。 安装 Apollo由于使用 Docker 安装 Apollo 相对于普通安装更简单和快捷，因此推荐由于 Docker 来安装 Apollo，以便于快速了解和使用 Apollo。 1. 下载源代码使用 git clone 下载最新的 Apollo 源代码到本地。 1git clone https://github.com/ctripcorp/apollo.git 2. 启动配置中心下载 Apollo 源代码后，可以看到 Script 目录下包含 docker-quick-start 目录， docker-quick-start 目录如下： 其中 docker-compose.yml 文件由 docker-compose 使用，用来定义启动 Apollo 所依赖的镜像。其依赖的 apollo-quick-start 镜像在 dockerhub 可以看到其 Dockerfile，里面定义了如何启动 Apollo。 进入 docker-quick-start 目录，然后使用 docker-compose 启动 Apollo 配置中心。 1docker-compose up 有关 docker-compos 命令的使用，可以参考链接 Compose 命令说明，此处不再赘述。 成功启动 Apollo 后，可以看到以下启动日志，说明 Apollo 已正常启动，接下来可以进行访问使用。 3. 测试打开浏览器，输入地址 http://localhost:8070/，打开 Apollo Web 页面，输入用户 apollo 和密码 admin 进行登录后便进入以下页面。 4. 运行客户端使用 docker exec 命令进入 pollo-quick-start 容器，其中，986c37493816 为 pollo-quick-start 容器 ID，可以通过 docker ps -a 命令获取容器 ID。 1docker exec -it 986c37493816 /bin/bash 进入容器后，进入目录 /apollo-quick-star，可以看到 demo.sh 脚本，使用 demo.sh 运行测试客户端。 1./demo.sh client 进入 SampleApp 配置页面，可以看到 timeout 配置为 100，修改 timeout 值为 200： 并对配置进行发布，这时可以看到测试客户端自动接收到了 timeout 新的配置值： Apollo 核心概念上面 Apollo 应用配置的使用，已经基本可以覆盖大部分的应用场景。除此之外，Apollo 还提供 environment（环境），cluster（集群），以及 namespace（命名空间）的配置管理。有关这些高级配置的使用，可以参考官方文档的介绍：Apollo 配置中心介绍。 参考资料 https://github.com/ctripcorp/apollo/wiki/Apollo-Quick-Start-Docker%E9%83%A8%E7%BD%B2 https://github.com/ctripcorp/apollo https://github.com/ctripcorp/apollo/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97 https://yeasy.gitbooks.io/docker_practice/compose/commands.html https://www.cnblogs.com/sparkdev/p/9753793.html]]></content>
+      <categories>
+        <category>后台</category>
+      </categories>
+      <tags>
+        <tag>Apollo</tag>
+        <tag>配置中心</tag>
+        <tag>携程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[记一次 socket 通信性能优化过程]]></title>
     <url>%2F%E8%AE%B0%E4%B8%80%E6%AC%A1-socket-%E9%80%9A%E4%BF%A1%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B%2F</url>
     <content type="text"><![CDATA[上段时间测试人员对某个服务端程序进行了性能压力测试，发现当使用 JMeter 向程序并发发送 100 个请求后，再发送请求，则会出现程序无法响应的现象。想着这个问题比较棘手，就拖了不少时间。最近其他事情少了点，可以专心下来优化这个程序的性能，就着手开干了。 利用 Wireshark 和 Python 构造请求报文客户端对向发送的请求报文进行了加密，且密钥存在过期时间。为方便构造请求报文，我们使用了 Wireshark 对请求报文进行抓包，然后直接将抓取的报文由 Python 程序发送。 我们先在 Wireshark 对过滤条件进行配置，服务端程序的监听端口为 5111，故配置tcp.dstport==5111 的过滤条件。然后使用客户端向服务端程序发送请求，可以看到 Wireshark 显示出相应的请求报文： 右键报文，选择显示分组字节，显示为C数组： 由于 JMeter 使用不多，并不太熟悉 JMeter 的使用，故这里使用 Python 来模拟客户端向服务端程序发送请求。将相应的报文数据拷贝到 Python 程序，即可模拟客户端向服务端程序发送请求。为节省篇幅，Python 代码只截取了部分 msg 请求数据。 1234567891011121314151617181920212223242526#!/usr/bin/env python# -*- coding:utf-8 -*-import structfrom socket import socket, AF_INET, SOCK_STREAMhost = '10.88.115.114'port = 5111msg = [ 0x02, 0x93, 0x72, 0x36, 0x3a, 0x03, 0x00, 0x00, 0x74, 0x61, 0x73, 0x6b, 0x3d, 0x79, 0x73, 0x73, 0x54, 0x72]n = len(msg)fmt = '%dB' % nbt = struct.pack(fmt, *msg)while True: client = socket(AF_INET, SOCK_STREAM) client.connect((host, port)) client.send(bt) data = client.recv(1024) print(data) break 修复 FD_SETSIZE 的问题Python 程序模拟同时有大量的客户端请求与服务端程序建立连接并发送请求。运行 Python 程序后，发现服务端对于前面的请求还是可以正常响应的，但运行一段时间后，服务端程序就无法响应了。使用top -c 命令查看服务器 CPU ，可以看到服务端程序基本占满 100% 的 CPU。使用 tail -f 命令查看程序日志，可以看到主线程不再打印日志，说明已卡住了。为进一步确认主线程阻塞的地方，使用 pstack 命令来查看程序运行堆栈： 12345Thread 1 (Thread 0x7f73bfbee720 (LWP 14182)):#0 0x00007f73bd39c623 in select () from /lib64/libc.so.6#1 0x0000000000419c7c in ReadNetworkData(_SOCKET_INFORMATION*) ()#2 0x000000000041d731 in ServerMain() ()#3 0x000000000043dc89 in main () 可以看到，程序阻塞在函数 ReadNetworkData 的 select 系统调用上了。 而服务端程序正常情况下运行堆栈如下，程序阻塞在epoll_wait 等待测试的文件描述符是否就绪。 1234Thread 1 (Thread 0x7feaf652c720 (LWP 7815)):#0 0x00007feaf3ce21c3 in epoll_wait () from /lib64/libc.so.6#1 0x000000000041d313 in ServerMain() ()#2 0x000000000043dc05 in main () 再观察服务端日志，可以看到当文件描述符的值小于 1024 时，是可以正常响应客户端请求的，但当文件描述符大于等于 1024 时，则会导致主线程阻塞在 select 调用上。网上搜索关键词 select 1024 ，果然看到由于 FD_SETSIZE 参数上限为 1024 导致的惨案，例如，云风的 BLOG：一起 select 引起的崩溃。 原程序读取客户端请求数据的代码如下：1234567while(1)&#123; nRet = select( FD_SETSIZE, &amp;fds, NULL, NULL, &amp;tmOut ); if(nRet== 0) break; nRead = recv(si-&gt;nSock, si-&gt;pRecvBuffer + si-&gt;nRecvLen, si-&gt;nBufferLen - si-&gt;nRecvLen, 0); ... select 中 FD_SETSIZE 参数上限为 1024，当需要测试的文件描述符大于等于 1024 时，则会出现越界的现象。由于程序中通过轮询来测试文件描述是否就绪，而测试的文件描述符又大于 1024，则会出现一直轮询下去的问题，导致程序一直阻塞在 select 调用上。 参考 stackoverflow 的例子，使用 poll 代替 select ，对程序进行改写，改写后程序代码如下：12345678910111213while (1) &#123; // 非阻塞 poll，轮询 nready = poll(&amp;client, 1, 0); if (nready == 0) &#123; LogMessage("poll not ready, socket: %d", si-&gt;nSock); break; &#125; else if (nready == -1) &#123; LogMessage("poll error, socket: %d", si-&gt;nSock); break; &#125; else &#123; LogMessage("poll read ready, socket: %d", si-&gt;nSock); &#125; nRead = recv(si-&gt;nSock, si-&gt;pRecvBuffer + si-&gt;nRecvLen, si-&gt;nBufferLen - si-&gt;nRecvLen, 0); 使用 poll 改写 select 后，即使客户端连接数大于 1024，也没出现程序卡死的问题。 修复 accept 接受用户连接的问题修复 FS_SETSIZE 的问题后，再提交给测试人员进行压力测试，发现仍然存在问题。向服务端程序并发发送 100 个请求后，再发送请求，仍然会出现无法响应的现象。 查看程序日志，发现当使用 Python 向服务端程序发送请求时，日志会出现上一个连接的 IP 和端口，也就是说，程序将上一个连接当成是新建立的连接来使用了。这时，如果再从旧的连接读取或写入数据，会出现 “Connection reset by peer” 或者 “Broken pipe”的错误，这是由于旧的连接可能已经断开了。于是怀疑 accept 调用是否存在问题。考虑到调用 accept 前使用 epoll_wait 来测试监听套接字是否就绪，且使用了 ET 模式，故监听套接字就绪时，可能已经有一个或者多个客户端连接进来，故只调用一次 accept 就可能会出现连接错误的问题。 程序原来的 accept 处理逻辑如下：1234567891011121314151617181920if (fd==g_TcpSock)&#123; //A new tcp connection come in. nAddrLen = sizeof(addrPeer); if( (sockNew = accept(g_TcpSock, (struct sockaddr*)&amp;addrPeer, (socklen_t *)&amp;nAddrLen)) != -1) &#123; LogMessage("accept tcp connection %s:%d.", inet_ntoa(addrPeer.sin_addr),(int)(ntohs(addrPeer.sin_port))); //set keep-alive. nKA = TRUE; setsockopt(sockNew,IPPROTO_TCP,SO_KEEPALIVE,(const char*)&amp;nKA,sizeof(nKA)); //将该客户端加到列表 AddConnection(sockNew,&amp;addrPeer, NET_SOURCE_TYPE_IN_TCP, IN_TCP_HEAD_MAGIC); &#125; else &#123; nRet = errno; LogMessage("accept() tcp error: %d,%d",sockNew,nRet); &#125; continue;&#125; 参考文章 《I/O多路复用之 epoll 系统调用》 的说明，改写了 accept 调用的逻辑： 1234567891011121314151617181920212223242526if (fd==g_TcpSock)&#123; // 监听套接字就绪，表明有一个或者多个连接进来 while (true) &#123; nAddrLen = sizeof(addrPeer); sockNew = accept(g_TcpSock, (struct sockaddr*)&amp;addrPeer, (socklen_t *)&amp;nAddrLen); if (sockNew == -1) &#123; if (errno == EAGAIN || errno == EWOULDBLOCK) &#123; // 处理完所有的连接 LogMessage("finish accept all connection, errno: %d", errno); break; &#125; else &#123; LogMessage("accept() tcp errno: %d, error message: %s", errno, strerror(errno)); break; &#125; &#125; LogMessage("accept tcp connection %s:%d, socket: %d", inet_ntoa(addrPeer.sin_addr),(int)(ntohs(addrPeer.sin_port)), sockNew); //set keep-alive. nKA = TRUE; setsockopt(sockNew,IPPROTO_TCP,SO_KEEPALIVE,(const char*)&amp;nKA,sizeof(nKA)); //将该客户端加到列表 AddConnection(sockNew,&amp;addrPeer, NET_SOURCE_TYPE_IN_TCP, IN_TCP_HEAD_MAGIC); &#125; continue;&#125; 改写后，不再出现连接错乱的现象，原来压力测试发现的问题也不再出现。 小结这次对服务端程序 socket 通信性能进行优化，挑战还是不小，几次没有头绪差点想要放弃。通过分散自己的思维，翻看自己以前写的文章，最后还是顺利修复了问题。看来平时的积累非常重要，要加强平时的学习。 参考资料 https://blog.csdn.net/lihao21/article/details/66475051 https://blog.csdn.net/lihao21/article/details/67631516 https://blog.csdn.net/lihao21/article/details/64951446 https://blog.csdn.net/lihao21/article/details/71307115 https://blog.csdn.net/lihao21/article/details/66097377 https://blog.csdn.net/lihao21/article/details/64624796#commentBox https://bbs.csdn.net/topics/60361248 https://blog.csdn.net/a3192048/article/details/84671340 https://stackoverflow.com/questions/7976388/increasing-limit-of-fd-setsize-and-select]]></content>
@@ -199,8 +212,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Rserve</tag>
         <tag>Java</tag>
+        <tag>Rserve</tag>
       </tags>
   </entry>
   <entry>
@@ -365,8 +378,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>日志</tag>
         <tag>json</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -723,9 +736,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -736,8 +749,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -748,10 +761,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -765,8 +778,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -838,9 +851,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -1000,8 +1013,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>MongoDB</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
