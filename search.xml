@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[分布式对象存储服务器 MinIO 牛刀小试]]></title>
+    <url>%2F%E5%88%86%E5%B8%83%E5%BC%8F%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1%E5%99%A8-MinIO-%E7%89%9B%E5%88%80%E5%B0%8F%E8%AF%95%2F</url>
+    <content type="text"><![CDATA[数据存储包括三种类型，分别是块存储，文件存储和对象存储。有关这三种类型的差别，可以参考 对象存储、文件存储和块存储的区别。 MioIO 是一个开源的分布式对象存储系统，非常适合于存储大容量非结构化的数据，例如图片，视频，日志文件，备份数据等。本文讲述如何快速搭建 MioIO 服务端和客户端，以便于对 MioIO 有个概要了解。 MinIO 服务端安装MioIO 是一个非常轻量级的对象存储系统，可以使用 Docker 快速搭建 MinIO 服务。 12docker pull minio/miniodocker run -p 9000:9000 minio/minio server /data 执行以上命令，就启动了 MinIO 服务。有关使用 Docker 启动 MinIO 的详细介绍，可以参考链接 https://docs.min.io/docs/minio-docker-quickstart-guide。 打开浏览器，输入地址 http://127.0.0.1:9000/，输入用户名 minioadmin 和密码 minioadmin，便进入 MinIO 的管理页面。 在 MinIO 管理页面，可以进行文件的浏览、上传下载操作。 MinIO 客户端安装MinIO Client（mc）提供 ls、cat、cp、 diff、find 等UNIX命令，用来对存储在 MinIO 服务端的桶和文件进行操作，并支持对 Amazon S3 云存储文件进行操作。 可以使用 Docker 来快速安装 mc： 12docker pull minio/mcdocker run minio/mc ls play 上述第一个命令拉取 mc 镜像，第二个命令启动 mc 容器，并列出 MinIO 官方演示环境 play 的内容。如果需要使用 mc 操作其他 S3 兼容的服务，可以采取以下方式启动容器： 1docker run -it --entrypoint=/bin/sh minio/mc 启动容器后接下来可以使用 mc 的其他命令，例如： 1mc config host list 输出： 123456789101112131415161718192021222324252627gcs URL : https://storage.googleapis.com AccessKey : YOUR-ACCESS-KEY-HERE SecretKey : YOUR-SECRET-KEY-HERE API : S3v2 Lookup : dnslocal URL : http://10.88.115.119:9000 AccessKey : minioadmin SecretKey : minioadmin API : S3v4 Lookup : autoplay URL : https://play.min.io AccessKey : Q3AM3UQ867SPQQA43P2F SecretKey : zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG API : S3v4 Lookup : autos3 URL : https://s3.amazonaws.com AccessKey : YOUR-ACCESS-KEY-HERE SecretKey : YOUR-SECRET-KEY-HERE API : S3v4 Lookup : dns 可以通过修改文件 ~/.mc/config.json 来修改 mc config host list 展示出来的配置。 为了使用 mc 对上面我们搭建的 MinIO 服务进行测试，我们修改了 local 的配置： local URL : http://10.88.115.119:9000 AccessKey : minioadmin SecretKey : minioadmin API : S3v4 Lookup : auto 其中，http://10.88.115.119:9000 为 MinIO 服务端地址，读者可以根据实际情况进行调整。 执行 1mc ls local 输出 [2020-01-22 07:37:53 UTC] 0B leo/ 执行 1mc ls local/leo 输出 [2020-01-22 07:37:53 UTC] 696KiB 屏幕截图(1).png 在 MinIO 服务中，我们创建了一个名为 leo 的桶，并在该桶下上传了一个名为 屏幕截图(1).png 的文件。 至于其他 mc 命令，大家可以自行测试。 参考资料 https://github.com/minio/minio https://docs.min.io/ https://docs.min.io/cn/minio-client-complete-guide.html https://www.alibabacloud.com/zh/knowledge/difference-between-object-storage-file-storage-block-storage https://zhuanlan.zhihu.com/p/39572049]]></content>
+      <categories>
+        <category>后台</category>
+      </categories>
+      <tags>
+        <tag>MinIO</tag>
+        <tag>对象存储</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[携程 Apollo 配置中心初探]]></title>
     <url>%2F%E6%90%BA%E7%A8%8B-Apollo-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%88%9D%E6%8E%A2%2F</url>
     <content type="text"><![CDATA[最近在对开源配置中心进行调研。当前流行的开源配置中心包括 Apollo，Nacos，以及 Disconf。Apollo 应该是当前最流行，所以写篇文章来记录 Apollo 的安装与使用。 Apollo 是携程开源的分布式配置中心，能够集中化管理不同环境，不同集群的配置，配置修改后能够实时推送到应用，并且具备权限治理功能。 本文讲述如何快速搭建开发或者测试使用 Apollo 配置中心。如果需要在生产环境正式使用，可以参考链接 Apollo 分布式部署指南。 安装 Apollo由于使用 Docker 安装 Apollo 相对于普通安装更简单和快捷，因此推荐由于 Docker 来安装 Apollo，以便于快速了解和使用 Apollo。 1. 下载源代码使用 git clone 下载最新的 Apollo 源代码到本地。 1git clone https://github.com/ctripcorp/apollo.git 2. 启动配置中心下载 Apollo 源代码后，可以看到 Script 目录下包含 docker-quick-start 目录， docker-quick-start 目录如下： 其中 docker-compose.yml 文件由 docker-compose 使用，用来定义启动 Apollo 所依赖的镜像。其依赖的 apollo-quick-start 镜像在 dockerhub 可以看到其 Dockerfile，里面定义了如何启动 Apollo。 进入 docker-quick-start 目录，然后使用 docker-compose 启动 Apollo 配置中心。 1docker-compose up 有关 docker-compos 命令的使用，可以参考链接 Compose 命令说明，此处不再赘述。 成功启动 Apollo 后，可以看到以下启动日志，说明 Apollo 已正常启动，接下来可以进行访问使用。 3. 测试打开浏览器，输入地址 http://localhost:8070/，打开 Apollo Web 页面，输入用户 apollo 和密码 admin 进行登录后便进入以下页面。 4. 运行客户端使用 docker exec 命令进入 pollo-quick-start 容器，其中，986c37493816 为 pollo-quick-start 容器 ID，可以通过 docker ps -a 命令获取容器 ID。 1docker exec -it 986c37493816 /bin/bash 进入容器后，进入目录 /apollo-quick-star，可以看到 demo.sh 脚本，使用 demo.sh 运行测试客户端。 1./demo.sh client 进入 SampleApp 配置页面，可以看到 timeout 配置为 100，修改 timeout 值为 200： 并对配置进行发布，这时可以看到测试客户端自动接收到了 timeout 新的配置值： Apollo 核心概念上面 Apollo 应用配置的使用，已经基本可以覆盖大部分的应用场景。除此之外，Apollo 还提供 environment（环境），cluster（集群），以及 namespace（命名空间）的配置管理。有关这些高级配置的使用，可以参考官方文档的介绍：Apollo 配置中心介绍。 参考资料 https://github.com/ctripcorp/apollo/wiki/Apollo-Quick-Start-Docker%E9%83%A8%E7%BD%B2 https://github.com/ctripcorp/apollo https://github.com/ctripcorp/apollo/wiki/%E5%88%86%E5%B8%83%E5%BC%8F%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97 https://yeasy.gitbooks.io/docker_practice/compose/commands.html https://www.cnblogs.com/sparkdev/p/9753793.html]]></content>
@@ -212,8 +224,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>Rserve</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -378,8 +390,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>json</tag>
         <tag>日志</tag>
+        <tag>json</tag>
       </tags>
   </entry>
   <entry>
@@ -761,10 +773,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
+        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
-        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -778,8 +790,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>多客户</tag>
         <tag>并发</tag>
+        <tag>多客户</tag>
       </tags>
   </entry>
   <entry>
@@ -1013,8 +1025,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>MongoDB</tag>
         <tag>Java</tag>
+        <tag>MongoDB</tag>
       </tags>
   </entry>
   <entry>

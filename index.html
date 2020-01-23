@@ -312,6 +312,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/分布式对象存储服务器-MinIO-牛刀小试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/分布式对象存储服务器-MinIO-牛刀小试/" itemprop="url">分布式对象存储服务器 MinIO 牛刀小试</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-23T08:48:09+08:00">
+                2020-01-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后台/" itemprop="url" rel="index">
+                    <span itemprop="name">后台</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>数据存储包括三种类型，分别是块存储，文件存储和对象存储。有关这三种类型的差别，可以参考 <a href="https://www.alibabacloud.com/zh/knowledge/difference-between-object-storage-file-storage-block-storage">对象存储、文件存储和块存储的区别</a>。</p>
+<p>MioIO 是一个开源的分布式对象存储系统，非常适合于存储大容量非结构化的数据，例如图片，视频，日志文件，备份数据等。本文讲述如何快速搭建 MioIO 服务端和客户端，以便于对 MioIO 有个概要了解。</p>
+<h2 id="MinIO-服务端安装"><a href="#MinIO-服务端安装" class="headerlink" title="MinIO 服务端安装"></a>MinIO 服务端安装</h2><p>MioIO 是一个非常轻量级的对象存储系统，可以使用 Docker 快速搭建 MinIO 服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker pull minio/minio</div><div class="line">docker run -p 9000:9000 minio/minio server /data</div></pre></td></tr></table></figure>
+<p>执行以上命令，就启动了 MinIO 服务。有关使用 Docker 启动 MinIO 的详细介绍，可以参考链接 <a href="https://docs.min.io/docs/minio-docker-quickstart-guide">https://docs.min.io/docs/minio-docker-quickstart-guide</a>。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTIxLTE0MTYyNi5wbmc?x-oss-process=image/format,png" alt=""></p>
+<p>打开浏览器，输入地址 <code>http://127.0.0.1:9000/</code>，输入用户名 <code>minioadmin</code> 和密码 <code>minioadmin</code>，便进入 MinIO 的管理页面。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAxLTIxLTE0MTc0OS5wbmc?x-oss-process=image/format,png" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/分布式对象存储服务器-MinIO-牛刀小试/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/携程-Apollo-配置中心初探/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1725,168 +1878,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Samba-服务器搭建与-Java-客户端实现/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Samba-服务器搭建与-Java-客户端实现/" itemprop="url">Samba 服务器搭建与 Java 客户端实现</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-03T22:14:08+08:00">
-                2019-01-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>最近需要将原来使用阿里云 OSS 的程序模块改成使用公司内部搭建的文件服务器，由于目前使用的文件不多，且都是一些小文件，经过对比后，决定采用 Samba 来实现文件服务器。</p>
-<p>Samba 是一个程序的集合，包括服务器与客户端程序，它允许在 Linux 与 Windows 实现共享文件的功能。本文先讲述如何在 CentOS 7 下安装与配置 Samba，然后讲述如何使用 Java 来实现 Samba 客户端以上传与读取文件。</p>
-<h2 id="Samba-安装"><a href="#Samba-安装" class="headerlink" title="Samba 安装"></a>Samba 安装</h2><p>CentOS 平台下可以直接使用 yum 来安装 Samba 服务器以及客户端。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># yum install samba samba-client</span></div></pre></td></tr></table></figure>
-<p>Samba 安装好后，就可以启动操作。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb start</span></div></pre></td></tr></table></figure>
-<p>如果需要关闭，则使用命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb stop</span></div></pre></td></tr></table></figure>
-<p>如果需要查看 smb 运行状态，可以使用命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># service smb status</span></div></pre></td></tr></table></figure>
-<h2 id="Samba-配置"><a href="#Samba-配置" class="headerlink" title="Samba 配置"></a>Samba 配置</h2><p>安装好 Samba 后，就可以对 Samba 进行配置了。</p>
-<p>我们先使用以下命令添加 Linux 组 leehao 和用户 leehao。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># groupadd leehao</span></div><div class="line"><span class="comment"># useradd -g leehao leehao</span></div></pre></td></tr></table></figure>
-<p>接下来使用<code>smbpasswd</code>命令来创建 Samba 的用户：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># smbpasswd -a leehao</span></div></pre></td></tr></table></figure>
-<p>输入 Samba 用户 leehao 的密码。</p>
-<p>Samba 的默认配置文件是<code>/etc/samba/smb.conf</code>。打开 smb.conf 文件，添加以下配置：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Samba-服务器搭建与-Java-客户端实现/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1937,7 +1928,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-count">84</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1959,7 +1950,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">219</span>
+                <span class="site-state-item-count">221</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
