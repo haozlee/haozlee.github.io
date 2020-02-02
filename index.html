@@ -312,6 +312,157 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/gRPC-C-入门教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/gRPC-C-入门教程/" itemprop="url">gRPC C++ 入门教程</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-02T10:28:29+08:00">
+                2020-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>之前曾经写过 Python 使用 gRPC 收发消息的教程，可以参考文章 <a href="https://blog.csdn.net/lihao21/article/details/54800616">《体验 gRPC 那些事儿》</a>。最近计划在 C++ 项目中使用 gRPC，故写一篇文章来记录一下如何使用 C++ 语言来实现一个简单的 gRPC 服务端和客户端程序。</p>
+<p>本教程需要先安装 gRPC，有关 gRPC 的安装教程可以参考文章 <a href="https://leehao.blog.csdn.net/article/details/104074443">《CentOS 7 安装 gRPC》</a>，<a href="https://blog.csdn.net/lihao21/article/details/54800616">《体验 gRPC 那些事儿》</a>。</p>
+<p>本文涉及的程序包括四部分，分别是客户端源代码 <code>client.cc</code>，服务端源代码 <code>server.cc</code>，proto 文件 <code>mathtest.proto</code> 以及 Makefile。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTAxLTA0NDAxNy5wbmc?x-oss-process=image/format,png" alt=""></p>
+<h2 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h2><p>Makefile 的作用是编译源代码，Makefile 文件如下：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">LDFLAGS = -L/usr/local/lib `pkg-config --libs protobuf grpc++`\</div><div class="line">           -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed\</div><div class="line">           -ldl</div><div class="line"></div><div class="line">CXX = g++</div><div class="line">CPPFLAGS += `pkg-config --cflags protobuf grpc`</div><div class="line">CXXFLAGS += -std=c++11</div><div class="line"></div><div class="line">GRPC_CPP_PLUGIN = grpc_cpp_plugin</div><div class="line">GRPC_CPP_PLUGIN_PATH ?= `which <span class="variable">$(GRPC_CPP_PLUGIN)</span>`</div><div class="line"></div><div class="line">all: client server</div><div class="line"></div><div class="line">client: mathtest.pb.o mathtest.grpc.pb.o client.o</div><div class="line">        $(CXX) $^ $(LDFLAGS) -o $@</div><div class="line"></div><div class="line">server: mathtest.pb.o mathtest.grpc.pb.o server.o</div><div class="line">        $(CXX) $^ $(LDFLAGS) -o $@</div><div class="line"></div><div class="line">%.grpc.pb.cc: %.proto</div><div class="line">        protoc --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $&lt;</div><div class="line"></div><div class="line">%.pb.cc: %.proto</div><div class="line">        protoc --cpp_out=. $&lt;</div><div class="line"></div><div class="line"><span class="section">clean:</span></div><div class="line">        rm -f *.o *.pb.cc *.pb.h client server</div></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/gRPC-C-入门教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/分布式对象存储服务器-MinIO-牛刀小试/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1727,157 +1878,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-LaTeX-制作幻灯片/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/使用-LaTeX-制作幻灯片/" itemprop="url">使用 LaTeX 制作幻灯片</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-27T22:01:47+08:00">
-                2019-01-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LaTeX/" itemprop="url" rel="index">
-                    <span itemprop="name">LaTeX</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>之前一直好奇大学里老师的那种看起来很专业的幻灯片是怎么制作的，只是知道他们使用 TeX 而一直没有动手实践。本着绝知此事要躬行的精神，决定动手实践一把。<br>由于在家主要使用 Mac  电脑，故本文讲述如何在 Mac OS 制作 LaTeX 幻灯片。  </p>
-<h2 id="一、安装-MacTeX"><a href="#一、安装-MacTeX" class="headerlink" title="一、安装 MacTeX"></a>一、安装 MacTeX</h2><p>MacTeX 是 TeX Live 的 Mac 版本，可以在 <a href="http://tug.org/mactex/">http://tug.org/mactex/</a> 查看 MacTeX 的最新消息，MacTeX 当前的最新版本是 2018 版。下载 <a href="http://tug.org/mactex/mactex-download.html">MacTeX.pkg</a>  即可进行安装。<br>MacTeX 安装好后，会生成以下的软件：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-01-26-024141.png" alt=""></p>
-<p>打开 TeXShop，进行 LaTeX 的编辑界面，输入以下代码：</p>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">\<span class="name">documentclass</span><span class="string">&#123;article&#125;</span></span></div><div class="line"><span class="tag">\<span class="name">usepackage</span><span class="string">&#123;xeCJK&#125;</span></span></div><div class="line"><span class="tag">\<span class="name">begin</span><span class="string">&#123;document&#125;</span></span></div><div class="line"></div><div class="line">你好, <span class="tag">\<span class="name">LaTeX</span></span>!</div><div class="line"><span class="tag">\<span class="name">end</span><span class="string">&#123;document&#125;</span></span></div></pre></td></tr></table></figure>
-<p>点击“排版”，便可以输出 pdf 文档：</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-01-26-041142.png" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/使用-LaTeX-制作幻灯片/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1928,7 +1928,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">84</span>
+                <span class="site-state-item-count">85</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1950,7 +1950,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">221</span>
+                <span class="site-state-item-count">222</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

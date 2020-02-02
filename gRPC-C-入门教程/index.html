@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="C++, gRPC, Makefile," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="之前曾经写过 Python 使用 gRPC 收发消息的教程，可以参考文章 《体验 gRPC 那些事儿》。最近计划在 C++ 项目中使用 gRPC，故写一篇文章来记录一下如何使用 C++ 语言来实现一个简单的 gRPC 服务端和客户端程序。
+本教程需要先安装 gRPC，有关 gRPC 的安装教程可以参考文章 《CentOS 7 安装 gRPC》，《体验 gRPC 那些事儿》。
+本文涉及的程序包括四部">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gRPC C++ 入门教程">
+<meta property="og:url" content="https://leehao.me/gRPC-C-入门教程/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="之前曾经写过 Python 使用 gRPC 收发消息的教程，可以参考文章 《体验 gRPC 那些事儿》。最近计划在 C++ 项目中使用 gRPC，故写一篇文章来记录一下如何使用 C++ 语言来实现一个简单的 gRPC 服务端和客户端程序。
+本教程需要先安装 gRPC，有关 gRPC 的安装教程可以参考文章 《CentOS 7 安装 gRPC》，《体验 gRPC 那些事儿》。
+本文涉及的程序包括四部">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTAxLTA0NDAxNy5wbmc?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2020-02-02T02:29:38.692Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gRPC C++ 入门教程">
+<meta name="twitter:description" content="之前曾经写过 Python 使用 gRPC 收发消息的教程，可以参考文章 《体验 gRPC 那些事儿》。最近计划在 C++ 项目中使用 gRPC，故写一篇文章来记录一下如何使用 C++ 语言来实现一个简单的 gRPC 服务端和客户端程序。
+本教程需要先安装 gRPC，有关 gRPC 的安装教程可以参考文章 《CentOS 7 安装 gRPC》，《体验 gRPC 那些事儿》。
+本文涉及的程序包括四部">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTAxLTA0NDAxNy5wbmc?x-oss-process=image/format,png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/gRPC-C-入门教程/"/>
+
+
+
+
+
+  <title>gRPC C++ 入门教程 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/gRPC-C-入门教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">gRPC C++ 入门教程</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-02T10:28:29+08:00">
+                2020-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前曾经写过 Python 使用 gRPC 收发消息的教程，可以参考文章 <a href="https://blog.csdn.net/lihao21/article/details/54800616" target="_blank" rel="external">《体验 gRPC 那些事儿》</a>。最近计划在 C++ 项目中使用 gRPC，故写一篇文章来记录一下如何使用 C++ 语言来实现一个简单的 gRPC 服务端和客户端程序。</p>
+<p>本教程需要先安装 gRPC，有关 gRPC 的安装教程可以参考文章 <a href="https://leehao.blog.csdn.net/article/details/104074443" target="_blank" rel="external">《CentOS 7 安装 gRPC》</a>，<a href="https://blog.csdn.net/lihao21/article/details/54800616" target="_blank" rel="external">《体验 gRPC 那些事儿》</a>。</p>
+<p>本文涉及的程序包括四部分，分别是客户端源代码 <code>client.cc</code>，服务端源代码 <code>server.cc</code>，proto 文件 <code>mathtest.proto</code> 以及 Makefile。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTAxLTA0NDAxNy5wbmc?x-oss-process=image/format,png" alt=""></p>
+<h2 id="Makefile"><a href="#Makefile" class="headerlink" title="Makefile"></a>Makefile</h2><p>Makefile 的作用是编译源代码，Makefile 文件如下：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">LDFLAGS = -L/usr/local/lib `pkg-config --libs protobuf grpc++`\</div><div class="line">           -Wl,--no-as-needed -lgrpc++_reflection -Wl,--as-needed\</div><div class="line">           -ldl</div><div class="line"></div><div class="line">CXX = g++</div><div class="line">CPPFLAGS += `pkg-config --cflags protobuf grpc`</div><div class="line">CXXFLAGS += -std=c++11</div><div class="line"></div><div class="line">GRPC_CPP_PLUGIN = grpc_cpp_plugin</div><div class="line">GRPC_CPP_PLUGIN_PATH ?= `which <span class="variable">$(GRPC_CPP_PLUGIN)</span>`</div><div class="line"></div><div class="line">all: client server</div><div class="line"></div><div class="line">client: mathtest.pb.o mathtest.grpc.pb.o client.o</div><div class="line">        $(CXX) $^ $(LDFLAGS) -o $@</div><div class="line"></div><div class="line">server: mathtest.pb.o mathtest.grpc.pb.o server.o</div><div class="line">        $(CXX) $^ $(LDFLAGS) -o $@</div><div class="line"></div><div class="line">%.grpc.pb.cc: %.proto</div><div class="line">        protoc --grpc_out=. --plugin=protoc-gen-grpc=$(GRPC_CPP_PLUGIN_PATH) $&lt;</div><div class="line"></div><div class="line">%.pb.cc: %.proto</div><div class="line">        protoc --cpp_out=. $&lt;</div><div class="line"></div><div class="line"><span class="section">clean:</span></div><div class="line">        rm -f *.o *.pb.cc *.pb.h client server</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>执行这个 Makefile 文件，会生成可执行客户端 <code>client</code> 和服务端 <code>server</code> 可执行文件。<br>客户端和服务端可执行文件都依赖于由 proto 文件生成的源代码，Makefile 在 <code>clean</code> 前面的两个规则的作用即是生成这些代码。 </p>
+<p>Makefile 文件中出现了一些特殊符号：</p>
+<ul>
+<li>$@：规则的目标名称，例如上面 Makefile 中代表 <code>client</code> 和 <code>server</code></li>
+<li>%：匹配字符，例如上面 Makefile 中匹配 <code>mathtest.proto</code></li>
+<li>$&lt;：依赖的第一个目标名称，例如上面 Makefile 中的 <code>mathtest.proto</code></li>
+<li>$^：依赖的所有目标名称，上面 Makefile 中的  <code>server</code> 规则中，即代表 <code>mathtest.pb.o mathtest.grpc.pb.o server.o</code></li>
+</ul>
+<p>有关 Makefile 的解析，可以参考阮一峰的 <a href="http://www.ruanyifeng.com/blog/2015/02/make.html" target="_blank" rel="external">《Make 命令教程》</a>。</p>
+<h2 id="Proto"><a href="#Proto" class="headerlink" title="Proto"></a>Proto</h2><p><code>.proto</code> 文件用来定义客户端和服务端的消息格式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">syntax = &quot;proto3&quot;;</div><div class="line"></div><div class="line">option java_package = &quot;ex.grpc&quot;;</div><div class="line"></div><div class="line">package mathtest;</div><div class="line"></div><div class="line">// Defines the service</div><div class="line">service MathTest &#123;</div><div class="line">    // Function invoked to send the request</div><div class="line">    rpc sendRequest (MathRequest) returns (MathReply) &#123;&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// The request message containing requested numbers</div><div class="line">message MathRequest &#123;</div><div class="line">    int32 a = 1;</div><div class="line">    int32 b = 2;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// The response message containing response</div><div class="line">message MathReply &#123;</div><div class="line">    int32 result = 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><code>syntax</code> 定义了使用 proto3 的语法（还有 proto2）</li>
+<li><code>java_package</code> 用来定义生成 Java 类所在的包</li>
+<li><code>package</code> 表示定义消息的包名，对于 C++ 程序，消息类将会被包装在对应的命名空间中，例如，使用 <code>mathtest::MathRequest</code> 来引用 <code>MathRequest</code> 消息</li>
+<li><code>service</code> 用来定义在 RPC 调用中的服务接口，这里我们定义了一个服务接口 <code>sendRequest</code>，它接受一个 <code>MathRequest</code> 消息，并返回 <code>MathReply</code> 消息</li>
+<li><code>message</code> 用来定义消息的字段，例如，<code>MathRequest</code> 消息包含两个整型字段 <code>a</code> 和 <code>b</code>，<code>MathReply</code> 包含一个整型字段 <code>result</code>。字段后面的数字并不表示该字段的值，只是 <code>proto</code> 程序用来生成相关源代码使用。</li>
+</ul>
+<p>有关 Protocol Buffers 的介绍，可以参考官方文档，<a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank" rel="external">https://developers.google.com/protocol-buffers/docs/overview</a>。</p>
+<h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><p>服务端代码 <code>server.cc</code> 如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// </span></div><div class="line"><span class="comment">// server.cc</span></div><div class="line"><span class="comment">// Created by leo on 2020/1/31.</span></div><div class="line"><span class="comment">//</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;grpcpp/grpcpp.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"mathtest.grpc.pb.h"</span></span></div><div class="line"></div><div class="line"><span class="keyword">using</span> grpc::Server;</div><div class="line"><span class="keyword">using</span> grpc::ServerBuilder;</div><div class="line"><span class="keyword">using</span> grpc::ServerContext;</div><div class="line"><span class="keyword">using</span> grpc::Status;</div><div class="line"></div><div class="line"><span class="keyword">using</span> mathtest::MathTest;</div><div class="line"><span class="keyword">using</span> mathtest::MathRequest;</div><div class="line"><span class="keyword">using</span> mathtest::MathReply;</div><div class="line"></div><div class="line"><span class="keyword">class</span> MathServiceImplementation final : <span class="keyword">public</span> MathTest::Service &#123;</div><div class="line">    <span class="function">Status <span class="title">sendRequest</span><span class="params">(</span></span></div><div class="line">            ServerContext* context,</div><div class="line">            <span class="keyword">const</span> MathRequest* request,</div><div class="line">            MathReply* reply</div><div class="line">    ) override &#123;</div><div class="line">        <span class="keyword">int</span> a = request-&gt;a();</div><div class="line">        <span class="keyword">int</span> b = request-&gt;b();</div><div class="line"></div><div class="line">        reply-&gt;set_result(a * b);</div><div class="line"></div><div class="line">        <span class="keyword">return</span> Status::OK;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Run</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">address</span><span class="params">(<span class="string">"0.0.0.0:5000"</span>)</span></span>;</div><div class="line">    MathServiceImplementation service;</div><div class="line"></div><div class="line">    ServerBuilder builder;</div><div class="line"></div><div class="line">    builder.AddListeningPort(address, grpc::InsecureServerCredentials());</div><div class="line">    builder.RegisterService(&amp;service);</div><div class="line"></div><div class="line">    <span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;Server&gt; server(builder.BuildAndStart());</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Server listening on port: "</span> &lt;&lt; address &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    server-&gt;Wait();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</div><div class="line">    Run();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在代码开头，我们引入了 grpc 头文件以及 proto 生成的头文件，然后我们声明了在服务端代码中使用的相应命名空间下的类型。</p>
+<p><code>MathServiceImplementation</code> 实现服务接口 <code>sendRequest()</code>，该接口获取请求消息中的 <code>a</code> 和 <code>b</code> 字段的值，并返回 <code>a * b</code> 的积。<code>MathServiceImplementation</code> 是个实现类，继承于 <code>MathTest::Service</code> ，<code>MathTest::Service</code> 在 <code>mathtest.grpc.pb.h</code> 声明。</p>
+<p><code>Run()</code> 函数指定了服务地址 <code>0.0.0.0:5000</code>，对 <code>MathServiceImplementation</code> 服务注册后，我们启动了服务端，并接受客户端的请求。</p>
+<h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p>客户端 <code>client.cc</code> 代码如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">// client.cc</div><div class="line">// Created by leo on 2020/1/31.</div><div class="line">//</div><div class="line"></div><div class="line">#include &lt;string&gt;</div><div class="line"></div><div class="line">#include &lt;grpcpp/grpcpp.h&gt;</div><div class="line">#include "mathtest.grpc.pb.h"</div><div class="line"></div><div class="line">using grpc::Channel;</div><div class="line">using grpc::ClientContext;</div><div class="line">using grpc::Status;</div><div class="line"></div><div class="line">using mathtest::MathTest;</div><div class="line">using mathtest::MathRequest;</div><div class="line">using mathtest::MathReply;</div><div class="line"></div><div class="line">class MathTestClient &#123;</div><div class="line">public:</div><div class="line">    MathTestClient(std::shared_ptr&lt;Channel&gt; channel) : stub_(MathTest::NewStub(channel)) &#123;&#125;</div><div class="line"></div><div class="line">    int sendRequest(int a, int b) &#123;</div><div class="line">        MathRequest request;</div><div class="line"></div><div class="line">        request.set_a(a);</div><div class="line">        request.set_b(b);</div><div class="line"></div><div class="line">        MathReply reply;</div><div class="line"></div><div class="line">        ClientContext context;</div><div class="line"></div><div class="line">        Status status = stub_-&gt;sendRequest(&amp;context, request, &amp;reply);</div><div class="line"></div><div class="line">        if(status.ok())&#123;</div><div class="line">            return reply.result();</div><div class="line">        &#125; else &#123;</div><div class="line">            std::cout &lt;&lt; status.error_code() &lt;&lt; ": " &lt;&lt; status.error_message() &lt;&lt; std::endl;</div><div class="line">            return -1;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">private:</div><div class="line">    std::unique_ptr&lt;MathTest::Stub&gt; stub_;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">void Run() &#123;</div><div class="line">    std::string address("0.0.0.0:5000");</div><div class="line">    MathTestClient client(</div><div class="line">            grpc::CreateChannel(</div><div class="line">                    address,</div><div class="line">                    grpc::InsecureChannelCredentials()</div><div class="line">            )</div><div class="line">    );</div><div class="line"></div><div class="line">    int response;</div><div class="line"></div><div class="line">    int a = 5;</div><div class="line">    int b = 10;</div><div class="line"></div><div class="line">    response = client.sendRequest(a, b);</div><div class="line">    std::cout &lt;&lt; "Answer received: " &lt;&lt; a &lt;&lt; " * " &lt;&lt; b &lt;&lt; " = " &lt;&lt; response &lt;&lt; std::endl;</div><div class="line">&#125;</div><div class="line"></div><div class="line">int main(int argc, char* argv[])&#123;</div><div class="line">    Run();</div><div class="line"></div><div class="line">    return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>MathTestClient</code> 类提供向服务端发送请求的接口 <code>sendRequest()</code>。<code>sendRequest()</code> 接受两个整型参数，然后通过私有成员变量 <code>stub_</code> 向服务端发送请求消息并接收返回结果。</p>
+<p><code>Run()</code> 函数指定服务地址并初始化 <code>MathTestClient</code> 对象 <code>client</code>，通过对象 <code>client</code> 调用服务接口并获取返回结果。可以看到，在客户端调用服务端的接口时，就像是调用本地接口一样，这也是 RPC 调用的特色。</p>
+<h2 id="编译运行"><a href="#编译运行" class="headerlink" title="编译运行"></a>编译运行</h2><p>执行命令编译客户端和服务端源代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">make</div></pre></td></tr></table></figure>
+<p>执行服务端程序：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./server</div></pre></td></tr></table></figure>
+<p>可以看到服务端输出：</p>
+<blockquote>
+<p>Server listening on port: 0.0.0.0:5000</p>
+</blockquote>
+<p>执行客户端程序：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./client</div></pre></td></tr></table></figure>
+<p>可以看到客户端输出：</p>
+<blockquote>
+<p>Answer received: 5 * 10 = 50</p>
+</blockquote>
+<p>如果执行编译过程时报错，可以参考以下处理方法。</p>
+<h3 id="解决-pkg-config-报错"><a href="#解决-pkg-config-报错" class="headerlink" title="解决 pkg-config 报错"></a>解决 pkg-config 报错</h3><p>上述 Makefile 中使用了 <code>pkg-config</code> 命令，如果执行 <code>make</code> 编译代码时报错，例如：</p>
+<blockquote>
+<p>Package protobuf was not found in the pkg-config search path.<br>Perhaps you should add the directory containing `protobuf.pc’<br>to the PKG_CONFIG_PATH environment variable<br>No package ‘protobuf’ found</p>
+</blockquote>
+<p>如报错提示，这是由于 pkg-config 无法搜到 *pc 文件所在路径导致，可以通过在 ~/.bashrc 文件添加环境变量 <code>PKG_CONFIG_PATH</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig</div><div class="line">export PKG_CONFIG_PATH</div></pre></td></tr></table></figure>
+<p>其中，<code>/usr/local/lib/pkgconfig</code> 为 <code>protobuf.pc</code> 所在路径（可以通过 <code>find</code> 命令搜索到）。<br>添加 <code>PKG_CONFIG_PATH</code> 环境变量后，执行 <code>source ~/.bashrc</code> ，再执行编译代码，不再报错。</p>
+<h3 id="解决-libgrpc-so-无法找到报错"><a href="#解决-libgrpc-so-无法找到报错" class="headerlink" title="解决 libgrpc++.so 无法找到报错"></a>解决 libgrpc++.so 无法找到报错</h3><p>如果运行时报 libgrpc++.so 库文件无法找到的错误，例如：</p>
+<blockquote>
+<p>./server: error while loading shared libraries: libgrpc++.so.1: cannot open shared object file: No such file or directory</p>
+</blockquote>
+<p>这是由于 gRPC 安装时库文件所在的路径无法被系统找到导致。可以通过增加 ld 搜索路径解决。<br>在 <code>/etc/ld.so.conf.d/</code> 目录增加 <code>grpc.conf</code> 文件，内容是 libgrpc++.so 文件所在的目录（可以通过 <code>find</code> 命令搜索到）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/usr/local/lib/</div></pre></td></tr></table></figure>
+<p>然后执行命令 <code>ldconfig</code>，再运行程序即可。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://medium.com/@andrewvetovitz/grpc-c-introduction-45a66ca9461f" target="_blank" rel="external">https://medium.com/@andrewvetovitz/grpc-c-introduction-45a66ca9461f</a></li>
+<li><a href="https://grpc.io/docs/quickstart/cpp/" target="_blank" rel="external">https://grpc.io/docs/quickstart/cpp/</a></li>
+<li><a href="https://colobu.com/2015/01/07/Protobuf-language-guide/" target="_blank" rel="external">https://colobu.com/2015/01/07/Protobuf-language-guide/</a></li>
+<li><a href="https://github.com/grpc/grpc/blob/master/BUILDING.md" target="_blank" rel="external">https://github.com/grpc/grpc/blob/master/BUILDING.md</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C-gRPC-Makefile/" rel="tag"># C++, gRPC, Makefile</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/分布式对象存储服务器-MinIO-牛刀小试/" rel="next" title="分布式对象存储服务器 MinIO 牛刀小试">
+                <i class="fa fa-chevron-left"></i> 分布式对象存储服务器 MinIO 牛刀小试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">85</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">222</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Makefile"><span class="nav-number">1.</span> <span class="nav-text">Makefile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Proto"><span class="nav-number">2.</span> <span class="nav-text">Proto</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端"><span class="nav-number">3.</span> <span class="nav-text">服务端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端"><span class="nav-number">4.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译运行"><span class="nav-number">5.</span> <span class="nav-text">编译运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解决-pkg-config-报错"><span class="nav-number">5.1.</span> <span class="nav-text">解决 pkg-config 报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决-libgrpc-so-无法找到报错"><span class="nav-number">5.2.</span> <span class="nav-text">解决 libgrpc++.so 无法找到报错</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
