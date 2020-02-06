@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="docker,bind mount,volume," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="概览默认情况下，在 docker 容器（container）内创建的文件或产生的数据都只是保存在容器的可写层，这意味着当容器不存在时，容器内产生的数据也没有保存下来。
+Docker 提供两种容器数据持久化的方法，使用这两种方法即使容器不存在时，数据也能持久化下来：
+
+Bind mount：bind mount 可以是宿主机（host）文件系统的任意目录或文件，除了 docker 容器可以访问，宿主">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 数据持久化">
+<meta property="og:url" content="https://leehao.me/Docker-数据持久化/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="概览默认情况下，在 docker 容器（container）内创建的文件或产生的数据都只是保存在容器的可写层，这意味着当容器不存在时，容器内产生的数据也没有保存下来。
+Docker 提供两种容器数据持久化的方法，使用这两种方法即使容器不存在时，数据也能持久化下来：
+
+Bind mount：bind mount 可以是宿主机（host）文件系统的任意目录或文件，除了 docker 容器可以访问，宿主">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA1LTAxMDU0MS5qcGc?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2020-02-06T12:08:42.654Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker 数据持久化">
+<meta name="twitter:description" content="概览默认情况下，在 docker 容器（container）内创建的文件或产生的数据都只是保存在容器的可写层，这意味着当容器不存在时，容器内产生的数据也没有保存下来。
+Docker 提供两种容器数据持久化的方法，使用这两种方法即使容器不存在时，数据也能持久化下来：
+
+Bind mount：bind mount 可以是宿主机（host）文件系统的任意目录或文件，除了 docker 容器可以访问，宿主">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA1LTAxMDU0MS5qcGc?x-oss-process=image/format,png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Docker-数据持久化/"/>
+
+
+
+
+
+  <title>Docker 数据持久化 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Docker-数据持久化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Docker 数据持久化</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-06T20:07:18+08:00">
+                2020-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>默认情况下，在 docker 容器（container）内创建的文件或产生的数据都只是保存在容器的可写层，这意味着当容器不存在时，容器内产生的数据也没有保存下来。</p>
+<p>Docker 提供两种容器数据持久化的方法，使用这两种方法即使容器不存在时，数据也能持久化下来：</p>
+<ul>
+<li><em>Bind mount</em>：bind mount 可以是宿主机（host）文件系统的任意目录或文件，除了 docker 容器可以访问，宿主机上也可以对这些目录或文件读写操作</li>
+<li><em>Volume</em>：volume 数据持久化在宿主机文件系统 <code>/var/lib/docker/volumes/</code> 目录下，volume 数据由 docker 进行管理，外部不要对 volume 数据进程修改。 Volume 方式是 docker 官方推荐的数据持久化方式。</li>
+</ul>
+<p>另外，如果 docker 运行在 Linux 宿主机，还可以使用 <em>tmpfs mount</em>。<em>tmpfs mount</em> 的数据只是保存在宿主机的内存中，并没有持久化到硬盘。</p>
+<p>Docker 容器与宿主机数据共享的方式如下图所示：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA1LTAxMDU0MS5qcGc?x-oss-process=image/format,png" alt=""></p>
+<p>无论使用哪种方式，对于 docker 容器来说，这些数据都被看作成一个目录或文件，数据的使用方式是一样的。</p>
+<h2 id="Bind-mount"><a href="#Bind-mount" class="headerlink" title="Bind mount"></a>Bind mount</h2><p>Bind mount 方式是 docker 早期使用的容器与宿主机数据共享的方式，可以实现将宿主机上的文件或目录挂载（mount）到 docker 容器中使用。</p>
+<p>相对于 volume 方式，bind mount 方式存在不少的局限。例如，bind mount 在 Linux 和 Windows 操作系统下不可移植。因此 docker 官方推荐使用 volume 方式。</p>
+<p>为了便于说明 docker 数据共享的特点，我们以 <a href="https://www.busybox.net/" target="_blank" rel="external"><strong>busybox</strong></a> 镜像为例进行操作演示。</p>
+<p>例如，使用 <code>docker run -v</code> 命令来将将宿主机的 <code>/Users/lihao/code/docker/busybox</code> 目录挂载到容器的 <code>/databind</code> 目录：</p>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it --name container1 -v /Users/lihao/code/docker/busybox:/databind busybox</div></pre></td></tr></table></figure>
+<p>这时，在宿主机上创建两个文件 <code>file1.txt</code> 和 <code>file2.txt</code>，再在容器内执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> /databind</div><div class="line">ls</div></pre></td></tr></table></figure>
+<p>可以同步看到刚创建的两个文件：</p>
+<blockquote>
+<p>file1.txt  file2.txt</p>
+</blockquote>
+<p>对于 bind mount，有几点需要注意。</p>
+<ul>
+<li><code>-v</code> 宿主机目录路径必须以 <code>/</code> 或 <code>~/</code> 开头，否则 docker 会将其当成是 volume 而不是 bind mount</li>
+<li>如果宿主机上的目录不存在，docker 会自动创建该目录</li>
+<li>如果容器中的目录不存在，docker 会自动创建该目录</li>
+<li>如果容器中的目录已有内容，那么 docker 会使用宿主机上目录的内容覆盖容器目录的内容</li>
+</ul>
+<h2 id="Volume"><a href="#Volume" class="headerlink" title="Volume"></a>Volume</h2><p>与 bind mount 不同，volume 由 docker 创建和管理，docker 所有的 volume 都保存在宿主机文件系统的 <code>/var/lib/docker/volumes</code> 目录下（注意，mac 操作系统以虚拟机运行 docker，因此并不存在该目录，可以参考 <a href="https://stackoverflow.com/questions/38532483/where-is-var-lib-docker-on-mac-os-x" target="_blank" rel="external">stackoverflow</a>）。 </p>
+<p>Docker 引入 volume 的原因有：</p>
+<ul>
+<li>删除容器时，volume 不会被删除</li>
+<li>在不同的容器之间共享 volume （存储 / 数据）</li>
+<li>容器与存储分离</li>
+<li>将 volume 存储在远程主机或云上</li>
+</ul>
+<p>可以使用 <code>docker run -v</code> 参数为启动容器加载一个 volume，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it -v /data --name container1 busybox</div></pre></td></tr></table></figure>
+<p>这样，我们就启动了一个名为 <code>container1</code> 的容器，由于使用了 <code>-it</code> 参数，我们以交互方式进行了容器内部。<br>这时，执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ls</div></pre></td></tr></table></figure>
+<p>可以看到容器中 <code>/data</code> 目录：</p>
+<blockquote>
+<p>bin   data  dev   etc   home  proc  root  sys   tmp   usr   var</p>
+</blockquote>
+<p>接着，我们在容器 <code>/data</code> 目录创建 <code>file1.txt</code> 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd data</div><div class="line">touch file1.txt</div><div class="line">exit</div></pre></td></tr></table></figure>
+<p>退出容器后，执行 <code>docker ps -a</code> 可以看到 <code>container1</code> 容器的退出状态。</p>
+<p>现在，我们 <code>inpect</code> 一下容器，看下 docker 在启动容器时做了什么：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker inspect container1</div></pre></td></tr></table></figure>
+<p>可以看到一大串 JSON 格式的输出，我们重点关注 <code>Mounts</code> 字段的输出。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">"Mounts": [</div><div class="line">            &#123;</div><div class="line">                "Type": "volume",</div><div class="line">                "Name": "9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5",</div><div class="line">                "Source": "/var/lib/docker/volumes/9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5/_data",</div><div class="line">                "Destination": "/data",</div><div class="line">                "Driver": "local",</div><div class="line">                "Mode": "",</div><div class="line">                "RW": true,</div><div class="line">                "Propagation": ""</div><div class="line">            &#125;</div><div class="line">        ],</div></pre></td></tr></table></figure>
+<p>可以看到，当容器 <code>container1</code> 加载一个 volume （/data）时，docker 在目录 <code>/var/lib/docker/volumes/</code> 创建一个新的目录，用来存储容器中产生的文件。同时，我们注意到 <code>/data</code> 的 <strong>RW</strong> 属性为 <code>true</code>，即可读可写。</p>
+<p>我们重新启动 <code>container1</code> 容器，并进入容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker restart container1</div><div class="line">docker attach container1</div></pre></td></tr></table></figure>
+<p>在容器执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">ls</div><div class="line"><span class="built_in">cd</span> /data</div><div class="line">ls</div></pre></td></tr></table></figure>
+<p>可以看到 <code>/data</code> 目录仍在：</p>
+<blockquote>
+<p>bin   data  dev   etc   home  proc  root  sys   tmp   usr   var</p>
+</blockquote>
+<p>之前创建的 <code>file1.txt</code> 文件也在：</p>
+<blockquote>
+<p>file1.txt</p>
+</blockquote>
+<p>这说明，即使容器关闭，之前在 volume 存储的文件仍然会保留下来。</p>
+<p>然后，我们退出容器，并将容器 <code>container1</code> 删除。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker rm container1</div></pre></td></tr></table></figure>
+<p>这时，使用命令 <code>docker volume ls</code> 查看当前的 volume，可以看到 <code>9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5</code> volume 仍然存在。也就是说，即使容器不存在了，volume 仍可在宿主机上保存下来。</p>
+<blockquote>
+<p>local               9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5</p>
+</blockquote>
+<p>如果需要在其他容器也使用这个 volume，可以使用以下命令加载指定的 volume：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it -v 9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5:/data busybox</div></pre></td></tr></table></figure>
+<p>可以使用 <code>docker volume rm</code> 删除指定的 volume。</p>
+<h3 id="挂载指定的-volume"><a href="#挂载指定的-volume" class="headerlink" title="挂载指定的 volume"></a>挂载指定的 volume</h3><p>上面的 <code>docker run -v</code> 命令中，我们并没有指定 volume 的名称，这样 docker 会默认给我们创建一个匿名的 volume。<br>我们也可以挂载指定名称的 volume：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it -v my-volume:/data --name container1 busybox</div></pre></td></tr></table></figure>
+<p>这样，我们在启动容器 <code>container1</code> 时，将挂载一个名为 <code>my-volume</code> 的 volume，并挂载到容器的 <code>/data</code> 目录。对于 docker 来说，如果 <code>my-volume</code> 不存在，那么 docker 就会自动创建该 volume，并挂载到 <code>/data</code> 目录。</p>
+<p>退出容器后，执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker volume inspect my-volume</div></pre></td></tr></table></figure>
+<p>可以看到 <code>my-volume</code> 的 JSON 输出信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">    &#123;</div><div class="line">        <span class="attr">"CreatedAt"</span>: <span class="string">"2020-02-06T09:28:54Z"</span>,</div><div class="line">        <span class="attr">"Driver"</span>: <span class="string">"local"</span>,</div><div class="line">        <span class="attr">"Labels"</span>: <span class="literal">null</span>,</div><div class="line">        <span class="attr">"Mountpoint"</span>: <span class="string">"/var/lib/docker/volumes/my-volume/_data"</span>,</div><div class="line">        <span class="attr">"Name"</span>: <span class="string">"my-volume"</span>,</div><div class="line">        <span class="attr">"Options"</span>: <span class="literal">null</span>,</div><div class="line">        <span class="attr">"Scope"</span>: <span class="string">"local"</span></div><div class="line">    &#125;</div><div class="line">]</div></pre></td></tr></table></figure>
+<p>可以看到，名为 <code>my-volume</code> 的 volume 在宿主机的目录为 <code>/var/lib/docker/volumes/my-volume/_data</code>。</p>
+<p>除了让 docker 帮我们自动创建 volume，我们也可以自行创建 volume：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker volume create my-volume2</div></pre></td></tr></table></figure>
+<p>然后将这个手工创建的 volume 挂载到容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run -it -v my-volume2:/data --name container1 busybox</div></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://docs.docker.com/storage/" target="_blank" rel="external">https://docs.docker.com/storage/</a></li>
+<li><a href="https://docs.docker.com/storage/bind-mounts/" target="_blank" rel="external">https://docs.docker.com/storage/bind-mounts/</a></li>
+<li><a href="https://www.jianshu.com/p/8c22cdfc0ffd" target="_blank" rel="external">https://www.jianshu.com/p/8c22cdfc0ffd</a></li>
+<li><a href="https://www.jianshu.com/p/ef0f24fd0674" target="_blank" rel="external">https://www.jianshu.com/p/ef0f24fd0674</a></li>
+<li><a href="https://www.ostechnix.com/explaining-docker-volumes-with-examples/" target="_blank" rel="external">https://www.ostechnix.com/explaining-docker-volumes-with-examples/</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/bind-mount/" rel="tag"># bind mount</a>
+          
+            <a href="/tags/volume/" rel="tag"># volume</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/gRPC-C-入门教程/" rel="next" title="gRPC C++ 入门教程">
+                <i class="fa fa-chevron-left"></i> gRPC C++ 入门教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">86</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">225</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bind-mount"><span class="nav-number">2.</span> <span class="nav-text">Bind mount</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Volume"><span class="nav-number">3.</span> <span class="nav-text">Volume</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#挂载指定的-volume"><span class="nav-number">3.1.</span> <span class="nav-text">挂载指定的 volume</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
