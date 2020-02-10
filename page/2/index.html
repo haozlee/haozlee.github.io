@@ -312,6 +312,165 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/CLion-实现远程调试/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/CLion-实现远程调试/" itemprop="url">CLion 实现远程调试</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T08:41:16+08:00">
+                2019-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>CLion 是 JetBrains IDE 全家桶产品之一，可以用来开发 C/C++ 项目，而 GDB 则可以用来对 C/C++ 程序进行调试。<br>作为一款调试器，GDB 为程序开发人员提供了强大的调试功能，但却需要使用命令来执行调试操作，操作起来不是很方便。（有关 GDB 的使用，可以参考文章<a href="https://blog.csdn.net/lihao21/article/details/78294587">《GDB 调试》</a>。）为此，CLion 为程序开发人员提供了图形化的调试界面以方便调试。另外，CLion 还提供了远程调试的功能。因为在实际项目中，我们常会碰到在本地开发环境编写代码，程序却在远程机器运行的情况。远程调试功能对我们来说是十分必要的。</p>
+<p>本文讲述如何使用 CLion 来实现远程调试。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>假设本地开发环境是 Windows 操作系统，程序远程执行环境是 CentOS 操作系统。为满足远程调试，需要在 CentOS 上安装必要的软件，安装的软件包括：</p>
+<ul>
+<li>cmake</li>
+<li>gcc</li>
+<li>gdb</li>
+<li>gdbserver</li>
+</ul>
+<p>安装命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">yum install cmake -y</div><div class="line">yum install gcc-c++ -y</div><div class="line">yum install gdb -y</div><div class="line">yum install gdb-gdbserver -y</div></pre></td></tr></table></figure>
+<p>cmake 用于管理编译过程，生成 Makefile 文件；gcc-c++ 是编译器；gdb 是个调试工具，程序调试功能实际上就是由 gdb 提供的；gdbserver 用于监听某个 TCP 端口，允许远程主机连接，以实现远程调试功能。</p>
+<p>至于本地开发环境，Windows 操作系统上安装好最新版本的 CLion ，以笔者为例，当前 CLion 最新版本为 2018.3。</p>
+<h2 id="代码同步"><a href="#代码同步" class="headerlink" title="代码同步"></a>代码同步</h2><p>使用 CLion 创建一个 C++ 项目 helloworld。然后，打开菜单 Tools - Deployment - Configuration，配置远程主机以及本地目录与远程目录的映射关系：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-02-16-001953.jpg" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/CLion-实现远程调试/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/债券的价格/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1712,154 +1871,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Spring-MVC-入门例子/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Spring-MVC-入门例子/" itemprop="url">Spring MVC 入门例子</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-18T21:48:06+08:00">
-                2018-06-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>Spring Web MVC 是一个建立在 Servlet API 的 Web 框架，它属于 Spring Framework 的产品。Spring Web MVC 名称来源于模块 spring-webmvc ，但它更常用的叫法是 Spring MVC。<br>本文讲述如何使用 IntelliJ IDEA 来编写一个 Spring MVC Demo。</p>
-<p>使用 IntelliJ IDEA 创建一个 Maven 项目，选择 webapp 类型。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2018-06-18-134926.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Spring-MVC-入门例子/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1910,7 +1921,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">86</span>
+                <span class="site-state-item-count">87</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1932,7 +1943,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">225</span>
+                <span class="site-state-item-count">228</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

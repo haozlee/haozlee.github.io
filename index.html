@@ -312,6 +312,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Docker-Compose-入门教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Docker-Compose-入门教程/" itemprop="url">Docker Compose 入门教程</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-10T09:44:29+08:00">
+                2020-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。<br>通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。</p>
+<p>使用 compose 只需要三步：</p>
+<ol>
+<li>使用 <code>Dockerfile</code> 定义应用的环境，以便于可以任何地方复制应用的环境</li>
+<li>使用 <code>docker-compose.yml</code> 定义构成应用的服务，以便于它们可以在隔离的环境中一起运行</li>
+<li>运行 <code>docker-compose up</code> 命令，这时 compose 会启动并运行整个应用程序</li>
+</ol>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>对于 Mac 系统 和 Windows 系统，安装 docker 桌面端时， compose 已经捆绑安装了。对于 Linux 系统安装 compose 也不麻烦，可以参考官方安装文档 <a href="https://docs.docker.com/compose/install/">https://docs.docker.com/compose/install/</a>。</p>
+<p>可以通过以下命令来测试 compose 安装是否成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose --version</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>docker-compose version 1.24.1, build 4667896b</p>
+</blockquote>
+<h2 id="实践：以-Flask-应用为例"><a href="#实践：以-Flask-应用为例" class="headerlink" title="实践：以 Flask 应用为例"></a>实践：以 Flask 应用为例</h2><p>我们以一个 Flask 应用程序为例，说明如何使用 compose 来配置相关的服务。</p>
+<h3 id="步骤一：编写源代码"><a href="#步骤一：编写源代码" class="headerlink" title="步骤一：编写源代码"></a>步骤一：编写源代码</h3><ol>
+<li>创建源代码目录 <code>composetest</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir composetest</div><div class="line"><span class="built_in">cd</span> composetest</div></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Docker-Compose-入门教程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/Docker-数据持久化/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1721,165 +1885,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/CLion-实现远程调试/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/CLion-实现远程调试/" itemprop="url">CLion 实现远程调试</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-16T08:41:16+08:00">
-                2019-02-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/C/" itemprop="url" rel="index">
-                    <span itemprop="name">C++</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>CLion 是 JetBrains IDE 全家桶产品之一，可以用来开发 C/C++ 项目，而 GDB 则可以用来对 C/C++ 程序进行调试。<br>作为一款调试器，GDB 为程序开发人员提供了强大的调试功能，但却需要使用命令来执行调试操作，操作起来不是很方便。（有关 GDB 的使用，可以参考文章<a href="https://blog.csdn.net/lihao21/article/details/78294587">《GDB 调试》</a>。）为此，CLion 为程序开发人员提供了图形化的调试界面以方便调试。另外，CLion 还提供了远程调试的功能。因为在实际项目中，我们常会碰到在本地开发环境编写代码，程序却在远程机器运行的情况。远程调试功能对我们来说是十分必要的。</p>
-<p>本文讲述如何使用 CLion 来实现远程调试。</p>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>假设本地开发环境是 Windows 操作系统，程序远程执行环境是 CentOS 操作系统。为满足远程调试，需要在 CentOS 上安装必要的软件，安装的软件包括：</p>
-<ul>
-<li>cmake</li>
-<li>gcc</li>
-<li>gdb</li>
-<li>gdbserver</li>
-</ul>
-<p>安装命令如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">yum install cmake -y</div><div class="line">yum install gcc-c++ -y</div><div class="line">yum install gdb -y</div><div class="line">yum install gdb-gdbserver -y</div></pre></td></tr></table></figure>
-<p>cmake 用于管理编译过程，生成 Makefile 文件；gcc-c++ 是编译器；gdb 是个调试工具，程序调试功能实际上就是由 gdb 提供的；gdbserver 用于监听某个 TCP 端口，允许远程主机连接，以实现远程调试功能。</p>
-<p>至于本地开发环境，Windows 操作系统上安装好最新版本的 CLion ，以笔者为例，当前 CLion 最新版本为 2018.3。</p>
-<h2 id="代码同步"><a href="#代码同步" class="headerlink" title="代码同步"></a>代码同步</h2><p>使用 CLion 创建一个 C++ 项目 helloworld。然后，打开菜单 Tools - Deployment - Configuration，配置远程主机以及本地目录与远程目录的映射关系：<br><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2019-02-16-001953.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/CLion-实现远程调试/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1930,7 +1935,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">86</span>
+                <span class="site-state-item-count">87</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1952,7 +1957,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">225</span>
+                <span class="site-state-item-count">228</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

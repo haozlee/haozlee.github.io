@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Docker Compose 入门教程]]></title>
+    <url>%2FDocker-Compose-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。 使用 compose 只需要三步： 使用 Dockerfile 定义应用的环境，以便于可以任何地方复制应用的环境 使用 docker-compose.yml 定义构成应用的服务，以便于它们可以在隔离的环境中一起运行 运行 docker-compose up 命令，这时 compose 会启动并运行整个应用程序 安装对于 Mac 系统 和 Windows 系统，安装 docker 桌面端时， compose 已经捆绑安装了。对于 Linux 系统安装 compose 也不麻烦，可以参考官方安装文档 https://docs.docker.com/compose/install/。 可以通过以下命令来测试 compose 安装是否成功： 1docker-compose --version 输出： docker-compose version 1.24.1, build 4667896b 实践：以 Flask 应用为例我们以一个 Flask 应用程序为例，说明如何使用 compose 来配置相关的服务。 步骤一：编写源代码 创建源代码目录 composetest 12mkdir composetestcd composetest 创建 Flask 应用 创建 app.py 源代码： 12345678910111213141516171819202122232425import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count(): retries = 5 while True: try: return cache.incr('hits') except redis.exceptions.ConnectionError as exc: if retries == 0: raise exc retries -= 1 time.sleep(0.5)@app.route('/')def hello(): count = get_hit_count() return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count) 上述的代码中，redis 是 redis 容器的主机名称，且 redis 的监听端口为 6379。对于 compose 来说，可以使用容器名称来作为主机名称来访问其他容器，具体可以参考 compose 网络。注意，如果使用 compose 运行 app.py，则 redis 的主机地址不能使用 127.0.0.1，否则会出现无法连接 redis 的报错。 创建 python 依赖 创建 requirements.txt 文件，里面包含应用程序依赖的 python 包。 12flaskredis 步骤二：创建 Dockerfile接下来，我们编写 Dockerfile 文件来构建 docker 镜像。这个镜像包含了 flask 应用程序的依赖环境。 在 composetest 目录创建 Dockerfile 文件： 123456789101112131415FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"] 这个 Dockerfile 文件作用包括： 构建的基础镜像是 python:3.7-alpine 工作目录为 /code 设置 flask 应用程序的环境变量，有关 flask 环境变量的使用，可以参考 flask quickstart 安装 gcc 等软件 复制 requirements.txt 文件到工作目录，以便于安装有关 python 依赖 复制当前目录文件到工作目录 /code 设置容器启动命令，以便启动 flask 应用程序 有关 Dockerfile 的使用，请参考官方文档 Dockerfile 官方文档。 步骤三：定义 compose 服务接下来，我们编写 docker-compose.yml。在 composetest 目录创建 docker-compose.yml 文件： 12345678version: '3'services: web: build: . ports: - "5000:5000" redis: image: "redis:alpine" 在 docker-compose.yml 文件定义了两个服务：web 和 redis。 web 服务：web 服务的镜像由 Dockerfile 来指定构建。另外，我们还指定的宿主机和容器间端口的映射关系 5000:5000 redis 服务：redis 服务的镜像从 docker 镜像仓库拉取 注意每个服务都必须通过 image 指定镜像或 build 指令（需要 Dockerfile）来自动构建生成镜像。 最后，composetest 目录内的文件如下图所示： 步骤四：运行进入 composetest 目录，执行命令： 1docker-compose up 接下来，compose 会构建 web 镜像，拉取 redis 镜像，并启动服务。 启动完毕，打开浏览器，输入地址 http://localhost:5000/，会看到以下输出： Hello World! I have been seen 1 times. 刷新一下页面，会看到数据不断地增加 1。 使用命令 docker images 可以观察到当前的镜像，使用命令 docker ps -a 可以观察当前正在运行的容器，有需要的话，还可以使用命令 docker exec -it xxx /bin/sh 进入容器。 为了关闭并删除 compose 启动的容器，可以执行命令： 1docker-compose down 步骤五：往 compose 文件添加 bind mount修改 docker-compose.yml 文件，往 web 服务添加 bind mount： 123456789101112version: '3'services: web: build: . ports: - "5000:5000" volumes: - .:/code environment: FLASK_ENV: development redis: image: "redis:alpine" 通过 volumes 关键字我们将当前目录 composetest 挂载到容器内的 /code 目录，这样一来，我们就可以随时修改应用程序的源代码，而不需要重新构建镜像。同时，我们增加了新的环境变量 FLASK_ENV（值为 development），这使得可以修改 flask 应用的代码随即生效，而不需要对 flask 应用进行重启。 有关 bind mount 的使用，可以参考文章 《Docker 数据持久化》。 重新执行命令 docker-compose up，启动应用程序。打开浏览器，输入地址，看到输出 Hello World! I have been seen 1 times. 这时，修改本地 composetest 目录的 app.py 源代码，调整问候语，然后保存。 1234@app.route('/')def hello(): count = get_hit_count() return 'Hello from Docker! I have been seen &#123;&#125; times.\n'.format(count) 再刷新浏览器，可以看到输出的问候语已更新，说明由于 bind mount 的使用，通过修改本地源代码而不需要重新构建镜像，应用程序就已经得到了更新。 Hello from Docker! I have been seen 2 times. 参考资料 https://docs.docker.com/compose/ https://docs.docker.com/compose/install/ https://docs.docker.com/compose/wordpress/ https://juejin.im/post/5d17442e518825559f46ed92 https://www.jianshu.com/p/4c4b8e8f9f55 https://docs.docker.com/compose/gettingstarted/ https://flask.palletsprojects.com/en/1.1.x/quickstart/ https://docs.docker.com/compose/networking/ https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html]]></content>
+      <categories>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>compose</tag>
+        <tag>容器</tag>
+        <tag>Dockerfile</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Docker 数据持久化]]></title>
     <url>%2FDocker-%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96%2F</url>
     <content type="text"><![CDATA[概览默认情况下，在 docker 容器（container）内创建的文件或产生的数据都只是保存在容器的可写层，这意味着当容器不存在时，容器内产生的数据也没有保存下来。 Docker 提供两种容器数据持久化的方法，使用这两种方法即使容器不存在时，数据也能持久化下来： Bind mount：bind mount 可以是宿主机（host）文件系统的任意目录或文件，除了 docker 容器可以访问，宿主机上也可以对这些目录或文件读写操作 Volume：volume 数据持久化在宿主机文件系统 /var/lib/docker/volumes/ 目录下，volume 数据由 docker 进行管理，外部不要对 volume 数据进程修改。 Volume 方式是 docker 官方推荐的数据持久化方式。 另外，如果 docker 运行在 Linux 宿主机，还可以使用 tmpfs mount。tmpfs mount 的数据只是保存在宿主机的内存中，并没有持久化到硬盘。 Docker 容器与宿主机数据共享的方式如下图所示： 无论使用哪种方式，对于 docker 容器来说，这些数据都被看作成一个目录或文件，数据的使用方式是一样的。 Bind mountBind mount 方式是 docker 早期使用的容器与宿主机数据共享的方式，可以实现将宿主机上的文件或目录挂载（mount）到 docker 容器中使用。 相对于 volume 方式，bind mount 方式存在不少的局限。例如，bind mount 在 Linux 和 Windows 操作系统下不可移植。因此 docker 官方推荐使用 volume 方式。 为了便于说明 docker 数据共享的特点，我们以 busybox 镜像为例进行操作演示。 例如，使用 docker run -v 命令来将将宿主机的 /Users/lihao/code/docker/busybox 目录挂载到容器的 /databind 目录： 1docker run -it --name container1 -v /Users/lihao/code/docker/busybox:/databind busybox 这时，在宿主机上创建两个文件 file1.txt 和 file2.txt，再在容器内执行命令： 12cd /databindls 可以同步看到刚创建的两个文件： file1.txt file2.txt 对于 bind mount，有几点需要注意。 -v 宿主机目录路径必须以 / 或 ~/ 开头，否则 docker 会将其当成是 volume 而不是 bind mount 如果宿主机上的目录不存在，docker 会自动创建该目录 如果容器中的目录不存在，docker 会自动创建该目录 如果容器中的目录已有内容，那么 docker 会使用宿主机上目录的内容覆盖容器目录的内容 Volume与 bind mount 不同，volume 由 docker 创建和管理，docker 所有的 volume 都保存在宿主机文件系统的 /var/lib/docker/volumes 目录下（注意，mac 操作系统以虚拟机运行 docker，因此并不存在该目录，可以参考 stackoverflow）。 Docker 引入 volume 的原因有： 删除容器时，volume 不会被删除 在不同的容器之间共享 volume （存储 / 数据） 容器与存储分离 将 volume 存储在远程主机或云上 可以使用 docker run -v 参数为启动容器加载一个 volume，例如： 1docker run -it -v /data --name container1 busybox 这样，我们就启动了一个名为 container1 的容器，由于使用了 -it 参数，我们以交互方式进行了容器内部。这时，执行命令： 1ls 可以看到容器中 /data 目录： bin data dev etc home proc root sys tmp usr var 接着，我们在容器 /data 目录创建 file1.txt 文件： 123cd datatouch file1.txtexit 退出容器后，执行 docker ps -a 可以看到 container1 容器的退出状态。 现在，我们 inpect 一下容器，看下 docker 在启动容器时做了什么： 1docker inspect container1 可以看到一大串 JSON 格式的输出，我们重点关注 Mounts 字段的输出。 123456789101112"Mounts": [ &#123; "Type": "volume", "Name": "9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5", "Source": "/var/lib/docker/volumes/9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5/_data", "Destination": "/data", "Driver": "local", "Mode": "", "RW": true, "Propagation": "" &#125; ], 可以看到，当容器 container1 加载一个 volume （/data）时，docker 在目录 /var/lib/docker/volumes/ 创建一个新的目录，用来存储容器中产生的文件。同时，我们注意到 /data 的 RW 属性为 true，即可读可写。 我们重新启动 container1 容器，并进入容器： 12docker restart container1docker attach container1 在容器执行命令： 123lscd /datals 可以看到 /data 目录仍在： bin data dev etc home proc root sys tmp usr var 之前创建的 file1.txt 文件也在： file1.txt 这说明，即使容器关闭，之前在 volume 存储的文件仍然会保留下来。 然后，我们退出容器，并将容器 container1 删除。 1docker rm container1 这时，使用命令 docker volume ls 查看当前的 volume，可以看到 9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5 volume 仍然存在。也就是说，即使容器不存在了，volume 仍可在宿主机上保存下来。 local 9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5 如果需要在其他容器也使用这个 volume，可以使用以下命令加载指定的 volume： 1docker run -it -v 9ee296c604fcb8e89c726b3ce07b55efe700763058c992821a81ca1c30f11cc5:/data busybox 可以使用 docker volume rm 删除指定的 volume。 挂载指定的 volume上面的 docker run -v 命令中，我们并没有指定 volume 的名称，这样 docker 会默认给我们创建一个匿名的 volume。我们也可以挂载指定名称的 volume： 1docker run -it -v my-volume:/data --name container1 busybox 这样，我们在启动容器 container1 时，将挂载一个名为 my-volume 的 volume，并挂载到容器的 /data 目录。对于 docker 来说，如果 my-volume 不存在，那么 docker 就会自动创建该 volume，并挂载到 /data 目录。 退出容器后，执行 1docker volume inspect my-volume 可以看到 my-volume 的 JSON 输出信息： 1234567891011[ &#123; "CreatedAt": "2020-02-06T09:28:54Z", "Driver": "local", "Labels": null, "Mountpoint": "/var/lib/docker/volumes/my-volume/_data", "Name": "my-volume", "Options": null, "Scope": "local" &#125;] 可以看到，名为 my-volume 的 volume 在宿主机的目录为 /var/lib/docker/volumes/my-volume/_data。 除了让 docker 帮我们自动创建 volume，我们也可以自行创建 volume： 1docker volume create my-volume2 然后将这个手工创建的 volume 挂载到容器： 1docker run -it -v my-volume2:/data --name container1 busybox 参考资料 https://docs.docker.com/storage/ https://docs.docker.com/storage/bind-mounts/ https://www.jianshu.com/p/8c22cdfc0ffd https://www.jianshu.com/p/ef0f24fd0674 https://www.ostechnix.com/explaining-docker-volumes-with-examples/]]></content>
@@ -248,8 +261,8 @@
         <category>Java</category>
       </categories>
       <tags>
-        <tag>Rserve</tag>
         <tag>Java</tag>
+        <tag>Rserve</tag>
       </tags>
   </entry>
   <entry>
@@ -414,8 +427,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>日志</tag>
         <tag>json</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -772,9 +785,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>poll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>poll</tag>
       </tags>
   </entry>
   <entry>
@@ -785,8 +798,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
       </tags>
   </entry>
   <entry>
@@ -887,9 +900,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>epoll</tag>
-        <tag>select</tag>
         <tag>IO多路复用</tag>
+        <tag>select</tag>
+        <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
         <tag>非阻塞</tag>
@@ -1049,8 +1062,8 @@
         <category>MongoDB</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>MongoDB</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>

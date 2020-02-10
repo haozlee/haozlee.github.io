@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="compose,容器,Dockerfile," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。
+使用 compose 只需要三步：
+
+使用 Dockerfile 定义应用的环境，以便于可以任何地方复制应用的环境
+使用 docker-com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker Compose 入门教程">
+<meta property="og:url" content="https://leehao.me/Docker-Compose-入门教程/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。
+使用 compose 只需要三步：
+
+使用 Dockerfile 定义应用的环境，以便于可以任何地方复制应用的环境
+使用 docker-com">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA5LTEwMjkwOC5wbmc?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA5LTEwNDkyOS5wbmc?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2020-02-10T01:47:05.806Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker Compose 入门教程">
+<meta name="twitter:description" content="Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。
+使用 compose 只需要三步：
+
+使用 Dockerfile 定义应用的环境，以便于可以任何地方复制应用的环境
+使用 docker-com">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA5LTEwMjkwOC5wbmc?x-oss-process=image/format,png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/Docker-Compose-入门教程/"/>
+
+
+
+
+
+  <title>Docker Compose 入门教程 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Docker-Compose-入门教程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Docker Compose 入门教程</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-10T09:44:29+08:00">
+                2020-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。<br>通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。</p>
+<p>使用 compose 只需要三步：</p>
+<ol>
+<li>使用 <code>Dockerfile</code> 定义应用的环境，以便于可以任何地方复制应用的环境</li>
+<li>使用 <code>docker-compose.yml</code> 定义构成应用的服务，以便于它们可以在隔离的环境中一起运行</li>
+<li>运行 <code>docker-compose up</code> 命令，这时 compose 会启动并运行整个应用程序</li>
+</ol>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>对于 Mac 系统 和 Windows 系统，安装 docker 桌面端时， compose 已经捆绑安装了。对于 Linux 系统安装 compose 也不麻烦，可以参考官方安装文档 <a href="https://docs.docker.com/compose/install/" target="_blank" rel="external">https://docs.docker.com/compose/install/</a>。</p>
+<p>可以通过以下命令来测试 compose 安装是否成功：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose --version</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<blockquote>
+<p>docker-compose version 1.24.1, build 4667896b</p>
+</blockquote>
+<h2 id="实践：以-Flask-应用为例"><a href="#实践：以-Flask-应用为例" class="headerlink" title="实践：以 Flask 应用为例"></a>实践：以 Flask 应用为例</h2><p>我们以一个 Flask 应用程序为例，说明如何使用 compose 来配置相关的服务。</p>
+<h3 id="步骤一：编写源代码"><a href="#步骤一：编写源代码" class="headerlink" title="步骤一：编写源代码"></a>步骤一：编写源代码</h3><ol>
+<li>创建源代码目录 <code>composetest</code></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir composetest</div><div class="line"><span class="built_in">cd</span> composetest</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<ol start="2">
+<li>创建 Flask 应用</li>
+</ol>
+<p>创建 <code>app.py</code> 源代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> time</div><div class="line"></div><div class="line"><span class="keyword">import</span> redis</div><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line"></div><div class="line">app = Flask(__name__)</div><div class="line">cache = redis.Redis(host=<span class="string">'redis'</span>, port=<span class="number">6379</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_hit_count</span><span class="params">()</span>:</span></div><div class="line">    retries = <span class="number">5</span></div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            <span class="keyword">return</span> cache.incr(<span class="string">'hits'</span>)</div><div class="line">        <span class="keyword">except</span> redis.exceptions.ConnectionError <span class="keyword">as</span> exc:</div><div class="line">            <span class="keyword">if</span> retries == <span class="number">0</span>:</div><div class="line">                <span class="keyword">raise</span> exc</div><div class="line">            retries -= <span class="number">1</span></div><div class="line">            time.sleep(<span class="number">0.5</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">@app.route('/')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    count = get_hit_count()</div><div class="line">    <span class="keyword">return</span> <span class="string">'Hello World! I have been seen &#123;&#125; times.\n'</span>.format(count)</div></pre></td></tr></table></figure>
+<p>上述的代码中，<code>redis</code> 是 redis 容器的主机名称，且 redis 的监听端口为 <code>6379</code>。对于 compose 来说，可以使用容器名称来作为主机名称来访问其他容器，具体可以参考 <a href="https://docs.docker.com/compose/networking/" target="_blank" rel="external">compose 网络</a>。<br>注意，如果使用 compose 运行 <code>app.py</code>，则 redis 的主机地址不能使用 <code>127.0.0.1</code>，否则会出现无法连接 redis 的报错。</p>
+<ol start="3">
+<li>创建 python 依赖</li>
+</ol>
+<p>创建 <code>requirements.txt</code> 文件，里面包含应用程序依赖的 python 包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">flask</div><div class="line">redis</div></pre></td></tr></table></figure>
+<h3 id="步骤二：创建-Dockerfile"><a href="#步骤二：创建-Dockerfile" class="headerlink" title="步骤二：创建 Dockerfile"></a>步骤二：创建 Dockerfile</h3><p>接下来，我们编写 Dockerfile 文件来构建 docker 镜像。这个镜像包含了 flask 应用程序的依赖环境。</p>
+<p>在 <code>composetest</code> 目录创建 <code>Dockerfile</code> 文件：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">FROM</span> python:<span class="number">3.7</span>-alpine</div><div class="line"></div><div class="line"><span class="keyword">WORKDIR</span><span class="bash"> /code</span></div><div class="line"></div><div class="line"><span class="keyword">ENV</span> FLASK_APP app.py</div><div class="line"><span class="keyword">ENV</span> FLASK_RUN_HOST <span class="number">0.0</span>.<span class="number">0.0</span></div><div class="line"></div><div class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache gcc musl-dev linux-headers</span></div><div class="line"></div><div class="line"><span class="keyword">COPY</span><span class="bash"> requirements.txt requirements.txt</span></div><div class="line"></div><div class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span></div><div class="line"></div><div class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></div><div class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"flask"</span>, <span class="string">"run"</span>]</span></div></pre></td></tr></table></figure>
+<p>这个 Dockerfile 文件作用包括：</p>
+<ul>
+<li>构建的基础镜像是 <code>python:3.7-alpine</code></li>
+<li>工作目录为 <code>/code</code></li>
+<li>设置 flask 应用程序的环境变量，有关 flask 环境变量的使用，可以参考 <a href="https://flask.palletsprojects.com/en/1.1.x/quickstart/" target="_blank" rel="external">flask quickstart</a></li>
+<li>安装 gcc 等软件</li>
+<li>复制 <code>requirements.txt</code> 文件到工作目录，以便于安装有关 python 依赖</li>
+<li>复制当前目录文件到工作目录 <code>/code</code></li>
+<li>设置容器启动命令，以便启动 flask 应用程序</li>
+</ul>
+<p>有关 Dockerfile 的使用，请参考官方文档 <a href="https://docs.docker.com/engine/reference/builder/" target="_blank" rel="external">Dockerfile 官方文档</a>。</p>
+<h3 id="步骤三：定义-compose-服务"><a href="#步骤三：定义-compose-服务" class="headerlink" title="步骤三：定义 compose 服务"></a>步骤三：定义 compose 服务</h3><p>接下来，我们编写 <code>docker-compose.yml</code>。在 <code>composetest</code> 目录创建 <code>docker-compose.yml</code> 文件：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  web:</span></div><div class="line"><span class="attr">    build:</span> .</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"5000:5000"</span></div><div class="line"><span class="attr">  redis:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">"redis:alpine"</span></div></pre></td></tr></table></figure>
+<p>在 <code>docker-compose.yml</code> 文件定义了两个服务：<code>web</code> 和 <code>redis</code>。</p>
+<ul>
+<li>web 服务：<code>web</code> 服务的镜像由 <code>Dockerfile</code> 来指定构建。另外，我们还指定的宿主机和容器间端口的映射关系 5000:5000</li>
+<li>redis 服务：<code>redis</code> 服务的镜像从 docker 镜像仓库拉取</li>
+</ul>
+<p>注意每个服务都必须通过 <code>image</code> 指定镜像或 <code>build</code> 指令（需要 Dockerfile）来自动构建生成镜像。</p>
+<p>最后，<code>composetest</code> 目录内的文件如下图所示：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA5LTEwMjkwOC5wbmc?x-oss-process=image/format,png" alt=""></p>
+<h3 id="步骤四：运行"><a href="#步骤四：运行" class="headerlink" title="步骤四：运行"></a>步骤四：运行</h3><p>进入 <code>composetest</code> 目录，执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose up</div></pre></td></tr></table></figure>
+<p>接下来，compose 会构建 <code>web</code> 镜像，拉取 <code>redis</code> 镜像，并启动服务。</p>
+<p>启动完毕，打开浏览器，输入地址 <code>http://localhost:5000/</code>，会看到以下输出：</p>
+<blockquote>
+<p>Hello World! I have been seen 1 times.</p>
+</blockquote>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTA5LTEwNDkyOS5wbmc?x-oss-process=image/format,png" alt=""></p>
+<p>刷新一下页面，会看到数据不断地增加 1。</p>
+<p>使用命令 <code>docker images</code> 可以观察到当前的镜像，使用命令 <code>docker ps -a</code> 可以观察当前正在运行的容器，有需要的话，还可以使用命令 <code>docker exec -it xxx /bin/sh</code> 进入容器。</p>
+<p>为了关闭并删除 compose 启动的容器，可以执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose down</div></pre></td></tr></table></figure>
+<h3 id="步骤五：往-compose-文件添加-bind-mount"><a href="#步骤五：往-compose-文件添加-bind-mount" class="headerlink" title="步骤五：往 compose 文件添加 bind mount"></a>步骤五：往 compose 文件添加 bind mount</h3><p>修改 <code>docker-compose.yml</code> 文件，往 <code>web</code> 服务添加 bind mount：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  web:</span></div><div class="line"><span class="attr">    build:</span> .</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"5000:5000"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> .:/code</div><div class="line"><span class="attr">    environment:</span></div><div class="line"><span class="attr">      FLASK_ENV:</span> development</div><div class="line"><span class="attr">  redis:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">"redis:alpine"</span></div></pre></td></tr></table></figure>
+<p>通过 <code>volumes</code> 关键字我们将当前目录 <code>composetest</code> 挂载到容器内的 <code>/code</code> 目录，这样一来，我们就可以随时修改应用程序的源代码，而不需要重新构建镜像。<br>同时，我们增加了新的环境变量 <code>FLASK_ENV</code>（值为 <code>development</code>），这使得可以修改 flask 应用的代码随即生效，而不需要对 flask 应用进行重启。</p>
+<p>有关 bind mount 的使用，可以参考文章 <a href="https://leehao.blog.csdn.net/article/details/104201200" target="_blank" rel="external">《Docker 数据持久化》</a>。</p>
+<p>重新执行命令 <code>docker-compose up</code>，启动应用程序。打开浏览器，输入地址，看到输出</p>
+<blockquote>
+<p>Hello World! I have been seen 1 times.</p>
+</blockquote>
+<p>这时，修改本地 <code>composetest</code> 目录的 <code>app.py</code> 源代码，调整问候语，然后保存。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@app.route('/')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    count = get_hit_count()</div><div class="line">    <span class="keyword">return</span> <span class="string">'Hello from Docker! I have been seen &#123;&#125; times.\n'</span>.format(count)</div></pre></td></tr></table></figure>
+<p>再刷新浏览器，可以看到输出的问候语已更新，说明由于 bind mount 的使用，通过修改本地源代码而不需要重新构建镜像，应用程序就已经得到了更新。</p>
+<blockquote>
+<p>Hello from Docker! I have been seen 2 times.</p>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://docs.docker.com/compose/" target="_blank" rel="external">https://docs.docker.com/compose/</a></li>
+<li><a href="https://docs.docker.com/compose/install/" target="_blank" rel="external">https://docs.docker.com/compose/install/</a></li>
+<li><a href="https://docs.docker.com/compose/wordpress/" target="_blank" rel="external">https://docs.docker.com/compose/wordpress/</a></li>
+<li><a href="https://juejin.im/post/5d17442e518825559f46ed92" target="_blank" rel="external">https://juejin.im/post/5d17442e518825559f46ed92</a></li>
+<li><a href="https://www.jianshu.com/p/4c4b8e8f9f55" target="_blank" rel="external">https://www.jianshu.com/p/4c4b8e8f9f55</a></li>
+<li><a href="https://docs.docker.com/compose/gettingstarted/" target="_blank" rel="external">https://docs.docker.com/compose/gettingstarted/</a></li>
+<li><a href="https://flask.palletsprojects.com/en/1.1.x/quickstart/" target="_blank" rel="external">https://flask.palletsprojects.com/en/1.1.x/quickstart/</a></li>
+<li><a href="https://docs.docker.com/compose/networking/" target="_blank" rel="external">https://docs.docker.com/compose/networking/</a></li>
+<li><a href="https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html" target="_blank" rel="external">https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/compose/" rel="tag"># compose</a>
+          
+            <a href="/tags/容器/" rel="tag"># 容器</a>
+          
+            <a href="/tags/Dockerfile/" rel="tag"># Dockerfile</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Docker-数据持久化/" rel="next" title="Docker 数据持久化">
+                <i class="fa fa-chevron-left"></i> Docker 数据持久化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">87</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">228</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践：以-Flask-应用为例"><span class="nav-number">2.</span> <span class="nav-text">实践：以 Flask 应用为例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤一：编写源代码"><span class="nav-number">2.1.</span> <span class="nav-text">步骤一：编写源代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤二：创建-Dockerfile"><span class="nav-number">2.2.</span> <span class="nav-text">步骤二：创建 Dockerfile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤三：定义-compose-服务"><span class="nav-number">2.3.</span> <span class="nav-text">步骤三：定义 compose 服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤四：运行"><span class="nav-number">2.4.</span> <span class="nav-text">步骤四：运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤五：往-compose-文件添加-bind-mount"><span class="nav-number">2.5.</span> <span class="nav-text">步骤五：往 compose 文件添加 bind mount</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

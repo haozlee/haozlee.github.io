@@ -312,6 +312,155 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/Redis-快照持久化学习笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Redis-快照持久化学习笔记/" itemprop="url">Redis 快照持久化学习笔记</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-09T17:46:24+08:00">
+                2017-07-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Redis 是一种内存数据库，它将数据存储在内存中，所以如果不将数据保存到硬盘中，那么一旦 Redis 进程退出，保存在内存中的数据将会丢失。为此，Redis 提供了两种不同的持久化方法来将数据存储到硬盘里面。一种方法叫做<strong>快照</strong>（snapshotting），它可以将存在于某一时刻的所有数据写入硬盘里面。另一种方法叫 <strong>AOF</strong>（append-only file），它会在执行写命令时，将被执行的写命令复制到硬盘里面。这种两持久化方法既可以同时使用，也可以单独使用，当然如果 Redis 单纯只作为缓存系统使用的话，也可以两种持久化方法都不使用。具体选择哪种持久化方法取决于用户的应用场景。<br>快照持久化方法是 Redis 默认开启的持久化方法，本文介绍快照持久化方法，AOF 方法将在另一篇文章中介绍。</p>
+<h2 id="RDB-文件"><a href="#RDB-文件" class="headerlink" title="RDB 文件"></a>RDB 文件</h2><p>Redis 将某一时刻的快照保存成一种称为 RDB 格式的文件中。RDB 文件是一个经过压缩的二进制文件，通过该文件，Redis 可以将内存中的数据恢复成某一时刻的状态。Redis 与 RDB 文件的关系可以通过下图 1 和图 2 来表示。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-08-130229.jpg" alt=""><br>图 1：Redis 将内存的数据保存为 RDB 文件</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-07-08-130419.jpg" alt=""><br>图2：Redis 用 RDB 文件还原内存数据</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Redis-快照持久化学习笔记/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/夯实基础：Redis-的数据结构介绍/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1695,158 +1844,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Web-服务架构类型/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Web-服务架构类型/" itemprop="url">Web 服务架构类型</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-16T23:30:49+08:00">
-                2017-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/后台/" itemprop="url" rel="index">
-                    <span itemprop="name">后台</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>根据 Web 应用架构设计的风格，可以将 Web 服务划分为以功能为中心的服务以及以资源为中心的服务。</p>
-<h2 id="以功能为中心的服务"><a href="#以功能为中心的服务" class="headerlink" title="以功能为中心的服务"></a>以功能为中心的服务</h2><p>以功能为中心的 Web 服务历史由来已久，它是指能够调用远程机器上的功能或者对象方法，而无须知道这些功能或者对象是如何实现的。<br>我们了解的 CORBA（公共对象请求代理体系架构），XML - RPC（可扩展标记语言——远程过程调用），DCOM（分布式组件对象模型），SOAP（简单对象访问协议）等技术都是关注于如何让客户端代码调用一个在远程机器上实现的功能。<br>本文我们重点讲述 SOAP 协议。</p>
-<h3 id="SOAP"><a href="#SOAP" class="headerlink" title="SOAP"></a>SOAP</h3><p>SOAP 基于 XML 和 HTTP，使用 XML 来实现消息描述，使用 HTTP 实现消息传输。SOAP 最重要的一个特性是允许 Web 服务基于自身的约定描述完成服务发现并生成集成代码。</p>
-<p>图1所示为 SOAP 的工作原理。</p>
-<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2017-04-21-151241.jpg" alt=""><br>图1：SOAP 的工作原理</p>
-<p>Web 服务提供者暴露一组 XML 资源，诸如 Web 服务定义语言（WSDL）文件，XML 模式定义（XSD）文件。WSDL 描述方法与可用的终端信息，XSD 描述请求与响应中用到的数据结构。这些资源文件就是 Web 服务的约定，客户端代码如何生成，Web 服务如何调用，这些必要的信息全部都在这些资源文件中。</p>
-<p>举个例子，如果我们使用 Java 开发客户端，那么我们可以使用专门的工具和库，下载这些 Web 服务定义资源文件，然后生成 Java 本地客户端代码。这些代码就是一些 Java 类，可以被编译并用在应用程序中。在这些代码的背后，会依赖到 SOAP 相关的一些库，这些库封装了数据序列化，身份认证，路由，错误处理等各种实现细节。客户端无须知道自己调用的是远程 Web 服务，只需要简单地依赖基于 Web 服务约定（WSDL 和 XSD文件）生成的 Java 代码就可以使用这些远程服务器提供的功能了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Web-服务架构类型/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1897,7 +1894,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">86</span>
+                <span class="site-state-item-count">87</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1919,7 +1916,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">225</span>
+                <span class="site-state-item-count">228</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
