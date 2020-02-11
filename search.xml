@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[使用 docker 安装 gitlab]]></title>
+    <url>%2F%E4%BD%BF%E7%94%A8-docker-%E5%AE%89%E8%A3%85-gitlab%2F</url>
+    <content type="text"><![CDATA[Gitlab 作为开源的 git 代码仓库，功能强大，使用起来非常方便。本文讲述如何使用 docker 来安装 gitlab。 本文假定已安装好 docker，可以输入 docker --version 来验证是否已正常安装，输出： Docker version 19.03.5, build 633a0ea 使用 docker run 命令安装为方便安装，我们先拉取最新版本的 gitlab 社区版本镜像： 1docker pull gitlab/gitlab-ce:latest 然后，使用 docker run 运行 gitlab： 123456789docker run --detach \ --hostname 127.0.0.1 \ --publish 443:443 --publish 80:80 --publish 22:22 \ --name gitlab \ --restart always \ --volume /Users/lihao/code/docker/gitlab-ce/config:/etc/gitlab \ --volume /Users/lihao/code/docker/gitlab-ce/logs:/var/log/gitlab \ --volume /Users/lihao/code/docker/gitlab-ce/data:/var/opt/gitlab \ gitlab/gitlab-ce:latest docker run 命令使用了多个参数，这些参数的作用如下： --detach：后台运行容器 --publish：端口映射，容器端口如何映射到宿主机（本文指我们的 Mac 电脑）端口 --name：指定容器的名称，这里我们指定容器名称为 gitlab --restart always：设置当宿主机重启后，容器也会重启 --volume：这里使用 bind mount 的方式，设置 gitlab 容器的数据保存在目录 /Users/lihao/code/docker/gitlab-ce/ 下 有关 docker volume 的使用，可以参考文章 《Docker 数据持久化》。 Gitlab 容器使用 bind mount 方式以持久化的数据如下表： 本地目录 容器目录 用途 /Users/lihao/code/docker/gitlab-ce/config /etc/gitlab 保存 gitlab 配置 /Users/lihao/code/docker/gitlab-ce/logs /var/log/gitlab 保存 gitlab 输出日志 /Users/lihao/code/docker/gitlab-ce/data /var/opt/gitlab 保存 gitlab 应用数据 执行上面的 docker run 命令后，我们再转回到本地的目录 /Users/lihao/code/docker/gitlab-ce/config，打开文件 gitlab.rb ，并修改 external_url 为 http://127.0.0.1 ，以便于可以使用地址 http://127.0.0.1 访问 gitlab。 然后，再执行命令重启 gitlab。 1docker restart gitlab 启动 gitlab 容器过程中，可以使用命令来查看启动过程的日志输出。1docker logs -f gitlab 打开浏览器，输入地址 http://127.0.0.1/，更新密码，并使用 root 用户名登录，可以看到 gitlab 已可以正常访问。 使用 docker-compose 安装使用 docker-compose 可以更方便配置、安装 gitlab。安装 gitlab 的 docker-compose.yml 文件如下： 1234567891011121314151617version: '3'services: web: image: 'gitlab/gitlab-ce:latest' restart: always hostname: '127.0.0.1' environment: GITLAB_OMNIBUS_CONFIG: | external_url 'http://127.0.0.1' ports: - '80:80' - '443:443' - '22:22' volumes: - '/Users/lihao/code/docker/gitlab-compose/config:/etc/gitlab' - '/Users/lihao/code/docker/gitlab-compose/logs:/var/log/gitlab' - '/Users/lihao/code/docker/gitlab-compose/data:/var/opt/gitlab' 可以看到，docker-compose.yml 文件的参数与上述 docker run 命令的参数相似。为了方便配置 gitlab 的 external_url 配置，我们通过直接指定环境变量 GITLAB_OMNIBUS_CONFIG 的方式实现。 另外，为了与上面安装的 gitlab 数据不冲突，我们使用了本地另一个目录来保存容器的数据。 关闭上面启动的 gitlab 容器，然后在 docker-compose.yml 文件所在目录，执行以下命令： 1docker-compose up -d 等待执行一段时间以后（笔者在安装 gitlab 过程中，发现执行命令后马上访问 gitlab 会报 502 错误，等待一段时间又好了），打开浏览器，输入地址，同时可以正常访问 gitlab。 参考资料 https://docs.gitlab.com/omnibus/docker/]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>GitLab</tag>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Docker Compose 入门教程]]></title>
     <url>%2FDocker-Compose-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%2F</url>
     <content type="text"><![CDATA[Docker compose （以下简称为 compose）可用于定义和运行多容器 docker 应用程序。通过 compose，我们可以使用 YAML 文件来配置应用程序的服务（services），然后只需要通过一个命令，就可以将配置的所有服务启动起来。 使用 compose 只需要三步： 使用 Dockerfile 定义应用的环境，以便于可以任何地方复制应用的环境 使用 docker-compose.yml 定义构成应用的服务，以便于它们可以在隔离的环境中一起运行 运行 docker-compose up 命令，这时 compose 会启动并运行整个应用程序 安装对于 Mac 系统 和 Windows 系统，安装 docker 桌面端时， compose 已经捆绑安装了。对于 Linux 系统安装 compose 也不麻烦，可以参考官方安装文档 https://docs.docker.com/compose/install/。 可以通过以下命令来测试 compose 安装是否成功： 1docker-compose --version 输出： docker-compose version 1.24.1, build 4667896b 实践：以 Flask 应用为例我们以一个 Flask 应用程序为例，说明如何使用 compose 来配置相关的服务。 步骤一：编写源代码 创建源代码目录 composetest 12mkdir composetestcd composetest 创建 Flask 应用 创建 app.py 源代码： 12345678910111213141516171819202122232425import timeimport redisfrom flask import Flaskapp = Flask(__name__)cache = redis.Redis(host='redis', port=6379)def get_hit_count(): retries = 5 while True: try: return cache.incr('hits') except redis.exceptions.ConnectionError as exc: if retries == 0: raise exc retries -= 1 time.sleep(0.5)@app.route('/')def hello(): count = get_hit_count() return 'Hello World! I have been seen &#123;&#125; times.\n'.format(count) 上述的代码中，redis 是 redis 容器的主机名称，且 redis 的监听端口为 6379。对于 compose 来说，可以使用容器名称来作为主机名称来访问其他容器，具体可以参考 compose 网络。注意，如果使用 compose 运行 app.py，则 redis 的主机地址不能使用 127.0.0.1，否则会出现无法连接 redis 的报错。 创建 python 依赖 创建 requirements.txt 文件，里面包含应用程序依赖的 python 包。 12flaskredis 步骤二：创建 Dockerfile接下来，我们编写 Dockerfile 文件来构建 docker 镜像。这个镜像包含了 flask 应用程序的依赖环境。 在 composetest 目录创建 Dockerfile 文件： 123456789101112131415FROM python:3.7-alpineWORKDIR /codeENV FLASK_APP app.pyENV FLASK_RUN_HOST 0.0.0.0RUN apk add --no-cache gcc musl-dev linux-headersCOPY requirements.txt requirements.txtRUN pip install -r requirements.txtCOPY . .CMD ["flask", "run"] 这个 Dockerfile 文件作用包括： 构建的基础镜像是 python:3.7-alpine 工作目录为 /code 设置 flask 应用程序的环境变量，有关 flask 环境变量的使用，可以参考 flask quickstart 安装 gcc 等软件 复制 requirements.txt 文件到工作目录，以便于安装有关 python 依赖 复制当前目录文件到工作目录 /code 设置容器启动命令，以便启动 flask 应用程序 有关 Dockerfile 的使用，请参考官方文档 Dockerfile 官方文档。 步骤三：定义 compose 服务接下来，我们编写 docker-compose.yml。在 composetest 目录创建 docker-compose.yml 文件： 12345678version: '3'services: web: build: . ports: - "5000:5000" redis: image: "redis:alpine" 在 docker-compose.yml 文件定义了两个服务：web 和 redis。 web 服务：web 服务的镜像由 Dockerfile 来指定构建。另外，我们还指定的宿主机和容器间端口的映射关系 5000:5000 redis 服务：redis 服务的镜像从 docker 镜像仓库拉取 注意每个服务都必须通过 image 指定镜像或 build 指令（需要 Dockerfile）来自动构建生成镜像。 最后，composetest 目录内的文件如下图所示： 步骤四：运行进入 composetest 目录，执行命令： 1docker-compose up 接下来，compose 会构建 web 镜像，拉取 redis 镜像，并启动服务。 启动完毕，打开浏览器，输入地址 http://localhost:5000/，会看到以下输出： Hello World! I have been seen 1 times. 刷新一下页面，会看到数据不断地增加 1。 使用命令 docker images 可以观察到当前的镜像，使用命令 docker ps -a 可以观察当前正在运行的容器，有需要的话，还可以使用命令 docker exec -it xxx /bin/sh 进入容器。 为了关闭并删除 compose 启动的容器，可以执行命令： 1docker-compose down 步骤五：往 compose 文件添加 bind mount修改 docker-compose.yml 文件，往 web 服务添加 bind mount： 123456789101112version: '3'services: web: build: . ports: - "5000:5000" volumes: - .:/code environment: FLASK_ENV: development redis: image: "redis:alpine" 通过 volumes 关键字我们将当前目录 composetest 挂载到容器内的 /code 目录，这样一来，我们就可以随时修改应用程序的源代码，而不需要重新构建镜像。同时，我们增加了新的环境变量 FLASK_ENV（值为 development），这使得可以修改 flask 应用的代码随即生效，而不需要对 flask 应用进行重启。 有关 bind mount 的使用，可以参考文章 《Docker 数据持久化》。 重新执行命令 docker-compose up，启动应用程序。打开浏览器，输入地址，看到输出 Hello World! I have been seen 1 times. 这时，修改本地 composetest 目录的 app.py 源代码，调整问候语，然后保存。 1234@app.route('/')def hello(): count = get_hit_count() return 'Hello from Docker! I have been seen &#123;&#125; times.\n'.format(count) 再刷新浏览器，可以看到输出的问候语已更新，说明由于 bind mount 的使用，通过修改本地源代码而不需要重新构建镜像，应用程序就已经得到了更新。 Hello from Docker! I have been seen 2 times. 参考资料 https://docs.docker.com/compose/ https://docs.docker.com/compose/install/ https://docs.docker.com/compose/wordpress/ https://juejin.im/post/5d17442e518825559f46ed92 https://www.jianshu.com/p/4c4b8e8f9f55 https://docs.docker.com/compose/gettingstarted/ https://flask.palletsprojects.com/en/1.1.x/quickstart/ https://docs.docker.com/compose/networking/ https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html]]></content>
@@ -427,8 +440,8 @@
       </categories>
       <tags>
         <tag>Nginx</tag>
-        <tag>json</tag>
         <tag>日志</tag>
+        <tag>json</tag>
       </tags>
   </entry>
   <entry>
@@ -785,9 +798,9 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
-        <tag>select</tag>
         <tag>poll</tag>
+        <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -798,8 +811,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
       </tags>
   </entry>
   <entry>
@@ -810,10 +823,10 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
         <tag>并发</tag>
+        <tag>多线程</tag>
         <tag>pthread</tag>
       </tags>
   </entry>
@@ -827,8 +840,8 @@
       <tags>
         <tag>多进程</tag>
         <tag>并发服务器</tag>
-        <tag>并发</tag>
         <tag>多客户</tag>
+        <tag>并发</tag>
       </tags>
   </entry>
   <entry>
@@ -900,8 +913,8 @@
         <category>网络基础</category>
       </categories>
       <tags>
-        <tag>IO多路复用</tag>
         <tag>select</tag>
+        <tag>IO多路复用</tag>
         <tag>epoll</tag>
         <tag>IO模型</tag>
         <tag>异步</tag>
