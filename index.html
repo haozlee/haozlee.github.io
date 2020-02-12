@@ -312,6 +312,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-gitlab-搭建-docker-私有仓库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/使用-gitlab-搭建-docker-私有仓库/" itemprop="url">使用 gitlab 搭建 docker 私有仓库</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-12T10:28:20+08:00">
+                2020-02-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>我们知道，gitlab 可以用来管理 git 提交的源代码，此外，gitlab 还集成了 docker registry 的功能，可以用来作为一个 docker 镜像私有仓库使用。</p>
+<h2 id="启用-gitlab-registry-功能"><a href="#启用-gitlab-registry-功能" class="headerlink" title="启用 gitlab registry 功能"></a>启用 gitlab registry 功能</h2><p>我们假设已安装好 gitlab，具体安装可参考 <a href="https://leehao.blog.csdn.net/article/details/104264224">《使用 docker 安装 gitlab》</a>。</p>
+<p>Gitlab 默认不打开 docker registry 的功能，需要修改配置打开。</p>
+<p>修改配置 <code>/etc/gitlab/gitlab.rb</code> 文件，将 <code>registry_external_url</code> 的值修改为 <code>http://127.0.0.1:4567</code>：</p>
+<figure class="highlight rb"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">registry_external_url <span class="string">'http://127.0.0.1:4567'</span></div></pre></td></tr></table></figure>
+<p><code>registry_external_url</code> 这个地址是我们使用 docker 命令进行 pull 或者 push 镜像的仓库地址。</p>
+<p>重启 gitlab 后，可以在 gitlab 左侧面板看到 Container Registry 的菜单。</p>
+<h2 id="上传镜像"><a href="#上传镜像" class="headerlink" title="上传镜像"></a>上传镜像</h2><p>我们以一个常见的 flask 应用为例，说明如何向 gitlab registry 上传镜像。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/使用-gitlab-搭建-docker-私有仓库/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-docker-安装-gitlab/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1688,201 +1841,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/SQL-JOIN-的使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/SQL-JOIN-的使用/" itemprop="url">SQL JOIN 的使用</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-21T20:47:18+08:00">
-                2019-04-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>由于工作需要，现在也开始写一些复杂一点的 sql 了。由于之前对于 <code>join</code> 与 <code>where</code> 关键字的使用一直有疑惑，故写一篇文章整理一下，算是对 sql 中各种表联结使用的一个总结。</p>
-<h2 id="SQL-JOIN-的作用"><a href="#SQL-JOIN-的作用" class="headerlink" title="SQL JOIN 的作用"></a>SQL JOIN 的作用</h2><p>sql 关键字 <code>union</code> 与 <code>intersect</code> 属于以行方向为单位的集合运算，进行这些集合运算时，会导致记录行数的增加或减少。<br>关键字 <code>join</code> 则是属于列方向的运算，将其他表中的列添加过来。我们称这种操作为联结。<br>sql 联结根据其用途可以分为多种，这里主要讲述内联结与外联结。</p>
-<h2 id="INNER-JOIN"><a href="#INNER-JOIN" class="headerlink" title="INNER JOIN"></a>INNER JOIN</h2><p>内联结，inner join，是使用最广泛的联结运算。我们以例子来说明内联结的含义。</p>
-<p><code>student</code> 表结构与记录以下：</p>
-<table>
-<thead>
-<tr>
-<th>student_id</th>
-<th>student_name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Leo</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Lee</td>
-</tr>
-<tr>
-<td>3</td>
-<td>Hao</td>
-</tr>
-</tbody>
-</table>
-<p><code>score</code> 表结构与记录以下：</p>
-<table>
-<thead>
-<tr>
-<th>student_id</th>
-<th>student_score</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>89</td>
-</tr>
-<tr>
-<td>2</td>
-<td>95</td>
-</tr>
-</tbody>
-</table>
-<p>可以看到 <code>student_id</code> 列存在于 <code>student</code> 表和 <code>score</code> 表，其他列则只存在于一张表。可以将 <code>student_id</code> 列作为桥梁，将两表满足同样条件的列汇集到同一结果之中，这就是联结运算。</p>
-<p>可以看到，学生 Leo 的 id 为 1，分数在 <code>score</code> 表，Leo 的分数为 89 分。学生 Lee 的 id 为 2，分数为 95。学生 Hao 的 id 为 3，但 <code>score</code> 表中没有 Hao 的分数。</p>
-<p>使用 <code>inner join</code> 对 <code>student</code> 表和 <code>score</code> 表进行联结，sql 以下所示：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> st.student_id, st.student_name, sc.student_score</div><div class="line"><span class="keyword">from</span> student st</div><div class="line">       <span class="keyword">inner</span> <span class="keyword">join</span> score sc <span class="keyword">on</span> st.student_id = sc.student_id;</div></pre></td></tr></table></figure>
-<p>执行 sql 结果如下所示。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/SQL-JOIN-的使用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1933,7 +1891,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">88</span>
+                <span class="site-state-item-count">89</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1955,7 +1913,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">230</span>
+                <span class="site-state-item-count">231</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

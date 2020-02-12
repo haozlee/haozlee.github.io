@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Git,GitLab,Docker," />
+  <meta name="keywords" content="docker,容器,gitlab," />
 
 
 
@@ -93,34 +93,26 @@
 
 
 
-<meta name="description" content="Gitlab 作为开源的 git 代码仓库，功能强大，使用起来非常方便。本文讲述如何使用 docker 来安装 gitlab。
-本文假定已安装好 docker，可以输入 docker --version 来验证是否已正常安装，输出：
-
-Docker version 19.03.5, build 633a0ea
-
-使用 docker run 命令安装为方便安装，我们先拉取最新版本的 gitlab 社">
+<meta name="description" content="我们知道，gitlab 可以用来管理 git 提交的源代码，此外，gitlab 还集成了 docker registry 的功能，可以用来作为一个 docker 镜像私有仓库使用。
+启用 gitlab registry 功能我们假设已安装好 gitlab，具体安装可参考 《使用 docker 安装 gitlab》。
+Gitlab 默认不打开 docker registry 的功能，需要修改配置打开">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用 docker 安装 gitlab">
-<meta property="og:url" content="https://leehao.me/使用-docker-安装-gitlab/index.html">
+<meta property="og:title" content="使用 gitlab 搭建 docker 私有仓库">
+<meta property="og:url" content="https://leehao.me/使用-gitlab-搭建-docker-私有仓库/index.html">
 <meta property="og:site_name" content="Leo的博客">
-<meta property="og:description" content="Gitlab 作为开源的 git 代码仓库，功能强大，使用起来非常方便。本文讲述如何使用 docker 来安装 gitlab。
-本文假定已安装好 docker，可以输入 docker --version 来验证是否已正常安装，输出：
-
-Docker version 19.03.5, build 633a0ea
-
-使用 docker run 命令安装为方便安装，我们先拉取最新版本的 gitlab 社">
-<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTA2NDgwNi5wbmc?x-oss-process=image/format,png">
-<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTA2NTEzOC5wbmc?x-oss-process=image/format,png">
-<meta property="og:updated_time" content="2020-02-11T07:56:37.319Z">
+<meta property="og:description" content="我们知道，gitlab 可以用来管理 git 提交的源代码，此外，gitlab 还集成了 docker registry 的功能，可以用来作为一个 docker 镜像私有仓库使用。
+启用 gitlab registry 功能我们假设已安装好 gitlab，具体安装可参考 《使用 docker 安装 gitlab》。
+Gitlab 默认不打开 docker registry 的功能，需要修改配置打开">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTE0MjM1NS5wbmc?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTE0MjYzOS5wbmc?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTEyLTAxNTIzNC5wbmc?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2020-02-12T02:29:59.973Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用 docker 安装 gitlab">
-<meta name="twitter:description" content="Gitlab 作为开源的 git 代码仓库，功能强大，使用起来非常方便。本文讲述如何使用 docker 来安装 gitlab。
-本文假定已安装好 docker，可以输入 docker --version 来验证是否已正常安装，输出：
-
-Docker version 19.03.5, build 633a0ea
-
-使用 docker run 命令安装为方便安装，我们先拉取最新版本的 gitlab 社">
-<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTA2NDgwNi5wbmc?x-oss-process=image/format,png">
+<meta name="twitter:title" content="使用 gitlab 搭建 docker 私有仓库">
+<meta name="twitter:description" content="我们知道，gitlab 可以用来管理 git 提交的源代码，此外，gitlab 还集成了 docker registry 的功能，可以用来作为一个 docker 镜像私有仓库使用。
+启用 gitlab registry 功能我们假设已安装好 gitlab，具体安装可参考 《使用 docker 安装 gitlab》。
+Gitlab 默认不打开 docker registry 的功能，需要修改配置打开">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTE0MjM1NS5wbmc?x-oss-process=image/format,png">
 
 
 
@@ -150,13 +142,13 @@ Docker version 19.03.5, build 633a0ea
 
 
 
-  <link rel="canonical" href="https://leehao.me/使用-docker-安装-gitlab/"/>
+  <link rel="canonical" href="https://leehao.me/使用-gitlab-搭建-docker-私有仓库/"/>
 
 
 
 
 
-  <title>使用 docker 安装 gitlab | Leo的博客</title>
+  <title>使用 gitlab 搭建 docker 私有仓库 | Leo的博客</title>
   
 
 
@@ -329,7 +321,7 @@ Docker version 19.03.5, build 633a0ea
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-docker-安装-gitlab/">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-gitlab-搭建-docker-私有仓库/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Leo">
@@ -346,7 +338,7 @@ Docker version 19.03.5, build 633a0ea
 
         
         
-          <h2 class="post-title" itemprop="name headline">使用 docker 安装 gitlab</h2>
+          <h2 class="post-title" itemprop="name headline">使用 gitlab 搭建 docker 私有仓库</h2>
         
 
         <div class="post-meta">
@@ -358,8 +350,8 @@ Docker version 19.03.5, build 633a0ea
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-11T15:55:32+08:00">
-                2020-02-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-12T10:28:20+08:00">
+                2020-02-12
               </time>
             
 
@@ -418,68 +410,52 @@ Docker version 19.03.5, build 633a0ea
       
 
       
-        <p>Gitlab 作为开源的 git 代码仓库，功能强大，使用起来非常方便。本文讲述如何使用 docker 来安装 gitlab。</p>
-<p>本文假定已安装好 docker，可以输入 <code>docker --version</code> 来验证是否已正常安装，输出：</p>
-<blockquote>
-<p>Docker version 19.03.5, build 633a0ea</p>
-</blockquote>
-<h2 id="使用-docker-run-命令安装"><a href="#使用-docker-run-命令安装" class="headerlink" title="使用 docker run 命令安装"></a>使用 docker run 命令安装</h2><p>为方便安装，我们先拉取最新版本的 gitlab 社区版本镜像：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull gitlab/gitlab-ce:latest</div></pre></td></tr></table></figure>
-<p>然后，使用 <code>docker run</code> 运行 gitlab：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">docker run --detach \</div><div class="line">  --hostname 127.0.0.1 \</div><div class="line">  --publish 443:443 --publish 80:80 --publish 22:22 \</div><div class="line">  --name gitlab \</div><div class="line">  --restart always \</div><div class="line">  --volume /Users/lihao/code/docker/gitlab-ce/config:/etc/gitlab \</div><div class="line">  --volume /Users/lihao/code/docker/gitlab-ce/logs:/var/<span class="built_in">log</span>/gitlab \</div><div class="line">  --volume /Users/lihao/code/docker/gitlab-ce/data:/var/opt/gitlab \</div><div class="line">  gitlab/gitlab-ce:latest</div></pre></td></tr></table></figure>
-<p><code>docker run</code> 命令使用了多个参数，这些参数的作用如下：</p>
+        <p>我们知道，gitlab 可以用来管理 git 提交的源代码，此外，gitlab 还集成了 docker registry 的功能，可以用来作为一个 docker 镜像私有仓库使用。</p>
+<h2 id="启用-gitlab-registry-功能"><a href="#启用-gitlab-registry-功能" class="headerlink" title="启用 gitlab registry 功能"></a>启用 gitlab registry 功能</h2><p>我们假设已安装好 gitlab，具体安装可参考 <a href="https://leehao.blog.csdn.net/article/details/104264224" target="_blank" rel="external">《使用 docker 安装 gitlab》</a>。</p>
+<p>Gitlab 默认不打开 docker registry 的功能，需要修改配置打开。</p>
+<p>修改配置 <code>/etc/gitlab/gitlab.rb</code> 文件，将 <code>registry_external_url</code> 的值修改为 <code>http://127.0.0.1:4567</code>：</p>
+<figure class="highlight rb"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">registry_external_url <span class="string">'http://127.0.0.1:4567'</span></div></pre></td></tr></table></figure>
+<p><code>registry_external_url</code> 这个地址是我们使用 docker 命令进行 pull 或者 push 镜像的仓库地址。</p>
+<p>重启 gitlab 后，可以在 gitlab 左侧面板看到 Container Registry 的菜单。</p>
+<h2 id="上传镜像"><a href="#上传镜像" class="headerlink" title="上传镜像"></a>上传镜像</h2><p>我们以一个常见的 flask 应用为例，说明如何向 gitlab registry 上传镜像。</p>
 <a id="more"></a>
-<ul>
-<li><code>--detach</code>：后台运行容器</li>
-<li><code>--publish</code>：端口映射，容器端口如何映射到宿主机（本文指我们的 Mac 电脑）端口</li>
-<li><code>--name</code>：指定容器的名称，这里我们指定容器名称为 <code>gitlab</code></li>
-<li><code>--restart always</code>：设置当宿主机重启后，容器也会重启</li>
-<li><code>--volume</code>：这里使用 bind mount 的方式，设置 gitlab 容器的数据保存在目录 <code>/Users/lihao/code/docker/gitlab-ce/</code> 下</li>
-</ul>
-<p>有关 docker volume 的使用，可以参考文章 <a href="https://leehao.blog.csdn.net/article/details/104201200" target="_blank" rel="external">《Docker 数据持久化》</a>。</p>
-<p>Gitlab 容器使用 bind mount 方式以持久化的数据如下表：</p>
-<table>
-<thead>
-<tr>
-<th>本地目录</th>
-<th>容器目录</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/Users/lihao/code/docker/gitlab-ce/config</code></td>
-<td><code>/etc/gitlab</code></td>
-<td>保存 gitlab 配置</td>
-</tr>
-<tr>
-<td><code>/Users/lihao/code/docker/gitlab-ce/logs</code></td>
-<td><code>/var/log/gitlab</code></td>
-<td>保存 gitlab 输出日志</td>
-</tr>
-<tr>
-<td><code>/Users/lihao/code/docker/gitlab-ce/data</code></td>
-<td><code>/var/opt/gitlab</code></td>
-<td>保存 gitlab 应用数据</td>
-</tr>
-</tbody>
-</table>
-<p>执行上面的 <code>docker run</code> 命令后，我们再转回到本地的目录 <code>/Users/lihao/code/docker/gitlab-ce/config</code>，打开文件 <code>gitlab.rb</code> ，并修改 <code>external_url</code> 为 <code>http://127.0.0.1</code> ，以便于可以使用地址 <code>http://127.0.0.1</code> 访问 gitlab。</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTA2NDgwNi5wbmc?x-oss-process=image/format,png" alt=""></p>
-<p>然后，再执行命令重启 gitlab。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker restart gitlab</div></pre></td></tr></table></figure>
-<p>启动 gitlab 容器过程中，可以使用命令来查看启动过程的日志输出。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker logs <span class="_">-f</span> gitlab</div></pre></td></tr></table></figure></p>
-<p>打开浏览器，输入地址 <code>http://127.0.0.1/</code>，更新密码，并使用 root 用户名登录，可以看到 gitlab 已可以正常访问。</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTA2NTEzOC5wbmc?x-oss-process=image/format,png" alt=""></p>
-<h2 id="使用-docker-compose-安装"><a href="#使用-docker-compose-安装" class="headerlink" title="使用 docker-compose 安装"></a>使用 docker-compose 安装</h2><p>使用 docker-compose 可以更方便配置、安装 gitlab。安装 gitlab 的 <code>docker-compose.yml</code> 文件如下：</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  web:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">'gitlab/gitlab-ce:latest'</span></div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    hostname:</span> <span class="string">'127.0.0.1'</span></div><div class="line"><span class="attr">    environment:</span></div><div class="line"><span class="attr">      GITLAB_OMNIBUS_CONFIG:</span> <span class="string">|</span></div><div class="line">        external_url 'http://127.0.0.1'</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'80:80'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'443:443'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'22:22'</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'/Users/lihao/code/docker/gitlab-compose/config:/etc/gitlab'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'/Users/lihao/code/docker/gitlab-compose/logs:/var/log/gitlab'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'/Users/lihao/code/docker/gitlab-compose/data:/var/opt/gitlab'</span></div></pre></td></tr></table></figure>
-<p>可以看到，<code>docker-compose.yml</code> 文件的参数与上述 <code>docker run</code> 命令的参数相似。为了方便配置 gitlab 的 <code>external_url</code> 配置，我们通过直接指定环境变量 <code>GITLAB_OMNIBUS_CONFIG</code> 的方式实现。</p>
-<p>另外，为了与上面安装的 gitlab 数据不冲突，我们使用了本地另一个目录来保存容器的数据。</p>
-<p>关闭上面启动的 gitlab 容器，然后在 <code>docker-compose.yml</code> 文件所在目录，执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-compose up <span class="_">-d</span></div></pre></td></tr></table></figure>
-<p>等待执行一段时间以后（笔者在安装 gitlab 过程中，发现执行命令后马上访问 gitlab 会报 502 错误，等待一段时间又好了），打开浏览器，输入地址，同时可以正常访问 gitlab。</p>
+<p>Flask 应用源代码包括以下代码：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTE0MjM1NS5wbmc?x-oss-process=image/format,png" alt=""></p>
+<p><code>app.py</code> 是 flask 应用的入口代码：<br><figure class="highlight py"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding:utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</div><div class="line"></div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line"></div><div class="line"><span class="meta">@app.route('/')</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> <span class="string">'Hello, World!'</span></div></pre></td></tr></table></figure></p>
+<p>为了构建应用的镜像，提供 Dockerfile：<br><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">FROM</span> python:<span class="number">3.7</span>-alpine</div><div class="line"></div><div class="line"><span class="keyword">WORKDIR</span><span class="bash"> /code</span></div><div class="line"></div><div class="line"><span class="keyword">ENV</span> FLASK_APP app.py</div><div class="line"><span class="keyword">ENV</span> FLASK_RUN_HOST <span class="number">0.0</span>.<span class="number">0.0</span></div><div class="line"></div><div class="line"><span class="keyword">EXPOSE</span> <span class="number">5000</span></div><div class="line"></div><div class="line"><span class="keyword">RUN</span><span class="bash"> apk add --no-cache gcc musl-dev linux-headers</span></div><div class="line"></div><div class="line"><span class="keyword">COPY</span><span class="bash"> requirements.txt requirements.txt</span></div><div class="line"><span class="keyword">COPY</span><span class="bash"> app.py app.py</span></div><div class="line"></div><div class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span></div><div class="line"></div><div class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"flask"</span>, <span class="string">"run"</span>]</span></div></pre></td></tr></table></figure></p>
+<p><code>requirements.txt</code> 用于安装 python 包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">flask</div></pre></td></tr></table></figure>
+<p>将上述 flask 的有关源代码提交至 gitlab 的 myweb 项目。</p>
+<p>可以看到 myweb 项目左侧菜单已包含 Container Registry 的菜单，并展示了有关该项目有关镜像的使用说明：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTExLTE0MjYzOS5wbmc?x-oss-process=image/format,png" alt=""></p>
+<p>按照 gitlab 给出的提示，我们先登录上 gitlab 的 registry：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker login 127.0.0.1:4567</div></pre></td></tr></table></figure>
+<p>输入 gitlab 的用户名和密码，便可以成功登录。Gilab registry 与 gitlab 共享相同的用户权限和密码体系。</p>
+<p>构建镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker build -t 127.0.0.1:4567/study/myweb:v1.0 .</div></pre></td></tr></table></figure>
+<p>镜像的名称格式为 registry host ip:port/group name/project name:tag。</p>
+<p>然后执行推送镜像命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker push 127.0.0.1:4567/study/myweb:v1.0</div></pre></td></tr></table></figure>
+<p>这时可以在 gitlab Container Registry 菜单看到已经推送的镜像：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9sZWVoYW8ub3NzLWNuLXNoZW56aGVuLmFsaXl1bmNzLmNvbS8yMDIwLTAyLTEyLTAxNTIzNC5wbmc?x-oss-process=image/format,png" alt=""></p>
+<p>推送镜像后，我们可以在其他地方下载镜像（下面讲述），并运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker run <span class="_">-d</span> -p 5000:5000 127.0.0.1:4567/study/myweb:v2.0</div></pre></td></tr></table></figure>
+<h2 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h2><p>登录上 gitlab registry 后，可以使用 <code>docker pull</code> 下载镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull 127.0.0.1:4567/study/myweb:v1.0</div></pre></td></tr></table></figure>
+<p>命令会从 gitlab registry 下载镜像。<br>这里需要区分我们平时使用的 <code>docker pull</code> 命令，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker pull ubuntu</div></pre></td></tr></table></figure>
+<p>这意味着是从 docker 官方 Docker Hub 来下载 ubuntu 镜像，也就是 <code>docker pull docker.io/library/ubuntu</code>。</p>
+<p>可以查看下载到的镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker images</div></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">REPOSITORY                     TAG                 IMAGE ID            CREATED             SIZE</div><div class="line">127.0.0.1:4567/study/myweb     v2.0                72aa3f04d649        11 hours ago        221MB</div><div class="line">127.0.0.1:4567/study/myweb     v1.0                f626f22a3fef        12 hours ago        221MB</div></pre></td></tr></table></figure>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a href="https://docs.gitlab.com/omnibus/docker/" target="_blank" rel="external">https://docs.gitlab.com/omnibus/docker/</a></li>
+<li><a href="https://github.com/wenwenxiong/book/blob/master/devops/gitlab%E5%90%AF%E7%94%A8%E8%87%AA%E5%B8%A6%E7%9A%84docker-registry.md" target="_blank" rel="external">https://github.com/wenwenxiong/book/blob/master/devops/gitlab%E5%90%AF%E7%94%A8%E8%87%AA%E5%B8%A6%E7%9A%84docker-registry.md</a></li>
+<li><a href="https://docs.docker.com/registry/introduction/" target="_blank" rel="external">https://docs.docker.com/registry/introduction/</a></li>
+<li><a href="https://docs.gitlab.com/ce/user/packages/container_registry/" target="_blank" rel="external">https://docs.gitlab.com/ce/user/packages/container_registry/</a></li>
+<li><a href="https://www.cnblogs.com/edisonchou/p/docker_registry_repository_setup_introduction.html" target="_blank" rel="external">https://www.cnblogs.com/edisonchou/p/docker_registry_repository_setup_introduction.html</a></li>
+<li><a href="https://yeasy.gitbooks.io/docker_practice/repository/registry.html" target="_blank" rel="external">https://yeasy.gitbooks.io/docker_practice/repository/registry.html</a></li>
+<li><a href="https://dormousehole.readthedocs.io/en/latest/quickstart.html" target="_blank" rel="external">https://dormousehole.readthedocs.io/en/latest/quickstart.html</a></li>
 </ul>
 
       
@@ -498,11 +474,11 @@ Docker version 19.03.5, build 633a0ea
       
         <div class="post-tags">
           
-            <a href="/tags/Git/" rel="tag"># Git</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
-            <a href="/tags/GitLab/" rel="tag"># GitLab</a>
+            <a href="/tags/容器/" rel="tag"># 容器</a>
           
-            <a href="/tags/Docker/" rel="tag"># Docker</a>
+            <a href="/tags/gitlab/" rel="tag"># gitlab</a>
           
         </div>
       
@@ -515,8 +491,8 @@ Docker version 19.03.5, build 633a0ea
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Docker-Compose-入门教程/" rel="next" title="Docker Compose 入门教程">
-                <i class="fa fa-chevron-left"></i> Docker Compose 入门教程
+              <a href="/使用-docker-安装-gitlab/" rel="next" title="使用 docker 安装 gitlab">
+                <i class="fa fa-chevron-left"></i> 使用 docker 安装 gitlab
               </a>
             
           </div>
@@ -524,10 +500,6 @@ Docker version 19.03.5, build 633a0ea
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/使用-gitlab-搭建-docker-私有仓库/" rel="prev" title="使用 gitlab 搭建 docker 私有仓库">
-                使用 gitlab 搭建 docker 私有仓库 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -663,7 +635,7 @@ Docker version 19.03.5, build 633a0ea
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-docker-run-命令安装"><span class="nav-number">1.</span> <span class="nav-text">使用 docker run 命令安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-docker-compose-安装"><span class="nav-number">2.</span> <span class="nav-text">使用 docker-compose 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#启用-gitlab-registry-功能"><span class="nav-number">1.</span> <span class="nav-text">启用 gitlab registry 功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上传镜像"><span class="nav-number">2.</span> <span class="nav-text">上传镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#下载镜像"><span class="nav-number">3.</span> <span class="nav-text">下载镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
