@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next pisces" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Prometheus,Docker,Docker-compose,Grafana," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Prometheus 是当前一套非常流行的开源监控和报警系统，于 2016 年加入了 Clound Native Computing Foundation，是继 kubernates 之后的第二个托管项目。
+本文讲述如何使用 docker 快速搭建 prometheus 监控系统。
+概览本文的实验环境为 Mac OS，监控系统主要是用来监控两台 CentOS 主机资源使用情况。搭建的监控系统包括以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用 docker-compose 搭建 prometheus 监控系统">
+<meta property="og:url" content="https://leehao.me/使用-docker-compose-搭建-prometheus-监控系统/index.html">
+<meta property="og:site_name" content="Leo的博客">
+<meta property="og:description" content="Prometheus 是当前一套非常流行的开源监控和报警系统，于 2016 年加入了 Clound Native Computing Foundation，是继 kubernates 之后的第二个托管项目。
+本文讲述如何使用 docker 快速搭建 prometheus 监控系统。
+概览本文的实验环境为 Mac OS，监控系统主要是用来监控两台 CentOS 主机资源使用情况。搭建的监控系统包括以">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132846.jpg">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-124919.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-124224.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-120242.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-130342.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-130856.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-131105.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132310.png">
+<meta property="og:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132503.png">
+<meta property="og:updated_time" content="2020-02-16T14:03:36.789Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用 docker-compose 搭建 prometheus 监控系统">
+<meta name="twitter:description" content="Prometheus 是当前一套非常流行的开源监控和报警系统，于 2016 年加入了 Clound Native Computing Foundation，是继 kubernates 之后的第二个托管项目。
+本文讲述如何使用 docker 快速搭建 prometheus 监控系统。
+概览本文的实验环境为 Mac OS，监控系统主要是用来监控两台 CentOS 主机资源使用情况。搭建的监控系统包括以">
+<meta name="twitter:image" content="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132846.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: "",
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '8W6C45ZXZM',
+      apiKey: '81015abedcec7ff547bd4962d0db1a0b',
+      indexName: 'hexo',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://leehao.me/使用-docker-compose-搭建-prometheus-监控系统/"/>
+
+
+
+
+
+  <title>使用 docker-compose 搭建 prometheus 监控系统 | Leo的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?371df6f233e7e46671c4a763a94f4976";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Leo的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">记录开发的点滴</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-docker-compose-搭建-prometheus-监控系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">使用 docker-compose 搭建 prometheus 监控系统</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-16T22:01:51+08:00">
+                2020-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://prometheus.io/" target="_blank" rel="external">Prometheus</a> 是当前一套非常流行的开源监控和报警系统，于 2016 年加入了 Clound Native Computing Foundation，是继 kubernates 之后的第二个托管项目。</p>
+<p>本文讲述如何使用 docker 快速搭建 prometheus 监控系统。</p>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>本文的实验环境为 Mac OS，监控系统主要是用来监控两台 CentOS 主机资源使用情况。搭建的监控系统包括以下软件：</p>
+<ul>
+<li>prometheus：负责收集和存储时间序列数据</li>
+<li>node-exporter：负责暴露主机 metrics 数据给 prometheus</li>
+<li>grafana：负责展示数据</li>
+</ul>
+<p>它们的关系如下图所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132846.jpg" alt=""></p>
+<h2 id="node-exporter"><a href="#node-exporter" class="headerlink" title="node-exporter"></a>node-exporter</h2><p>为方便操作，我们先创建 <code>prometheus</code> 目录，用于存放此次实验的文件，例如，笔者创建的目录为 <code>~/code/docker/prometheus</code>。</p>
+<a id="more"></a>
+<p>Node-exporter （下文简称 exporter）官方文档不建议使用 docker 来安装 exporter，本文为了实验的便捷，通过在一个 centos 容器运行 exporter 来验证其使用方法。<br>生产环境下，可以直接在主机上安装 exporter。</p>
+<p>从链接 <a href="https://prometheus.io/download/#node_exporter" target="_blank" rel="external">https://prometheus.io/download/#node_exporter</a> 下载 exporter，解压，文件夹改名为 <code>node_exporter</code> ，并放置在 <code>prometheus</code> 目录下。</p>
+<p>为使用 docker 运行 exporter，需要安装好 docker 和 docker-compose。</p>
+<p>运行 exporter 的 <code>docker-compose.yml</code> 文件如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  centos1:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos1</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9101:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div><div class="line"></div><div class="line"><span class="attr">  centos2:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos2</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9102:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div></pre></td></tr></table></figure>
+<p>启动两个 centos 容器，每个容器都运行 exporter，用于生成 prometheus 所需要主机 metrics。</p>
+<p>exporter 启动的默认端口是 9100，为了在外部访问，我们将其分别映射为 9101 和 9102 端口。</p>
+<p>为了在 centos 容器内部执行 exporter，我们使用 bind mount 的方式，并使用 <code>command</code> 来执行 exporter。</p>
+<p>执行 <code>docker-compose up -d</code> ，成功启动容器 <code>centos1</code> 和 <code>centos2</code> ，打开浏览器，输入地址 <code>http://127.0.0.1:9101/metrics</code> 和 <code>http://127.0.0.1:9102/metrics</code> 可以看到 metrics 输出。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-124919.png" alt=""></p>
+<h2 id="prometheus"><a href="#prometheus" class="headerlink" title="prometheus"></a>prometheus</h2><p>在 <code>prometheus</code> 目录下创建 <code>prometheus</code> 目录，用于存放 prometheus 的配置文件 <code>prometheus.yml</code>。创建 <code>prometheus.yml</code> 文件如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="attr">global:</span></div><div class="line"><span class="attr">  scrape_interval:</span> <span class="number">5</span>s</div><div class="line"></div><div class="line"><span class="attr">scrape_configs:</span></div><div class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></div><div class="line"><span class="attr">    static_configs:</span></div><div class="line"><span class="attr">      - targets:</span> [<span class="string">'prometheus:9090'</span>]</div><div class="line"><span class="attr">  - job_name:</span> <span class="string">'linux-exporter'</span></div><div class="line"><span class="attr">    metrics_path:</span> /metrics</div><div class="line"><span class="attr">    static_configs:</span></div><div class="line"><span class="attr">      - targets:</span> [<span class="string">'centos1:9100'</span>, <span class="string">'centos2:9100'</span>]</div></pre></td></tr></table></figure>
+<p><code>global</code> 是全局的配置，<code>scrape_interval</code> 用于设置每次数据收集的间隔为 5 秒。<br><code>scrape_configs</code> 用于配置数据收集的信息，这里我们配置了两个  job，一个用于收集 prometheus 自身的 metrics，一个用于收集上面我们启动的两个 centos 容器的 metrics。</p>
+<p>在配置 <code>targets</code> 地址时，我们需要使用 <code>docker-compose.yml</code> 中容器名称来代替相应的 ip 地址，这种使用方式也在文章<a href="https://blog.csdn.net/lihao21/article/details/104241160" target="_blank" rel="external">《Docker Compose 入门教程》</a>中使用过。</p>
+<p>添加上 prometheus 的 <code>docker-compose.yml</code> 文件如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  centos1:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos1</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9101:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div><div class="line"></div><div class="line"><span class="attr">  centos2:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos2</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9102:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div><div class="line"></div><div class="line"><span class="attr">  prometheus:</span></div><div class="line"><span class="attr">    image:</span> prom/prometheus</div><div class="line"><span class="attr">    container_name:</span> prometheus</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9090:9090"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/prometheus:/etc/prometheus</div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/prometheus_data:/prometheus</div><div class="line"><span class="attr">    command:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'--config.file=/etc/prometheus/prometheus.yml'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'--storage.tsdb.path=/prometheus'</span></div></pre></td></tr></table></figure>
+<p>为了退出容器后可以保存数据，我们使用了 bind mount 的方式，将 prometheus 保存 TSDB 目录映射到本地的 <code>prometheus_data</code> 目录。</p>
+<p>执行 <code>docker-compose up -d</code> 后，打开浏览器，输入地址 <code>http://127.0.0.1:9090/targets</code> ，可以看到 两个 centos 容器 targets 的状态都为 UP 状态，说明 prometheus 可以正常获取 exporter 的数据。</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-124224.png" alt=""></p>
+<h2 id="grafana"><a href="#grafana" class="headerlink" title="grafana"></a>grafana</h2><p>在 <code>prometheus</code> 目录下创建 <code>grafana_data</code> 目录，用于保存 grafana 的数据。本实验完整的 <code>prometheus</code> 目录结构如下图所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-120242.png" alt=""></p>
+<p>添加上 grafana 的 <code>docker-compose.yml</code> 文件如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="attr">version:</span> <span class="string">'3'</span></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  centos1:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos1</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9101:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div><div class="line"></div><div class="line"><span class="attr">  centos2:</span></div><div class="line"><span class="attr">    image:</span> centos</div><div class="line"><span class="attr">    container_name:</span> centos2</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9102:9100"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/node_exporter:/root</div><div class="line"><span class="attr">    command:</span> /root/node_exporter</div><div class="line"></div><div class="line"><span class="attr">  prometheus:</span></div><div class="line"><span class="attr">    image:</span> prom/prometheus</div><div class="line"><span class="attr">    container_name:</span> prometheus</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"9090:9090"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/prometheus:/etc/prometheus</div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/prometheus_data:/prometheus</div><div class="line"><span class="attr">    command:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'--config.file=/etc/prometheus/prometheus.yml'</span></div><div class="line"><span class="bullet">      -</span> <span class="string">'--storage.tsdb.path=/prometheus'</span></div><div class="line"></div><div class="line"><span class="attr">  grafana:</span></div><div class="line"><span class="attr">    image:</span> grafana/grafana</div><div class="line"><span class="attr">    container_name:</span> grafana</div><div class="line"><span class="attr">    restart:</span> always</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">      -</span> <span class="string">"3000:3000"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">      -</span> ~/code/docker/prometheus/grafana_data:/var/lib/grafana</div></pre></td></tr></table></figure>
+<p>启动 docker-compose 后，打开浏览器，输入地址 <code>http://127.0.0.1:3000</code> ，输入用户名 admin 和密码 admin，登录进 grafana。</p>
+<p>我们先添加 data source：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-130342.png" alt=""></p>
+<p>注意输入的 prometheus 地址为 <code>http://prometheus:9090</code>。</p>
+<p>接下来可以创建新的 dashboard，例如，我们创建一个显示5 分钟内负载的 dashboard：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-130856.png" alt=""></p>
+<p>编辑完成，保存，显示效果：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-131105.png" alt=""></p>
+<p>除了自己创建 dashboard，也可以利用别人已完成的 dashborad。</p>
+<p>在地址 <a href="https://grafana.com/grafana/dashboards" target="_blank" rel="external">https://grafana.com/grafana/dashboards</a> 可以看到可以使用的 dashboard。这里我们选择 dashboard id 为 <a href="https://grafana.com/grafana/dashboards/8919" target="_blank" rel="external">8918</a> 的 dashboard，并导入到 grafana：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132310.png" alt=""></p>
+<p>输入 8919，保存后，可以看到显示效果：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132503.png" alt=""></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://github.com/prometheus/prometheus" target="_blank" rel="external">https://github.com/prometheus/prometheus</a></li>
+<li><a href="https://juejin.im/post/5d54bc80f265da03a6531063" target="_blank" rel="external">https://juejin.im/post/5d54bc80f265da03a6531063</a></li>
+<li><a href="https://www.cnblogs.com/xiao987334176/p/9930517.html" target="_blank" rel="external">https://www.cnblogs.com/xiao987334176/p/9930517.html</a></li>
+<li><a href="https://prometheus.io/docs/prometheus/latest/installation/" target="_blank" rel="external">https://prometheus.io/docs/prometheus/latest/installation/</a></li>
+<li><a href="https://github.com/vegasbrianc/prometheus/blob/master/docker-compose.yml" target="_blank" rel="external">https://github.com/vegasbrianc/prometheus/blob/master/docker-compose.yml</a></li>
+<li><a href="https://juejin.im/post/5c9dc0b06fb9a070ae3da6e7" target="_blank" rel="external">https://juejin.im/post/5c9dc0b06fb9a070ae3da6e7</a></li>
+<li><a href="https://prometheus.fuckcloudnative.io/di-san-zhang-prometheus/storage" target="_blank" rel="external">https://prometheus.fuckcloudnative.io/di-san-zhang-prometheus/storage</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/cloud/library/cl-lo-prometheus-getting-started-and-practice/index.html" target="_blank" rel="external">https://www.ibm.com/developerworks/cn/cloud/library/cl-lo-prometheus-getting-started-and-practice/index.html</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Prometheus/" rel="tag"># Prometheus</a>
+          
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
+          
+            <a href="/tags/Docker-compose/" rel="tag"># Docker-compose</a>
+          
+            <a href="/tags/Grafana/" rel="tag"># Grafana</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/使用-gitlab-搭建-docker-私有仓库/" rel="next" title="使用 gitlab 搭建 docker 私有仓库">
+                <i class="fa fa-chevron-left"></i> 使用 gitlab 搭建 docker 私有仓库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/favicon.jpeg"
+               alt="Leo" />
+          <p class="site-author-name" itemprop="name">Leo</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">90</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">234</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#node-exporter"><span class="nav-number">2.</span> <span class="nav-text">node-exporter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#prometheus"><span class="nav-number">3.</span> <span class="nav-text">prometheus</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#grafana"><span class="nav-number">4.</span> <span class="nav-text">grafana</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 &mdash; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Leo</span>
+
+  
+</div>
+
+
+<div>
+  <a href="http://www.beian.miit.gov.cn" target="_blank">
+    粤ICP备17015212号
+  </a>
+</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

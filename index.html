@@ -312,6 +312,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-docker-compose-搭建-prometheus-监控系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Leo">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/favicon.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Leo的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/使用-docker-compose-搭建-prometheus-监控系统/" itemprop="url">使用 docker-compose 搭建 prometheus 监控系统</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-16T22:01:51+08:00">
+                2020-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://prometheus.io/">Prometheus</a> 是当前一套非常流行的开源监控和报警系统，于 2016 年加入了 Clound Native Computing Foundation，是继 kubernates 之后的第二个托管项目。</p>
+<p>本文讲述如何使用 docker 快速搭建 prometheus 监控系统。</p>
+<h2 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h2><p>本文的实验环境为 Mac OS，监控系统主要是用来监控两台 CentOS 主机资源使用情况。搭建的监控系统包括以下软件：</p>
+<ul>
+<li>prometheus：负责收集和存储时间序列数据</li>
+<li>node-exporter：负责暴露主机 metrics 数据给 prometheus</li>
+<li>grafana：负责展示数据</li>
+</ul>
+<p>它们的关系如下图所示：</p>
+<p><img src="https://leehao.oss-cn-shenzhen.aliyuncs.com/2020-02-16-132846.jpg" alt=""></p>
+<h2 id="node-exporter"><a href="#node-exporter" class="headerlink" title="node-exporter"></a>node-exporter</h2><p>为方便操作，我们先创建 <code>prometheus</code> 目录，用于存放此次实验的文件，例如，笔者创建的目录为 <code>~/code/docker/prometheus</code>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/使用-docker-compose-搭建-prometheus-监控系统/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://leehao.me/使用-gitlab-搭建-docker-私有仓库/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1689,158 +1845,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://leehao.me/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Leo">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/favicon.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Leo的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/" itemprop="url">Oracle / PL SQL: CURSOR FOR LOOP 使用</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-25T21:12:08+08:00">
-                2019-08-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="FOR-LOOP-介绍"><a href="#FOR-LOOP-介绍" class="headerlink" title="FOR LOOP 介绍"></a>FOR LOOP 介绍</h2><p>为了对游标进行遍历，可以使用 <code>FOR LOOP</code> 语句实现，语法如下：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FOR record IN cursor_name</div><div class="line">LOOP</div><div class="line">  process_record_statements;</div><div class="line"><span class="keyword">END</span> <span class="keyword">LOOP</span>;</div></pre></td></tr></table></figure>
-<p>对游标进行 <code>FOR LOOP</code> 遍历时，省去了 <code>%ROWTYPE</code> 的声明，循环每次从查询结果中取出一行结果，当取完后，跳出循环。</p>
-<h3 id="1-record"><a href="#1-record" class="headerlink" title="1) record"></a>1) record</h3><p><code>record</code> 是 <code>FOR LOOP</code> 语句隐式创建的 <code>%ROWTYPE</code> 类型变量，用于表示对游标遍历中的每一行记录。<code>record</code>  变量只可以用于 <code>FOR LOOP</code> 语句内部。</p>
-<h3 id="2-cursor-name"><a href="#2-cursor-name" class="headerlink" title="2) cursor_name"></a>2) cursor_name</h3><p><code>cursor_name</code> 是显式创建的游标名称。<code>FOR LOOP</code> 语法除了使用显式创建的游标外，还可以直接使用 <code>SELECT</code> 语句来实现对游标进行遍历。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">FOR record IN (select_statement)</div><div class="line">LOOP</div><div class="line">    process_record_statements;</div><div class="line"><span class="keyword">END</span> <span class="keyword">LOOP</span>;</div></pre></td></tr></table></figure>
-<p>在此用法下，<code>FOR LOOP</code> 将进行隐式的创建游标，打开游标，获取记录，关闭游标等操作。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Oracle-PL-SQL-CURSOR-FOR-LOOP-使用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1891,7 +1895,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-count">90</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1913,7 +1917,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">231</span>
+                <span class="site-state-item-count">234</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
